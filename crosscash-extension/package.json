@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "eslint-config-willo-react": "^1.3.6"
+    "eslint-config-willo-react": "^1.3.6",
+    "eslint-config-willo-typescript": "^1.3.6"
   }
 }

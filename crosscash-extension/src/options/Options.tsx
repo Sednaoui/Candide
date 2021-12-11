@@ -2,7 +2,7 @@ import './Options.css';
 
 const logo = require('../logo.svg');
 
-function Options() {
+function Options(): JSX.Element {
     return (
         <div className="App">
             <header className="App-header">
