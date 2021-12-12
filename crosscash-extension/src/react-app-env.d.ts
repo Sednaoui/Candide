@@ -1,1 +1,1 @@
-/// <reference types="react-browser-extension-scripts" />
+// / <reference types="react-browser-extension-scripts" />
