@@ -17,3 +17,14 @@ export function printAllPageLinks() {
   console.log(allLinks);
   console.log('-'.repeat(30));
 }
+
+// Sourced from StackOverflow, method 2b:
+// https://stackoverflow.com/questions/9515704/use-a-content-script-to-access-the-page-context-variables-and-functions/9517879#9517879
+var actualCode = '(' + function() {
+  window.ethereum = {
+    isMetaMask: true
+  }
+} + ')();';
+var script = document.createElement('script');
+script.textContent = actualCode;
+(document.head||document.documentElement).appendChild(script);
