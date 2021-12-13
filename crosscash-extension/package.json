@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@metamask/post-message-stream": "^4.0.0",
+    "@metamask/providers": "^8.1.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -10,6 +12,7 @@
     "@types/node": "^16.11.12",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "loglevel": "^1.8.0",
     "react": "^17.0.2",
     "react-browser-extension-scripts": "4.0.10",
     "react-dom": "^17.0.2",
