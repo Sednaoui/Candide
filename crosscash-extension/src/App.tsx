@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
+import store from './store';
+import { createWalletAction } from './store/wallet/actions';
 
 function App(): JSX.Element {
     return (
@@ -15,6 +17,11 @@ function App(): JSX.Element {
                     {' '}
                     and save to reload.
                 </p>
+                <button
+                    type="button"
+                    onClick={() => store.store.dispatch(createWalletAction())}>
+                    Create wallet
+                </button>
                 <a
                     className="App-link"
                     href="https://reactjs.org"
