@@ -1,10 +1,29 @@
+import { Duplex } from 'stream';
+
+import { WindowPostMessageStream } from '@metamask/post-message-stream';
+import { initializeProvider } from '@metamask/providers/dist/initializeInpageProvider';
+import * as log from 'loglevel';
+
+import {
+    INJECTED_STREAM, CONTENTSCRIPT_STREAM,
+} from '../util/constants';
+
 declare global {
-    // eslint-disable-next-line
-    interface Window { ethereum: any; }
+  interface Window {
+    stream: Duplex;
+  }
 }
 
-window.ethereum = {
-    isMetaMask: true,
-};
+// TODO: temporary to demonstrate communication
+// Initializes communication to extension
+window.stream = new WindowPostMessageStream({
+    name: INJECTED_STREAM,
+    target: CONTENTSCRIPT_STREAM,
+}) as unknown as Duplex; // @metamask/post-message-stream used wrong Duplex
 
-export { };
+// Initializes the window.ethereum object
+initializeProvider({
+    connectionStream: window.stream,
+    logger: log,
+    shouldShimWeb3: true,
+});

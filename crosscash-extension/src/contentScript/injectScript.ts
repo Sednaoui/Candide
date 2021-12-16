@@ -1,7 +1,4 @@
-injectScript();
-
-// Injects script.js into <head>
-export function injectScript(): void {
+export default function injectScript(): void {
     const script = document.createElement('script');
 
     script.src = chrome.runtime.getURL('injected.bundle.js');
