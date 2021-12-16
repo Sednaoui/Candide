@@ -5,7 +5,7 @@ import { initializeProvider } from '@metamask/providers/dist/initializeInpagePro
 import * as log from 'loglevel';
 
 import {
-    INJECTED_STREAM, CONTENTSCRIPT_STREAM,
+    INPAGE_STREAM, CONTENTSCRIPT_STREAM,
 } from '../util/constants';
 
 declare global {
@@ -17,7 +17,7 @@ declare global {
 // TODO: temporary to demonstrate communication
 // Initializes communication to extension
 window.stream = new WindowPostMessageStream({
-    name: INJECTED_STREAM,
+    name: INPAGE_STREAM,
     target: CONTENTSCRIPT_STREAM,
 }) as unknown as Duplex; // @metamask/post-message-stream used wrong Duplex
 

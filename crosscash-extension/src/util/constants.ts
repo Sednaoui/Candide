@@ -1,3 +1,3 @@
 // Steam names for contentScript-injected communication
 export const CONTENTSCRIPT_STREAM = 'crosscash-contentscript';
-export const INJECTED_STREAM = 'crosscash-injected';
+export const INPAGE_STREAM = 'crosscash-inpage';

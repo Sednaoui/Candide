@@ -4,7 +4,7 @@ import { WindowPostMessageStream } from '@metamask/post-message-stream';
 import * as log from 'loglevel';
 
 import {
-    INJECTED_STREAM, CONTENTSCRIPT_STREAM,
+    INPAGE_STREAM, CONTENTSCRIPT_STREAM,
 } from '../util/constants';
 
 // TODO: temporary to demonstrate communication
@@ -15,7 +15,7 @@ export default function connectStreams(): void {
     // Sets up communication stream
     const stream = new WindowPostMessageStream({
         name: CONTENTSCRIPT_STREAM,
-        target: INJECTED_STREAM,
+        target: INPAGE_STREAM,
     }) as unknown as Duplex; // @metamask/post-message-stream used wrong Duplex
 
     // TODO: temporary to demonstrate communication
