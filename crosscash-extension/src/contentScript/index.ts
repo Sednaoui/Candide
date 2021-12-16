@@ -1,7 +1,7 @@
 import connectStreams from './connectStreams';
-import injectScript from './injectScript';
+import injectInpage from './injectInpage';
 
-injectScript();
+injectInpage();
 connectStreams();
 
 export { };
