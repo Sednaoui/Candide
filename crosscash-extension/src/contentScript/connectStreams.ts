@@ -3,6 +3,7 @@ import { Duplex } from 'stream';
 import { WindowPostMessageStream } from '@metamask/post-message-stream';
 import * as log from 'loglevel';
 
+import runApi from '../background/api';
 import {
     INPAGE_STREAM, CONTENTSCRIPT_STREAM,
 } from '../util/constants';
@@ -21,5 +22,6 @@ export default function connectStreams(): void {
     // TODO: temporary to demonstrate communication
     stream.on('data', (m) => {
         log.debug(m);
+        runApi(m);
     });
 }
