@@ -1,6 +1,9 @@
-import { EthereumMnemonic } from '../../model/wallet';
+import {
+    EthereumMnemonicPhrase,
+    Password,
+} from '../../model/wallet';
 
-export type CreateWalletAction = {
-    payload: EthereumMnemonic;
-    type: string;
+export interface EncryptedWallet {
+    password: Password,
+    mnemonic: EthereumMnemonicPhrase,
 }

@@ -7,27 +7,25 @@ import {
     spawn,
 } from 'redux-saga/effects';
 
-import {
-    createWallet,
-    EthereumMnemonic,
-} from '../../model/wallet';
-import { createWalletAction } from './actions';
+import { createEncryptedWallet } from '../../model/wallet';
+import { createWallet } from './actions';
+import { EncryptedWallet } from './type';
 
-function* fetchCreateWallet({ payload }: PayloadAction<EthereumMnemonic>): Generator {
+function* fetchCreateWallet({ payload }: PayloadAction<EncryptedWallet>): Generator {
     try {
-        yield put(createWalletAction.request());
-        const wallet = yield call(createWallet, payload);
+        yield put(createWallet.request());
+        const wallet = yield call(createEncryptedWallet, payload.password, payload.mnemonic);
 
-        yield put(createWalletAction.success(wallet));
+        yield put(createWallet.success(wallet));
     } catch (err) {
-        yield put(createWalletAction.failure(err));
+        yield put(createWallet.failure(err));
     } finally {
-        yield put(createWalletAction.fulfill());
+        yield put(createWallet.fulfill());
     }
 }
 
 function* watchCreateWallet(): Generator {
-    yield takeEvery(createWalletAction.TRIGGER, fetchCreateWallet);
+    yield takeEvery(createWallet.TRIGGER, fetchCreateWallet);
 }
 
 export default function* logSaga(): Generator {

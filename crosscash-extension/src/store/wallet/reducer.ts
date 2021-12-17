@@ -1,7 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 
 import { EthereumWallet } from '../../model/wallet';
-import { createWalletAction } from './actions';
+import { createWallet } from './actions';
 
 const initialState: WalletState = {
     walletInstance: null,
@@ -14,19 +14,19 @@ export const walletReducer = (
     action: PayloadAction<EthereumWallet & Error>,
 ): WalletState => {
     switch (action.type) {
-        case createWalletAction.TRIGGER:
+        case createWallet.TRIGGER:
             return { ...state, loading: true };
-        case createWalletAction.SUCCESS:
+        case createWallet.SUCCESS:
             return {
                 ...state,
                 walletInstance: action.payload,
             };
-        case createWalletAction.FAILURE:
+        case createWallet.FAILURE:
             return {
                 ...state,
                 error: action.payload,
             };
-        case createWalletAction.FULFILL:
+        case createWallet.FULFILL:
             return {
                 ...state,
                 loading: false,
@@ -37,7 +37,7 @@ export const walletReducer = (
 };
 
 export interface WalletState {
-    walletInstance: EthereumWallet;
+    walletInstance: EthereumWallet | null;
     loading: boolean;
     error: Error | null;
 }
