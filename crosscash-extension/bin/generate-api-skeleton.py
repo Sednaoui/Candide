@@ -133,7 +133,7 @@ def main(supported_apis):
     for api in supported_apis:
         api_file_path = os.path.join(API_ROOT, api) + '.ts'
         if not os.path.exists(api_file_path):
-            writeFile(api_file_path, API_FILE_TEMPLATE.format(name=api))
+            writeFile(api_file_path, API_FILE_TEMPLATE.format(api=api))
 
     # Write index file
     supported_apis.sort()  # For correct ordering of imports in index.ts
