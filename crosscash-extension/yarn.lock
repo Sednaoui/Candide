@@ -1775,10 +1775,10 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@quocanh/react-browser-extension-scripts@^4.1.4":
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/@quocanh/react-browser-extension-scripts/-/react-browser-extension-scripts-4.1.4.tgz#4af3d3a7f9c42b370f8b88e4398a29b8b2e075cf"
-  integrity sha512-Zpd3PEErmJi8aEyjGksCJlMj6IhSyfiJMjJ0rJxFKziJbXMzXDqZnTIRUA9oBRabRFvn5miy/asXSvpppQLwmg==
+"@quocanh/react-browser-extension-scripts@^4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@quocanh/react-browser-extension-scripts/-/react-browser-extension-scripts-4.1.5.tgz#75e4359779e787cd97d4e23c29565b932934a77d"
+  integrity sha512-B/P9CnJ+VJS5Me7TWi8mTS4uhlESkGmRbjoAPJ8MzdNlrVnTuulgxJUHG7/0rIa1ZwfYLt9VXRDbiVoIXJBqYg==
   dependencies:
     "@babel/core" "7.12.3"
     "@svgr/webpack" "5.5.0"
