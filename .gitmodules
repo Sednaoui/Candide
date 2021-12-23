@@ -1,3 +1,6 @@
 [submodule "simple-dapp-tutorial"]
 	path = simple-dapp-tutorial
 	url = https://github.com/BboyAkers/simple-dapp-tutorial.git
+[submodule "create-react-extension"]
+	path = create-react-extension
+	url = https://github.com/QuocAnhVu/create-react-extension.git
