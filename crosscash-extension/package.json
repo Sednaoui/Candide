@@ -14,10 +14,12 @@
     "@types/node": "^16.11.12",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "bootstrap": "5.1.3",
     "crypto-js": "^4.1.1",
     "ethers": "^5.5.2",
     "loglevel": "^1.8.0",
     "react": "^17.0.2",
+    "react-bootstrap": "^2.0.4",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
     "redux-logger": "^3.0.6",
@@ -54,11 +56,11 @@
     ]
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.171",
     "@types/crypto-js": "^4.0.2",
     "@types/react-redux": "^7.1.20",
     "@types/redux-logger": "^3.0.9",
     "@types/redux-saga-routines": "^3.1.2",
-    "@types/chrome": "^0.0.171",
     "eslint-config-willo-react": "^1.3.6",
     "eslint-config-willo-typescript": "^1.3.6"
   }
