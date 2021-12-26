@@ -4,6 +4,7 @@ import {
     useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import {
     Form,
@@ -14,11 +15,16 @@ import '../../App.css';
 
 const ImportWallet = (): ReactElement => {
     const [mnemonic, setMnemonic] = useState('');
+    const [password, setPassword] = useState('');
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     // TODO: validate mnemonic without disabling button,
     // handle when mnemonic is wrong and show error message
+
+    // TODO: validate weak password, inform user about best practices
+    // inforce strong password
 
     return (
         <div className="App">
@@ -33,10 +39,12 @@ const ImportWallet = (): ReactElement => {
                     className="mb-3"
                     onSubmit={(e) => {
                         e.preventDefault();
-                        dispatch(createWallet({ password: 'secret', mnemonic }));
+                        dispatch(createWallet({ password, mnemonic }));
+                        navigate('/wallet');
                     }}>
                     <Form.Group>
                         <Form.Control
+                            className="mb-3"
                             as="textarea"
                             rows={3}
                             type="text"
@@ -45,9 +53,20 @@ const ImportWallet = (): ReactElement => {
                             onChange={(e) => {
                                 setMnemonic(e.target.value);
                             }} />
+                        <Form.Label>
+                            Choose a password to encrypt your wallet
+                        </Form.Label>
+                        <Form.Control
+                            className='mt-3'
+                            type="password"
+                            placeholder="password"
+                            name="password"
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                            }} />
                         <Button
                             className='mt-3'
-                            disabled={!isValidMnemonic(mnemonic)}
+                            disabled={!isValidMnemonic(mnemonic) || !password}
                             type="submit">
                             Import
                         </Button>
