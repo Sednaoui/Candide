@@ -3,13 +3,13 @@ import {
     ReactElement,
     useState,
 } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import {
     Form,
     Button,
 } from '../../components';
+import { useAppDispatch } from '../../store';
 import { createWallet } from '../../store/wallet/actions';
 import '../../App.css';
 
@@ -17,7 +17,7 @@ const ImportWallet = (): ReactElement => {
     const [mnemonic, setMnemonic] = useState('');
     const [password, setPassword] = useState('');
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     // TODO: validate mnemonic without disabling button,

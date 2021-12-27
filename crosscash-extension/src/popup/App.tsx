@@ -1,14 +1,13 @@
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import logo from '../logo.svg';
 import './App.css';
 import { useAuth } from './pages/auth/AuthProvider';
-import { RootState } from './store/rootReducer';
+import { useAppSelector } from './store';
 
 function App(): JSX.Element {
     const auth = useAuth();
-    const { walletInstance } = useSelector((state: RootState) => state.wallet);
+    const { walletInstance } = useAppSelector((state) => state.wallet);
 
     let initialPath = '/';
 

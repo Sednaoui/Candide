@@ -3,6 +3,11 @@ import {
     applyMiddleware,
     AnyAction,
 } from '@reduxjs/toolkit';
+import {
+    useSelector,
+    useDispatch,
+    TypedUseSelectorHook,
+} from 'react-redux';
 import logger from 'redux-logger';
 import {
     persistStore,
@@ -32,6 +37,11 @@ const store = createStore(
 const persistor = persistStore(store);
 
 sagaMiddleware.run(rootSaga);
+
+// typed redux hooks to avoid typing userSelector and useDispatch throughout the app
+type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = (): AppDispatch => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default {
     store,

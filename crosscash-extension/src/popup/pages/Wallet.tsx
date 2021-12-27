@@ -1,11 +1,10 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { Button } from '../components';
-import { RootState } from '../store/rootReducer';
+import { useAppSelector } from '../store';
 
 const Wallet = (): React.ReactElement => {
-    const wallet = useSelector((state: RootState) => state.wallet.walletInstance);
+    const wallet = useAppSelector((state) => state.wallet.walletInstance);
 
     const copy = async () => {
         if (wallet) {
