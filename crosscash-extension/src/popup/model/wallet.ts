@@ -48,30 +48,40 @@ export const createEncryptedWallet = async (
 export const decryptWallet = async (
     password: Password,
     encryptedWallet: EthereumWallet,
-): Promise<EthereumWallet | null> => {
+): Promise<EthereumWallet | DecryptWalletErrorMessages | string> => {
     if (encryptedWallet) {
         const { privateKey, mnemonic } = encryptedWallet;
 
-        const decryptedPrivateKey = CryptoJS.AES.decrypt(privateKey, password)
-            .toString(CryptoJS.enc.Utf8);
+        try {
+            const decryptedPrivateKey = CryptoJS.AES.decrypt(privateKey, password)
+                .toString(CryptoJS.enc.Utf8);
 
-        const decryptedMnemonicPhrase = CryptoJS.AES.decrypt(
-            mnemonic.phrase,
-            password,
-        ).toString(CryptoJS.enc.Utf8);
+            const decryptedMnemonicPhrase = CryptoJS.AES.decrypt(
+                mnemonic.phrase,
+                password,
+            ).toString(CryptoJS.enc.Utf8);
 
-        return {
-            ...encryptedWallet,
-            privateKey: decryptedPrivateKey,
-            mnemonic: {
-                ...encryptedWallet.mnemonic,
-                phrase: decryptedMnemonicPhrase,
-            },
-        };
+            if (decryptedPrivateKey && decryptedMnemonicPhrase) {
+                return {
+                    ...encryptedWallet,
+                    privateKey: decryptedPrivateKey,
+                    mnemonic: {
+                        ...encryptedWallet.mnemonic,
+                        phrase: decryptedMnemonicPhrase,
+                    },
+                };
+            } else {
+                return 'could not decrypt wallet';
+            }
+        } catch (error) {
+            return JSON.stringify(error);
+        }
     } else {
-        return null;
+        return 'no wallet to decrypt';
     }
 };
+
+export type DecryptWalletErrorMessages = 'could not decrypt wallet' | 'no wallet to decrypt';
 
 export type Password = string;
 export interface EthereumWallet {

@@ -16,6 +16,7 @@ import {
     Login,
 } from './pages/auth/Login';
 import ImportWallet from './pages/onboarding/ImportWallet';
+import Send from './pages/transactions/send/Send';
 import Wallet from './pages/Wallet';
 import reportWebVitals from './reportWebVitals';
 import store from './store';
@@ -31,6 +32,7 @@ ReactDOM.render(
                             <Route path="/" element={<App />} />
                             <Route path="import_wallet" element={<ImportWallet />} />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/send" element={<Send />} />
                             <Route
                                 path="/wallet"
                                 element={(

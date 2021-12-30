@@ -80,7 +80,7 @@ describe('decrypt wallet', () => {
         if (encryptedWallet) {
             const wallet = await decryptWallet(password, encryptedWallet);
 
-            if (wallet) {
+            if (wallet && typeof (wallet) !== 'string') {
                 assert.equal(wallet.address, expectedAddress);
                 assert.equal(wallet.mnemonic.phrase, mnemonic);
             }
