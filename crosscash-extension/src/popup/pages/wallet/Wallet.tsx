@@ -1,16 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { trancatAddress } from '../../../util/helpers';
 import {
     Button,
     Row,
     Col,
-} from '../components';
-import { CURRENT_NETWORK } from '../model/constants';
-import { useAppSelector } from '../store';
+} from '../../components';
+import { CURRENT_NETWORK } from '../../model/constants';
+import { useAppSelector } from '../../store';
+import WalletNavBar from './WalletNavBar';
 
 const Wallet = (): React.ReactElement => {
     const wallet = useAppSelector((state) => state.wallet.walletInstance);
+
+    const address = wallet?.address || '';
 
     const navigate = useNavigate();
 
@@ -28,15 +32,13 @@ const Wallet = (): React.ReactElement => {
             <header className='App-header'>
                 <Row>
                     <Col>
-                        {`Netowrk: ${CURRENT_NETWORK}`}
+                        {`Network: ${CURRENT_NETWORK}`}
                     </Col>
                 </Row>
                 <Row>
                     <Col>
                         <Button type="button" onClick={copy}>
-                            {wallet?.address.substring(0, 4)}
-                            ...
-                            {wallet?.address.substring(wallet?.address.length - 4)}
+                            {trancatAddress(address)}
                         </Button>
                     </Col>
                     <Col>
@@ -48,6 +50,11 @@ const Wallet = (): React.ReactElement => {
                             }}>
                             Send
                         </Button>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <WalletNavBar />
                     </Col>
                 </Row>
             </header>
