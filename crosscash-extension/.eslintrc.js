@@ -5,6 +5,7 @@ module.exports = {
         'react/react-in-jsx-scope': 'off',
         'no-use-before-define': 'off',
         'react/require-default-props': 'off',
+        'no-console': 'warn',
         'import/extensions': [
             'error',
             'ignorePackages',
