@@ -1,19 +1,38 @@
 import React from 'react';
 import ReactBoostrapButton from 'react-bootstrap/Button';
 
+type Variant = 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'dark'
+    | 'light'
+    | 'link'
+    | 'outline-primary'
+    | 'outline-secondary'
+    | 'outline-success'
+    | 'outline-danger'
+    | 'outline-warning'
+    | 'outline-info'
+    | 'outline-dark'
+    | 'outline-light';
+
 const Button = (props: {
     type: 'submit' | 'reset' | 'button',
     onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
     disabled?: boolean | undefined,
     className?: string | undefined,
+    variant?: Variant | undefined,
     children?: React.ReactNode,
 }): React.ReactElement => {
-    const { type, onClick, disabled, className, children } = props;
+    const { type, onClick, disabled, className, variant, children } = props;
 
     return (
         <ReactBoostrapButton
             type={type}
-            variant="primary"
+            variant={variant}
             className={className}
             onClick={onClick}
             disabled={disabled}>

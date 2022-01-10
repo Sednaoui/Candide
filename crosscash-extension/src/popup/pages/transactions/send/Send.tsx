@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import {
     Form,
     Button,
+    Row,
+    Col,
+    CancelButton,
 } from '../../../components/index';
 import { sendETH } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
@@ -66,6 +69,11 @@ const Send = (): React.ReactElement => {
                             setTxTransaction('no wallet Instance');
                         }
                     }}>
+                    <Row>
+                        <Col className="d-flex flex-row-reverse">
+                            <CancelButton />
+                        </Col>
+                    </Row>
                     <Form.Group>
                         <Form.Label>
                             Select Token
@@ -73,6 +81,8 @@ const Send = (): React.ReactElement => {
                         <Form.Select required>
                             {list}
                         </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
                         <Form.Label>
                             Amount
                         </Form.Label>
@@ -82,6 +92,8 @@ const Send = (): React.ReactElement => {
                             placeholder="0.00"
                             name="amount"
                             onChange={(e) => setTokenAmount(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group>
                         <Form.Label>
                             Address
                         </Form.Label>
@@ -91,6 +103,8 @@ const Send = (): React.ReactElement => {
                             placeholder="0x0d8775f648430679a709e98d2b0cb6250d2887ef"
                             name="address"
                             onChange={(e) => setRecipient(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group>
                         <Form.Label>
                             Password
                         </Form.Label>
@@ -100,13 +114,13 @@ const Send = (): React.ReactElement => {
                             placeholder="Password"
                             name="password"
                             onChange={(e) => setPassword(e.target.value)} />
-                        <Button
-                            disabled={!utils.isAddress(recipient)}
-                            type="submit"
-                            className='mt-3'>
-                            Send
-                        </Button>
                     </Form.Group>
+                    <Button
+                        disabled={!utils.isAddress(recipient)}
+                        type="submit"
+                        className='mt-3'>
+                        Send
+                    </Button>
                 </Form>
                 {txTransaction && (
                     <div className="mt-3">
