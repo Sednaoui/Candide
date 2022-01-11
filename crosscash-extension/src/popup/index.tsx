@@ -17,7 +17,7 @@ import {
 } from './pages/auth/Login';
 import ImportWallet from './pages/onboarding/ImportWallet';
 import Send from './pages/transactions/send/Send';
-import Wallet from './pages/Wallet';
+import Wallet from './pages/wallet/Wallet';
 import reportWebVitals from './reportWebVitals';
 import store from './store';
 import 'bootstrap/dist/css/bootstrap.min.css';
