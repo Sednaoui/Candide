@@ -4,6 +4,8 @@ import {
     utils,
 } from 'ethers';
 
+import { HexString } from '../../util/accounts';
+
 export const createWallet = async (
     mnemonic: null | EthereumMnemonicPhrase = null,
 ): Promise<null | Wallet> => {
@@ -85,7 +87,7 @@ export type DecryptWalletErrorMessages = 'could not decrypt wallet' | 'no wallet
 
 export type Password = string;
 export interface EthereumWallet {
-    address: string;
+    address: HexString;
     mnemonic: {
         locale: string;
         phrase: string;
