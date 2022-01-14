@@ -2,7 +2,7 @@ import {
     Tab,
     Tabs,
 } from '../../components/index';
-import Assets from './AssetsList';
+import Assets from './assets/AssetsList';
 import Transactions from './TransactionsList';
 
 const WalletNavBar = (): React.ReactElement => (
