@@ -1,20 +1,20 @@
-import { TransactionResponse } from '@ethersproject/providers';
 import {
-    providers,
+    BaseProvider,
+    TransactionResponse,
+} from '@ethersproject/providers';
+import {
     Wallet,
     utils,
 } from 'ethers';
 
-import { ETH_PROVIDER } from './constants';
-
 export const sendETH = async (
+    provider: BaseProvider,
     sendTokenAmout: string,
     toAddress: string,
     fromAddress: string,
     privateKey: string,
 ): Promise<TransactionResponse | string> => {
     // TODO: create internal provider on windows.crosscash
-    const provider = new providers.JsonRpcProvider(ETH_PROVIDER);
     const walletSigner = new Wallet(privateKey, provider);
 
     let response: Promise<TransactionResponse>;

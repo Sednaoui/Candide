@@ -1,5 +1,6 @@
 import { utils } from 'ethers';
 import React, { useState } from 'react';
+import { useProvider } from 'wagmi';
 
 import {
     Form,
@@ -20,6 +21,8 @@ const tokens = [{
 }];
 
 const Send = (): React.ReactElement => {
+    const provider = useProvider();
+
     const [recipient, setRecipient] = useState('');
     const [tokenAmount, setTokenAmount] = useState('');
     const [password, setPassword] = useState('');
@@ -52,6 +55,7 @@ const Send = (): React.ReactElement => {
                                 setTxTransaction(wallet);
                             } else if (walletAddress && wallet.privateKey) {
                                 const tx = await sendETH(
+                                    provider,
                                     tokenAmount,
                                     recipient,
                                     walletAddress,
