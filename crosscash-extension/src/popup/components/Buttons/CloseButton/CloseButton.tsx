@@ -1,8 +1,7 @@
+import CloseB from 'react-bootstrap/CloseButton';
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../Button/Button';
-
-const CancelButton = (props: {
+const CloseButton = (props: {
     onClick?: () => void;
     className?: string,
 }): React.ReactElement => {
@@ -18,14 +17,11 @@ const CancelButton = (props: {
     };
 
     return (
-        <Button
+        <CloseB
             type="button"
             onClick={handleClick}
-            className={className}
-            variant="link">
-            Cancel
-        </Button>
+            className={className} />
     );
 };
 
-export default CancelButton;
+export default CloseButton;

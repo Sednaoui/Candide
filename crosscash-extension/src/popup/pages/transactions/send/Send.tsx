@@ -7,7 +7,7 @@ import {
     Button,
     Row,
     Col,
-    CancelButton,
+    CloseButton,
 } from '../../../components/index';
 import { sendETH } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
@@ -75,7 +75,7 @@ const Send = (): React.ReactElement => {
                     }}>
                     <Row>
                         <Col className="d-flex flex-row-reverse">
-                            <CancelButton />
+                            <CloseButton />
                         </Col>
                     </Row>
                     <Form.Group>

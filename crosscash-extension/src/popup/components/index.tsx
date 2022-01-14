@@ -1,6 +1,6 @@
 export {
     Button,
-    CancelButton,
+    CloseButton,
 } from './Buttons';
 
 export { default as Col } from 'react-bootstrap/Col';
