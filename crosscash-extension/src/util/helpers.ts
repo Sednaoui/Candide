@@ -30,3 +30,48 @@ export function getEthereumNetwork(): EVMNetwork {
     return ROPSTEN;
 }
 
+/**
+ * A fixed point number carrying an amount and the number of decimals it
+ * represents.
+ *
+ * For example, the number 100,893.000107 tracked with a precision of 6
+ * decimals is represented by the FixedPointNumber object:
+ * ```
+ * {
+ *   amount: 100893000107n,
+ *   decimals: 5
+ * }
+ * ```
+ *
+ * Convenience functions exist in this file to convert regular JavaScript
+ * floating point Number to and from FixedPointNumber, as well as to multiply
+ * FixedPointNumber and floats.
+ */
+export type FixedPointNumber = {
+    amount: bigint
+    decimals: number
+}
+
+/**
+ * Convert a fixed point bigint with precision `fixedPointDecimals` to a
+ * floating point number truncated to `desiredDecimals`. Note that precision
+ * is not guaranteed, as it is possible that the fixed point number cannot be
+ * accurately converted to or represented as a floating point number. If the
+ * desired precision is higher than that tracked in the fixed point number, the
+ * fixed point precision is used.
+ *
+ * This function is best used as the last step after any computations are done.
+ */
+export function fromFixedPoint(
+    fixedPoint: bigint,
+    fixedPointDecimals: number,
+    desiredDecimals: number,
+): number {
+    const fixedPointDesiredDecimalsAmount = fixedPoint
+        / 10n ** BigInt(Math.max(1, fixedPointDecimals - desiredDecimals));
+
+    return (
+        Number(fixedPointDesiredDecimalsAmount)
+        / 10 ** Math.min(desiredDecimals, fixedPointDecimals)
+    );
+}
