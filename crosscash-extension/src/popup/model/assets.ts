@@ -1,12 +1,12 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 
-import { HexString } from '../../util/accounts';
+import { HexString } from '../../lib/accounts';
 import {
     getTokenBalances,
     getTokenMetadata,
-} from '../../util/alchemy';
-import { AnyAssetAmount } from '../../util/assets';
-import { fromFixedPoint } from '../../util/helpers';
+} from '../../lib/alchemy';
+import { AnyAssetAmount } from '../../lib/assets';
+import { fromFixedPoint } from '../../lib/helpers';
 
 /**
  * Retrieve token balances for a particular account on a particular network,

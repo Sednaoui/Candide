@@ -9,8 +9,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider as Web3Provider } from 'wagmi';
 
 import './index.css';
-import { getEthereumNetwork } from '../util/helpers';
-import { EVMNetwork } from '../util/networks';
+import { getEthereumNetwork } from '../lib/helpers';
+import { EVMNetwork } from '../lib/networks';
 import { ALCHEMY_API_KEY } from './model/constants';
 import { AuthProvider } from './pages/auth/AuthProvider';
 import {

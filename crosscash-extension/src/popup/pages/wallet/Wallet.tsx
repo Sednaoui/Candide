@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { trancatAddress } from '../../../util/helpers';
+import { trancatAddress } from '../../../lib/helpers';
 import {
     Button,
     Row,

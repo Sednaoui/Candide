@@ -6,7 +6,7 @@ import * as log from 'loglevel';
 import runApi from '../background/api';
 import {
     INPAGE_STREAM, CONTENTSCRIPT_STREAM,
-} from '../util/constants';
+} from '../lib/constants';
 
 // TODO: temporary to demonstrate communication
 // In window type window.stream.write('hey');

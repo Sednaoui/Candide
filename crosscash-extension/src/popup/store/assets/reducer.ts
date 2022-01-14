@@ -1,6 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 
-import { AnyAssetAmount } from '../../../util/assets';
+import { AnyAssetAmount } from '../../../lib/assets';
 import { getAssets } from './actions';
 
 const initialState: AssetState = {

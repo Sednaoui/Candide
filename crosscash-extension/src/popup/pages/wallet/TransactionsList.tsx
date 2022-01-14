@@ -1,4 +1,4 @@
-import { trancatAddress } from '../../../util/helpers';
+import { trancatAddress } from '../../../lib/helpers';
 import {
     ListGroup,
     ListGroupItem,

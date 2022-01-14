@@ -4,7 +4,7 @@ import {
     utils,
 } from 'ethers';
 
-import { HexString } from '../../util/accounts';
+import { HexString } from '../../lib/accounts';
 
 export const createWallet = async (
     mnemonic: null | EthereumMnemonicPhrase = null,

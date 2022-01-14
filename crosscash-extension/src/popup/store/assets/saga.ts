@@ -8,7 +8,7 @@ import {
     spawn,
 } from 'redux-saga/effects';
 
-import { HexString } from '../../../util/accounts';
+import { HexString } from '../../../lib/accounts';
 import { retrieveTokenBalances } from '../../model/assets';
 import { getAssets } from './actions';
 

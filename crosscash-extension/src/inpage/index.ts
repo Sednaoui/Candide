@@ -6,7 +6,7 @@ import * as log from 'loglevel';
 
 import {
     INPAGE_STREAM, CONTENTSCRIPT_STREAM,
-} from '../util/constants';
+} from '../lib/constants';
 
 declare global {
   interface Window {

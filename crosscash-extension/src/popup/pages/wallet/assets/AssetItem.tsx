@@ -1,4 +1,4 @@
-import { AnyAssetAmount } from '../../../../util/assets';
+import { AnyAssetAmount } from '../../../../lib/assets';
 import {
     ListGroupItem,
     Row,
