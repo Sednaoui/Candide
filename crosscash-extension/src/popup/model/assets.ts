@@ -25,7 +25,9 @@ export async function retrieveTokenBalances(
         address,
     );
 
-    return Promise.all(balances.map(async ({ contractAddress, amount }) => {
+    const nonZeroBalances = balances.filter((balance) => balance.amount > 0n);
+
+    return Promise.all(nonZeroBalances.map(async ({ contractAddress, amount }) => {
         const token = await getTokenMetadata(provider, contractAddress);
 
         const { decimals } = token;
