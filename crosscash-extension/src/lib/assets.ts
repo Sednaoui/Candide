@@ -32,6 +32,7 @@ export type AssetMetadata = {
  * alongside potential metadata about that asset.
  */
 export type Asset = {
+    decimals: number,
     symbol: string
     name: string
     metadata?: AssetMetadata
