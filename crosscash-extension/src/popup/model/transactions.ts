@@ -1,4 +1,5 @@
 import {
+    AlchemyProvider,
     BaseProvider,
     TransactionResponse,
 } from '@ethersproject/providers';
@@ -6,6 +7,11 @@ import {
     Wallet,
     utils,
 } from 'ethers';
+
+import { HexString } from '../../lib/accounts';
+import { getAssetTransfers } from '../../lib/alchemy';
+import { AnyAssetTransfer } from '../../lib/assets';
+import { fromFixedPoint } from '../../lib/helpers';
 
 export const sendETH = async (
     provider: BaseProvider,
@@ -35,4 +41,23 @@ export const sendETH = async (
     } catch (error) {
         return JSON.stringify(error);
     }
+};
+
+export const getTransactionHistory = async (
+    provider: AlchemyProvider,
+    address: HexString,
+): Promise<AnyAssetTransfer[]> => {
+    const transfers = await getAssetTransfers(provider, address, 0);
+
+    return transfers.map((transfer) => {
+        const { decimals } = transfer.assetAmount.asset;
+
+        return {
+            ...transfer,
+            assetAmount: {
+                ...transfer.assetAmount,
+                amount: fromFixedPoint(transfer.assetAmount.amount, decimals, 4),
+            },
+        };
+    });
 };

@@ -3,9 +3,14 @@ import {
     AlchemyProvider,
     AlchemyWebSocketProvider,
 } from '@ethersproject/providers';
+import { utils } from 'ethers';
 
 import { HexString } from './accounts';
-import { SmartContractFungibleAsset } from './assets';
+import {
+    SmartContractFungibleAsset,
+    AssetTransfer,
+} from './assets';
+import { ETH } from './constants/currencies';
 import { getEthereumNetwork } from './helpers';
 
 /**
@@ -117,4 +122,92 @@ export async function getTokenMetadata(
         homeNetwork: getEthereumNetwork(), // TODO make multi-network friendly
         contractAddress,
     };
+}
+
+/**
+ * Use Alchemy's getAssetTransfers call to get historical transfers for an
+ * account.
+ *
+ * Note that pagination isn't supported in this wrapper, so any responses after
+ * 1k transfers will be dropped.
+ *
+ * More information
+ * https://docs.alchemy.com/alchemy/enhanced-apis/transfers-api#alchemy_getassettransfers
+ * @param provider an Alchemy ethers provider
+ * @param account the account whose transfer history we're fetching
+ * @param fromBlock the block height specifying how far in the past we want
+ *        to look.
+ */
+export async function getAssetTransfers(
+    provider: AlchemyProvider | AlchemyWebSocketProvider,
+    account: string,
+    fromBlock: number,
+    toBlock?: number,
+): Promise<AssetTransfer[]> {
+    const params = {
+        fromBlock: utils.hexValue(fromBlock),
+        toBlock: toBlock === undefined ? 'latest' : utils.hexValue(toBlock),
+        // excludeZeroValue: false,
+    };
+
+    // TODO handle partial failure
+    const rpcResponses = await Promise.all([
+        provider.send('alchemy_getAssetTransfers', [
+            {
+                ...params,
+                fromAddress: account,
+            },
+        ]),
+        provider.send('alchemy_getAssetTransfers', [
+            {
+                ...params,
+                toAddress: account,
+            },
+        ]),
+    ]);
+
+    return rpcResponses
+        .flatMap((jsonResponse: any) => jsonResponse.transfers)
+        .map((transfer) => {
+            // TODO handle NFT asset lookup properly
+            if (transfer.erc721TokenId) {
+                return null;
+            }
+
+            // we don't care about 0-value transfers
+            // TODO handle nonfungible assets properly
+            // TODO handle assets with a contract address and no name
+            if (
+                !transfer.rawContract
+                || !transfer.rawContract.value
+                || !transfer.rawContract.decimal
+                || !transfer.asset
+            ) {
+                return null;
+            }
+
+            const ethereumNetwork = getEthereumNetwork();
+
+            const asset = transfer.rawContract.address
+                ? {
+                    contractAddress: transfer.rawContract.address,
+                    decimals: Number(BigInt(transfer.rawContract.decimal)),
+                    symbol: transfer.asset,
+                    homeNetwork: ethereumNetwork,
+                }
+                : ETH;
+
+            return {
+                network: ethereumNetwork,
+                assetAmount: {
+                    asset,
+                    amount: BigInt(transfer.rawContract.value),
+                },
+                txHash: transfer.hash,
+                to: transfer.to,
+                from: transfer.from,
+                dataSource: 'alchemy',
+            } as AssetTransfer;
+        })
+        .filter((t): t is AssetTransfer => t !== null);
 }

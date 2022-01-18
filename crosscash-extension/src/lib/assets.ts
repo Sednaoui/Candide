@@ -1,4 +1,7 @@
+
+import { HexString } from './accounts';
 import {
+    Network,
     NetworkSpecific,
     SmartContract,
 } from './networks';
@@ -76,7 +79,7 @@ export type AnyAsset =
     | NetworkSpecificAsset
     | FiatCurrency
     | FungibleAsset
-| SmartContractFungibleAsset
+    | SmartContractFungibleAsset
 
 /*
  * The primary type representing amounts in fungible asset transactions.
@@ -84,4 +87,36 @@ export type AnyAsset =
 export type AnyAssetAmount = {
     asset: AnyAsset
     amount: number
+}
+
+/*
+ * The primary type representing amounts in fungible or non-fungible asset
+ * transactions.
+ */
+export type AssetAmount = {
+    asset: Asset
+    amount: bigint
+}
+
+/**
+ * An object representing a transfer of an asset from one address to another.
+ * Includes information on where the information on the transfer was found, as
+ * well as the transaction that executed the transfer.
+ */
+export type AssetTransfer = {
+    network: Network
+    assetAmount: AssetAmount
+    from: HexString
+    to: HexString
+    dataSource: 'alchemy' | 'local'
+    txHash: string
+}
+
+export type AnyAssetTransfer = {
+    network: Network
+    assetAmount: AnyAssetAmount
+    from: HexString
+    to: HexString
+    dataSource: 'alchemy' | 'local'
+    txHash: string
 }
