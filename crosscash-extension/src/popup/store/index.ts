@@ -25,7 +25,7 @@ const persistConfig = {
     key: 'root',
     storage,
     whiteList: ['wallet'],
-    blacklist: ['assets'],
+    blacklist: ['assets', 'transactions'],
 };
 
 const persistedReducer = persistReducer<RootState, AnyAction>(persistConfig, rootReducer);
