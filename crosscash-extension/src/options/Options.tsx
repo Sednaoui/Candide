@@ -1,6 +1,6 @@
 import './Options.css';
 
-const logo = require('../logo.svg');
+import logo from '../assets/logo.jpeg';
 
 function Options(): JSX.Element {
     return (
