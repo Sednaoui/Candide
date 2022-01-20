@@ -61,3 +61,80 @@ export const getTransactionHistory = async (
         };
     });
 };
+
+export type TransactionDetail = {
+    txHash: HexString,
+    to: HexString,
+    from: HexString,
+    value: string,
+    gas: number,
+    gasPrice: number, // gwei
+    blockNumber: number,
+    date: string,
+}
+
+export type Transaction = {
+    blockHash: HexString;
+    blockNumber: HexString;
+    chainId: HexString;
+    from: HexString;
+    gas: HexString;
+    gasPrice: HexString;
+    hash: HexString;
+    input: HexString;
+    nonce: HexString;
+    r: HexString;
+    s: HexString;
+    to: HexString;
+    transactionIndex: HexString;
+    v: HexString;
+    value: HexString;
+}
+
+export type Block = {
+    difficulty: HexString;
+    extraData: HexString;
+    gasLimit: HexString;
+    gasUsed: HexString;
+    hash: HexString;
+    logsBloom: HexString;
+    miner: HexString;
+    mixHash: HexString;
+    nonce: HexString;
+    number: HexString;
+    parentHash: HexString;
+    receiptsRoot: HexString;
+    sha3Uncles: HexString;
+    size: HexString;
+    stateRoot: HexString;
+    timestamp: HexString;
+    totalDifficulty: HexString;
+    transactionsRoot: HexString;
+    uncles: HexString[];
+    transactions: HexString[] | Transaction[];
+}
+
+export const getTransactionDetails = async (
+    provider: AlchemyProvider,
+    txHash: HexString,
+): Promise<TransactionDetail> => {
+    const tx: Transaction = await provider.send('eth_getTransactionByHash', [txHash]);
+
+    const block: Block = await provider.send('eth_getBlockByNumber', [tx.blockNumber, false]);
+
+    const date = new Date(Number(block.timestamp) * 1000).toLocaleString();
+
+    // convert gas price to gwei
+    const gasPrice = Number(tx.gasPrice) / 1000000000;
+
+    return {
+        txHash,
+        to: tx.to,
+        from: tx.from,
+        value: tx.value,
+        gas: Number(tx.gas),
+        gasPrice,
+        blockNumber: Number(tx.blockNumber),
+        date,
+    };
+};
