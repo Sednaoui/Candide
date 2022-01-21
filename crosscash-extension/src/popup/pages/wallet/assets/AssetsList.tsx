@@ -25,7 +25,9 @@ const AssetsList = (): React.ReactElement => {
     return (
         <ListGroup>
             {assetsList.map((assetAmount) => (
-                <AssetItem assetItem={assetAmount} />
+                <AssetItem
+                    key={assetAmount.asset.symbol}
+                    assetItem={assetAmount} />
             ))}
         </ListGroup>
     );
