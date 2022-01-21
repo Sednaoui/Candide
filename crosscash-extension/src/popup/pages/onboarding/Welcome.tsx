@@ -1,6 +1,11 @@
+import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import logo from '../../../assets/logo.jpeg';
+import {
+    Image,
+    Stack,
+} from '../../components';
 import '../../App.css';
 import { useAppSelector } from '../../store';
 import { useAuth } from '../auth/AuthProvider';
@@ -20,17 +25,15 @@ function Welcome(): JSX.Element {
     }
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Welcome to Crosscash
-                </p>
+        <Container className="App-header">
+            <Stack gap={2}>
+                <Image src={logo} className="App-logo" alt="logo" />
+                Welcome to Crosscash
                 <Link to={initialPath}>
                     {initialPath === '/login' ? 'Login' : 'Get Started'}
                 </Link>
-            </header>
-        </div>
+            </Stack>
+        </Container>
     );
 }
 

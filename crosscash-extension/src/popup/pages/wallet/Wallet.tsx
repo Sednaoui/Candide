@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { trancatAddress } from '../../../lib/helpers';
 import {
     Button,
-    Row,
-    Col,
+    Stack,
 } from '../../components';
 import { CURRENT_NETWORK } from '../../model/constants';
 import { useAppSelector } from '../../store';
@@ -28,20 +27,14 @@ const Wallet = (): React.ReactElement => {
     };
 
     return (
-        <div className='App'>
+        <div>
             <header className='App-header'>
-                <Row>
-                    <Col>
-                        {`Network: ${CURRENT_NETWORK}`}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
+                <Stack gap={2}>
+                    {`Network: ${CURRENT_NETWORK}`}
+                    <Stack direction="horizontal" gap={2}>
                         <Button type="button" onClick={copy}>
                             {trancatAddress(address)}
                         </Button>
-                    </Col>
-                    <Col>
                         <Button
                             type="button"
                             className="btn-primary"
@@ -50,13 +43,9 @@ const Wallet = (): React.ReactElement => {
                             }}>
                             Send
                         </Button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <WalletNavBar />
-                    </Col>
-                </Row>
+                    </Stack>
+                    <WalletNavBar />
+                </Stack>
             </header>
         </div>
     );

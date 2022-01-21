@@ -20,7 +20,7 @@ function Login(): React.ReactElement {
     const from = location.state?.from?.pathname || '/wallet';
 
     return (
-        <div className='App'>
+        <div>
             <header className='App-header'>
                 <p>
                     Type your password to login into your wallet
