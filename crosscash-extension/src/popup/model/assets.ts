@@ -6,6 +6,7 @@ import {
     getTokenMetadata,
 } from '../../lib/alchemy';
 import { AnyAssetAmount } from '../../lib/assets';
+import { ETH } from '../../lib/constants/currencies';
 import { fromFixedPoint } from '../../lib/helpers';
 
 /**
@@ -20,14 +21,32 @@ export async function retrieveTokenBalances(
     provider: AlchemyProvider,
     address: HexString,
 ): Promise<AnyAssetAmount[]> {
+    // get ERC-20 balances
     const balances = await getTokenBalances(
         provider,
         address,
     );
 
+    // get ETH balance
+    const ethBalance = await provider.getBalance(address);
+
+    const formatedEthBalance = fromFixedPoint(
+        BigInt(ethBalance.toString()),
+        ETH.decimals,
+        4,
+    );
+
+    const ethAssetAmount = {
+        asset: ETH,
+        amount: formatedEthBalance,
+    };
+
     const nonZeroBalances = balances.filter((balance) => balance.amount > 0n);
 
-    return Promise.all(nonZeroBalances.map(async ({ contractAddress, amount }) => {
+    const erc20AssetAmount = Promise.all(nonZeroBalances.map(async ({
+        contractAddress,
+        amount,
+    }) => {
         const token = await getTokenMetadata(provider, contractAddress);
 
         const { decimals } = token;
@@ -39,4 +58,9 @@ export async function retrieveTokenBalances(
             amount: balanceAmount,
         };
     }));
+
+    return [
+        ethAssetAmount,
+        ...(await erc20AssetAmount),
+    ];
 }
