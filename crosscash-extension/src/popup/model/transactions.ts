@@ -47,19 +47,26 @@ export const getTransactionHistory = async (
     provider: AlchemyProvider,
     address: HexString,
 ): Promise<AnyAssetTransfer[]> => {
-    const transfers = await getAssetTransfers(provider, address, 0);
+    try {
+        const transfers = await getAssetTransfers(provider, address, 0);
 
-    return transfers.map((transfer) => {
-        const { decimals } = transfer.assetAmount.asset;
+        return transfers.map((transfer) => {
+            const { decimals } = transfer.assetAmount.asset;
 
-        return {
-            ...transfer,
-            assetAmount: {
-                ...transfer.assetAmount,
-                amount: fromFixedPoint(transfer.assetAmount.amount, decimals, 4),
-            },
-        };
-    });
+            return {
+                ...transfer,
+                assetAmount: {
+                    ...transfer.assetAmount,
+                    amount: fromFixedPoint(transfer.assetAmount.amount, decimals, 4),
+                },
+            };
+        });
+    } catch (error: any) {
+        if (error.code === 'SERVER_ERROR') {
+            return getTransactionHistory(provider, address);
+        }
+        return [];
+    }
 };
 
 export type TransactionDetail = {
