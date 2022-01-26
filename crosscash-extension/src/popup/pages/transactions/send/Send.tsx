@@ -1,7 +1,10 @@
+import { AlchemyProvider } from '@ethersproject/providers';
 import { utils } from 'ethers';
 import React, { useState } from 'react';
 import { useProvider } from 'wagmi';
 
+import { getEthereumNetwork } from '../../../../lib/helpers';
+import { BlockEstimate } from '../../../../lib/networks';
 import {
     Form,
     Button,
@@ -9,6 +12,7 @@ import {
     Col,
     CloseButton,
 } from '../../../components/index';
+import getBlockPrices from '../../../model/gas';
 import { sendETH } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
 import { useAppSelector } from '../../../store';
@@ -21,7 +25,7 @@ const tokens = [{
 }];
 
 const Send = (): React.ReactElement => {
-    const provider = useProvider();
+    const provider = useProvider() as AlchemyProvider;
 
     const [recipient, setRecipient] = useState('');
     const [tokenAmount, setTokenAmount] = useState('');
@@ -39,6 +43,26 @@ const Send = (): React.ReactElement => {
             {token.symbol}
         </option>
     ));
+    const [blockPrices, setBlockPrices] = useState<BlockEstimate>();
+
+    React.useEffect(() => {
+        async function getEstimatedGasPrices() {
+            const bp = await getBlockPrices(getEthereumNetwork(), provider);
+
+            setBlockPrices(bp.estimatedPrices[0]);
+        }
+        getEstimatedGasPrices();
+    }, [getBlockPrices]);
+
+    const [maxFeePerGas, setMaxFeePerGas] = useState('');
+
+    React.useEffect(() => {
+        if (blockPrices) {
+            const gasInGewi = Number(utils.formatUnits(blockPrices.maxFeePerGas, 'gwei'));
+
+            setMaxFeePerGas(gasInGewi.toFixed(2));
+        }
+    }, [blockPrices]);
 
     return (
         <div className="App">
@@ -119,6 +143,15 @@ const Send = (): React.ReactElement => {
                             name="password"
                             onChange={(e) => setPassword(e.target.value)} />
                     </Form.Group>
+                    <Row>
+                        <Col>
+                            Estimated Max Fee:
+                            {' '}
+                            {maxFeePerGas}
+                            {' '}
+                            Gwei
+                        </Col>
+                    </Row>
                     <Button
                         disabled={!utils.isAddress(recipient)}
                         type="submit"
