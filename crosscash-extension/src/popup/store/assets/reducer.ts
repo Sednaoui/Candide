@@ -1,10 +1,14 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 
 import { AnyAssetAmount } from '../../../lib/assets';
+import { ETH } from '../../../lib/constants/currencies';
 import { getAssets } from './actions';
 
 const initialState: AssetState = {
-    assets: [],
+    assets: [{
+        asset: ETH,
+        amount: 0,
+    }],
     loading: false,
     error: null,
 };
