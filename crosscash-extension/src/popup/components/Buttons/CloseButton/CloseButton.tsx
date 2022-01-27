@@ -13,7 +13,7 @@ const CloseButton = (props: {
         if (onClick) {
             onClick();
         }
-        navigate('/Wallet');
+        navigate('/wallet');
     };
 
     return (
