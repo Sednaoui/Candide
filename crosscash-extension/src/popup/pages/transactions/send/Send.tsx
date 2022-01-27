@@ -1,6 +1,7 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 import { utils } from 'ethers';
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useProvider } from 'wagmi';
 
 import { getEthereumNetwork } from '../../../../lib/helpers';
@@ -13,19 +14,15 @@ import {
     CloseButton,
 } from '../../../components/index';
 import getBlockPrices from '../../../model/gas';
-import { sendETH } from '../../../model/transactions';
+import { transferTokens } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
 import { useAppSelector } from '../../../store';
 
-// fake token data for testing
-const tokens = [{
-    name: 'Ethereum',
-    symbol: 'ETH',
-    balance: '0.00',
-}];
-
 const Send = (): React.ReactElement => {
     const provider = useProvider() as AlchemyProvider;
+
+    const { assetSymbol } = useParams<'assetSymbol'>();
+    const [assetSymbolSelect, setAssetSymbolSelect] = useState(assetSymbol);
 
     const [recipient, setRecipient] = useState('');
     const [tokenAmount, setTokenAmount] = useState('');
@@ -36,15 +33,23 @@ const Send = (): React.ReactElement => {
     const walletAddress = walletInstance?.address;
     const walletEncryptedPrivateKey = walletInstance?.privateKey;
 
-    const list = tokens.map((token) => (
+    const assetList = useAppSelector((state) => state.assets.assets);
+
+    const list = assetList.map((token) => (
         <option
-            key={token.symbol}
-            value={token.symbol}>
-            {token.symbol}
+            key={token.asset.symbol}
+            value={token.asset.symbol}>
+            {token.asset.symbol}
         </option>
     ));
     const [blockPrices, setBlockPrices] = useState<BlockEstimate>();
 
+    const contractAddressOfTokenSelected = useAppSelector((state) =>
+        state.assets.assets.find((element) =>
+            // @ts-expect-error: fix typing for AnyAssetAmount
+            element.asset.symbol === assetSymbolSelect))?.asset.contractAddress;
+
+    // Estimate gas
     React.useEffect(() => {
         async function getEstimatedGasPrices() {
             const bp = await getBlockPrices(getEthereumNetwork(), provider);
@@ -78,12 +83,12 @@ const Send = (): React.ReactElement => {
                             if (typeof wallet === 'string') {
                                 setTxTransaction(wallet);
                             } else if (walletAddress && wallet.privateKey) {
-                                const tx = await sendETH(
+                                const tx = await transferTokens(
                                     provider,
                                     tokenAmount,
                                     recipient,
-                                    walletAddress,
                                     wallet.privateKey,
+                                    contractAddressOfTokenSelected,
                                 );
 
                                 // if transaction failed, tx will return error
@@ -106,7 +111,10 @@ const Send = (): React.ReactElement => {
                         <Form.Label>
                             Select Token
                         </Form.Label>
-                        <Form.Select required>
+                        <Form.Select
+                            required
+                            onChange={(e) => setAssetSymbolSelect(e.target.value)}
+                            defaultValue={assetSymbol}>
                             {list}
                         </Form.Select>
                     </Form.Group>

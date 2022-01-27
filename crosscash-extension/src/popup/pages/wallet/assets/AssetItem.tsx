@@ -1,4 +1,7 @@
+import { Link } from 'react-router-dom';
+
 import { AnyAssetAmount } from '../../../../lib/assets';
+import { unkownAssetLogo } from '../../../../lib/constants/assets';
 import {
     ListGroupItem,
     Row,
@@ -6,33 +9,38 @@ import {
     Image,
 } from '../../../components';
 
-const unkownAssetLogo = 'https://www.themoviethemesong.com/wp-content/uploads/2014/07/Wallace-and-Gromit-5.jpg';
-
 type AssetItemProps = {
     assetItem: AnyAssetAmount;
 }
 
 const AssetItem = ({ assetItem }: AssetItemProps): React.ReactElement => (
-    <ListGroupItem
-        action
-        key={assetItem.asset.symbol}
-        onClick={(): void => console.log(assetItem)}>
-        <Row>
-            <Col>
-                <Image
-                    width="35"
-                    height="35"
-                    roundedCircle
-                    src={assetItem.asset.metadata?.logoURL || unkownAssetLogo} />
-            </Col>
-            <Col>
-                {assetItem.amount}
-            </Col>
-            <Col>
-                {assetItem.asset.symbol}
-            </Col>
-        </Row>
-    </ListGroupItem>
+    <Link
+        to={`/wallet/${assetItem.asset.symbol}`}
+        {...assetItem}
+        state={{ assetItem }}
+        style={{
+            textDecoration: 'none',
+        }}>
+        <ListGroupItem
+            action
+            key={assetItem.asset.symbol}>
+            <Row>
+                <Col>
+                    <Image
+                        width="35"
+                        height="35"
+                        roundedCircle
+                        src={assetItem.asset.metadata?.logoURL || unkownAssetLogo} />
+                </Col>
+                <Col>
+                    {assetItem.amount}
+                </Col>
+                <Col>
+                    {assetItem.asset.symbol}
+                </Col>
+            </Row>
+        </ListGroupItem>
+    </Link>
 );
 
 export default AssetItem;

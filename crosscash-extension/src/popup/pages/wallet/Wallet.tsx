@@ -39,7 +39,7 @@ const Wallet = (): React.ReactElement => {
                             type="button"
                             className="btn-primary"
                             onClick={() => {
-                                navigate('/send');
+                                navigate('/send/ETH');
                             }}>
                             Send
                         </Button>

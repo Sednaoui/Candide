@@ -20,6 +20,7 @@ import {
 import ImportWallet from './pages/onboarding/ImportWallet';
 import Welcome from './pages/onboarding/Welcome';
 import Send from './pages/transactions/send/Send';
+import AssetView from './pages/wallet/assets/AssetView';
 import Wallet from './pages/wallet/Wallet';
 import store from './store';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -42,7 +43,7 @@ const App = (): React.ReactElement => {
                                 <Route path="/" element={<Welcome />} />
                                 <Route path="import_wallet" element={<ImportWallet />} />
                                 <Route path="/login" element={<Login />} />
-                                <Route path="/send" element={<Send />} />
+                                <Route path="/send/:assetSymbol" element={<Send />} />
                                 <Route
                                     path="/wallet"
                                     element={(
@@ -50,6 +51,7 @@ const App = (): React.ReactElement => {
                                             <Wallet />
                                         </RequireAuth>
                                     )} />
+                                <Route path="/wallet/:assetSymbol" element={<AssetView />} />
                             </Routes>
                         </AuthProvider>
                     </Router>

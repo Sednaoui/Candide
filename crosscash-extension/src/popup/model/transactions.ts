@@ -6,8 +6,10 @@ import {
 import {
     Wallet,
     utils,
+    Contract,
 } from 'ethers';
 
+import ERC20ABI from '../../lib/abi/erc20.json';
 import { HexString } from '../../lib/accounts';
 import { getAssetTransfers } from '../../lib/alchemy';
 import { AnyAssetTransfer } from '../../lib/assets';
@@ -17,7 +19,6 @@ export const sendETH = async (
     provider: BaseProvider,
     sendTokenAmout: string,
     toAddress: string,
-    fromAddress: string,
     privateKey: string,
 ): Promise<TransactionResponse | string> => {
     // TODO: create internal provider on windows.crosscash
@@ -29,7 +30,6 @@ export const sendETH = async (
         const currentGasPrice = await provider.getGasPrice();
         const gasPrice = utils.hexlify(currentGasPrice);
         const tx = {
-            from: fromAddress,
             to: toAddress,
             value: utils.parseEther(sendTokenAmout),
             gasPrice,
@@ -40,6 +40,60 @@ export const sendETH = async (
         return await response;
     } catch (error) {
         return JSON.stringify(error);
+    }
+};
+
+/**
+ * Send erc20 tokens to a given address.
+ * @param provider an Alchemy ethers provider
+ * @param sendTokenAmout the amount of tokens to send
+ * @param toAddress the address to send the tokens to
+ * @param privateKey the private key of the account to send the tokens from
+ * @param tokenAddress the address of the token contract
+* */
+export const sendERC20 = async (
+    provider: AlchemyProvider,
+    sendTokenAmout: string,
+    toAddress: string,
+    privateKey: string,
+    contractAddress: string,
+): Promise<TransactionResponse | string> => {
+    const walletSigner = new Wallet(privateKey, provider);
+    const amountFormated = utils.parseUnits(sendTokenAmout, 18);
+
+    try {
+        const tokenContract = new Contract(
+            contractAddress,
+            ERC20ABI,
+            walletSigner,
+        );
+
+        return tokenContract.transfer(toAddress, amountFormated);
+    } catch (error) {
+        return JSON.stringify(error);
+    }
+};
+
+/**
+ * Transfer Tokens from one address to another. Handles both ERC20 and ETH.
+ * @param provider an Alchemy ethers provider
+ * @param sendTokenAmout the amount of tokens to send
+ * @param toAddress the address to send the tokens to
+ * @param privateKey the private key of the account to send the tokens from
+ * @param contractAddress the address of the token contract
+ * @returns
+ */
+export const transferTokens = async (
+    provider: AlchemyProvider,
+    sendTokenAmout: string,
+    toAddress: string,
+    privateKey: string,
+    contractAddress?: string,
+): Promise<TransactionResponse | string> => {
+    if (contractAddress) {
+        return sendERC20(provider, sendTokenAmout, toAddress, privateKey, contractAddress);
+    } else {
+        return sendETH(provider, sendTokenAmout, toAddress, privateKey);
     }
 };
 
