@@ -15,6 +15,14 @@ import { getAssetTransfers } from '../../lib/alchemy';
 import { AnyAssetTransfer } from '../../lib/assets';
 import { fromFixedPoint } from '../../lib/helpers';
 
+/**
+ * Tranfer ETH from one account to another.
+ * @param provider an Alchemy ethers provider
+ * @param sendTokenAmout the amount of token to send
+ * @param toAddress the address to send the token to
+ * @param privateKey the private key of the account to send the token from
+ * @returns the transaction response
+ */
 export const sendETH = async (
     provider: BaseProvider,
     sendTokenAmout: string,
@@ -97,6 +105,12 @@ export const transferTokens = async (
     }
 };
 
+/**
+ * Get Transation history of of asset tranfers of an account.
+ * @param provider
+ * @param address
+ * @returns A list of asset transfers
+ */
 export const getTransactionHistory = async (
     provider: AlchemyProvider,
     address: HexString,

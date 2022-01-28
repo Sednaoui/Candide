@@ -16,6 +16,7 @@ import { fromFixedPoint } from '../../lib/helpers';
  *
  * @param addressNetwork
  * @param contractAddresses
+ * @returns a list of asset and its balance
  */
 export async function retrieveTokenBalances(
     provider: AlchemyProvider,

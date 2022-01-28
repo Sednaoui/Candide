@@ -6,6 +6,11 @@ import {
 
 import { HexString } from '../../lib/accounts';
 
+/**
+ * Create wallet from mnemonic or create random wallet.
+ * @param mnemonic option mnemonic. If not provided, a new random wallet will be created.
+ * @returns wallet
+ */
 export const createWallet = async (
     mnemonic: null | EthereumMnemonicPhrase = null,
 ): Promise<null | Wallet> => {
@@ -20,6 +25,12 @@ export const createWallet = async (
     return null;
 };
 
+/**
+ * Create encrypted wallet from mnemonic and password.
+ * @param password
+ * @param mnemonic
+ * @returns encrypted wallet
+ */
 export const createEncryptedWallet = async (
     password: Password,
     mnemonic?: EthereumMnemonicPhrase,
@@ -46,7 +57,12 @@ export const createEncryptedWallet = async (
         return null;
     }
 };
-
+/**
+ * Decrypt encrypted wallet using password
+ * @param password
+ * @param encryptedWallet
+ * @returns decrypted wallet
+ */
 export const decryptWallet = async (
     password: Password,
     encryptedWallet: EthereumWallet,

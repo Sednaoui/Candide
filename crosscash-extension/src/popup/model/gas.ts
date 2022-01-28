@@ -6,6 +6,13 @@ import {
     EVMNetwork,
 } from '../../lib/networks';
 
+/**
+ * Get block prices for a particular network and block number.
+ * @param network
+ * @param provider
+ * @returns blockPrices for the given network and block number
+ */
+
 export default async function getBlockPrices(
     network: EVMNetwork,
     provider: Provider,
