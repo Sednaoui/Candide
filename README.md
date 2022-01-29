@@ -20,7 +20,7 @@ DAAPs sends request using ethereum.window object on the browser —> Extension r
 
 - JSON-RPC API: https://ethereum.org/en/developers/docs/apis/json-rpc/
 
--Universal Ethereum provider: https://github.com/floating/eth-provider
+- Universal Ethereum provider: https://github.com/floating/eth-provider
 
 ### To-do
 2. Add support for a different network other than ethereum main network. 
