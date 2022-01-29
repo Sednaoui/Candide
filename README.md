@@ -16,9 +16,11 @@ Build an architecture to expose window.ethereum into my extension so I can recei
 DAAPs sends request using ethereum.window object on the browser —> Extension receive requests, verify it and sends back response to daaps. 
 
 ### Helpful resources
-Anatomy of extensions: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Anatomy_of_a_WebExtension
-JSON-RPC API: https://ethereum.org/en/developers/docs/apis/json-rpc/
-Universal Ethereum provider: https://github.com/floating/eth-provider
+- Anatomy of extensions: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Anatomy_of_a_WebExtension
+
+- JSON-RPC API: https://ethereum.org/en/developers/docs/apis/json-rpc/
+
+-Universal Ethereum provider: https://github.com/floating/eth-provider
 
 ### To-do
 2. Add support for a different network other than ethereum main network. 
