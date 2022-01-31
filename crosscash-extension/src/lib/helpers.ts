@@ -1,3 +1,5 @@
+import { utils } from 'ethers';
+
 import { CURRENT_NETWORK } from '../popup/model/constants';
 import {
     MAINNET,
@@ -74,4 +76,13 @@ export function fromFixedPoint(
         Number(fixedPointDesiredDecimalsAmount)
         / 10 ** Math.min(desiredDecimals, fixedPointDecimals)
     );
+}
+
+/**
+ * Convert GWEI to WEI
+ * @param gwei
+ * @returns WEI
+ */
+export function gweiToWei(value: number | bigint): bigint {
+    return BigInt(utils.parseUnits(value.toString(), 'gwei').toString());
 }
