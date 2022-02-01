@@ -24,7 +24,7 @@ const sagaMiddleware = createSagaMiddleware();
 const persistConfig = {
     key: 'root',
     storage,
-    whiteList: ['wallet'],
+    whiteList: ['wallet', 'settingsReducer'],
     blacklist: ['assets', 'transactions'],
 };
 

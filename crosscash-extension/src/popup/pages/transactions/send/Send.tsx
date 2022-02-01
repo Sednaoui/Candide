@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProvider } from 'wagmi';
 
+import { ETH } from '../../../../lib/constants/currencies';
 import { getEthereumNetwork } from '../../../../lib/helpers';
 import { BlockEstimate } from '../../../../lib/networks';
 import {
@@ -13,6 +14,10 @@ import {
     Col,
     CloseButton,
 } from '../../../components/index';
+import {
+    ERC20TransferGasLimit,
+    ETHTransferGasLimit,
+} from '../../../model/constants';
 import getBlockPrices from '../../../model/gas';
 import { transferTokens } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
@@ -49,25 +54,29 @@ const Send = (): React.ReactElement => {
             // @ts-expect-error: fix typing for AnyAssetAmount
             element.asset.symbol === assetSymbolSelect))?.asset.contractAddress;
 
+    const defaultGasConfidence = useAppSelector((state) =>
+        state.settings.defaultGasSpeed.confidence);
+
     // Estimate gas
     React.useEffect(() => {
         async function getEstimatedGasPrices() {
             const bp = await getBlockPrices(getEthereumNetwork(), provider);
 
-            setBlockPrices(bp.estimatedPrices[0]);
+            setBlockPrices(bp.estimatedPrices.find((e) => e.confidence === defaultGasConfidence));
         }
         getEstimatedGasPrices();
-    }, [getBlockPrices]);
+    }, [provider, defaultGasConfidence, getBlockPrices]);
 
-    const [maxFeePerGas, setMaxFeePerGas] = useState('');
+    const [gasPriceOfTXInETH, setGasPriceOfTxInETH] = useState('');
+    const [gasLimit, setGasLimit] = useState(ETHTransferGasLimit);
 
     React.useEffect(() => {
         if (blockPrices) {
-            const gasInGewi = Number(utils.formatUnits(blockPrices.maxFeePerGas, 'gwei'));
+            const gasInEth = Number(utils.formatUnits(Number(blockPrices.maxFeePerGas) * gasLimit, 'ether'));
 
-            setMaxFeePerGas(gasInGewi.toFixed(2));
+            setGasPriceOfTxInETH(gasInEth.toFixed(8));
         }
-    }, [blockPrices]);
+    }, [blockPrices, gasLimit, setGasPriceOfTxInETH]);
 
     return (
         <div className="App">
@@ -113,7 +122,11 @@ const Send = (): React.ReactElement => {
                         </Form.Label>
                         <Form.Select
                             required
-                            onChange={(e) => setAssetSymbolSelect(e.target.value)}
+                            onChange={(e) => {
+                                setAssetSymbolSelect(e.target.value);
+                                setGasLimit(e.target.value === ETH.symbol
+                                    ? ETHTransferGasLimit : ERC20TransferGasLimit);
+                            }}
                             defaultValue={assetSymbol}>
                             {list}
                         </Form.Select>
@@ -153,11 +166,11 @@ const Send = (): React.ReactElement => {
                     </Form.Group>
                     <Row>
                         <Col>
-                            Estimated Max Fee:
+                            Estimated Fee:
                             {' '}
-                            {maxFeePerGas}
+                            {gasPriceOfTXInETH}
                             {' '}
-                            Gwei
+                            ETH
                         </Col>
                     </Row>
                     <Button
