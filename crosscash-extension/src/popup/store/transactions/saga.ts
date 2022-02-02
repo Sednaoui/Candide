@@ -9,6 +9,8 @@ import {
 } from 'redux-saga/effects';
 
 import { HexString } from '../../../lib/accounts';
+import { EVMNetwork } from '../../../lib/networks';
+import getBlockPrices from '../../model/gas';
 import {
     getTransactionHistory,
     getTransactionDetails,
@@ -16,6 +18,7 @@ import {
 import {
     getTransactions,
     getTransactionDetails as getTransactionDetailsAction,
+    getBlockPrices as getBlockPricesAction,
 } from './actions';
 
 function* fetchGetTransactions({ payload }: PayloadAction<{
@@ -58,10 +61,31 @@ function* watchGetTransactionDetails(): Generator {
     yield takeEvery(getTransactionDetailsAction.TRIGGER, fetchGetTransactionDetails);
 }
 
+function* fetchGetBlockPrices({ payload }: PayloadAction<{
+    network: EVMNetwork,
+    provider: AlchemyProvider,
+}>): Generator {
+    try {
+        yield put(getBlockPricesAction.request());
+        const blockPrices = yield call(getBlockPrices, payload.network, payload.provider);
+
+        yield put(getBlockPricesAction.success(blockPrices));
+    } catch (err) {
+        yield put(getBlockPricesAction.failure(err));
+    } finally {
+        yield put(getBlockPricesAction.fulfill());
+    }
+}
+
+function* watchGetBlockPrices(): Generator {
+    yield takeEvery(getBlockPricesAction.TRIGGER, fetchGetBlockPrices);
+}
+
 export default function* logSaga(): Generator {
     const sagas = [
         watchGetTransactions,
         watchGetTransactionDetails,
+        watchGetBlockPrices,
     ];
 
     yield all(sagas.map((saga) => (

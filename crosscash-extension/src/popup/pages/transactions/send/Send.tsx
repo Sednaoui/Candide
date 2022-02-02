@@ -6,7 +6,6 @@ import { useProvider } from 'wagmi';
 
 import { ETH } from '../../../../lib/constants/currencies';
 import { getEthereumNetwork } from '../../../../lib/helpers';
-import { BlockEstimate } from '../../../../lib/networks';
 import {
     Form,
     Button,
@@ -18,13 +17,18 @@ import {
     ERC20TransferGasLimit,
     ETHTransferGasLimit,
 } from '../../../model/constants';
-import getBlockPrices from '../../../model/gas';
 import { transferTokens } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
-import { useAppSelector } from '../../../store';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../store';
+import { getBlockPrices } from '../../../store/transactions/actions';
+import GasSettings from './GasSettings';
 
 const Send = (): React.ReactElement => {
     const provider = useProvider() as AlchemyProvider;
+    const dispatch = useAppDispatch();
 
     const { assetSymbol } = useParams<'assetSymbol'>();
     const [assetSymbolSelect, setAssetSymbolSelect] = useState(assetSymbol);
@@ -47,7 +51,6 @@ const Send = (): React.ReactElement => {
             {token.asset.symbol}
         </option>
     ));
-    const [blockPrices, setBlockPrices] = useState<BlockEstimate>();
 
     const contractAddressOfTokenSelected = useAppSelector((state) =>
         state.assets.assets.find((element) =>
@@ -57,26 +60,34 @@ const Send = (): React.ReactElement => {
     const defaultGasConfidence = useAppSelector((state) =>
         state.settings.defaultGasSpeed.confidence);
 
-    // Estimate gas
     React.useEffect(() => {
-        async function getEstimatedGasPrices() {
-            const bp = await getBlockPrices(getEthereumNetwork(), provider);
-
-            setBlockPrices(bp.estimatedPrices.find((e) => e.confidence === defaultGasConfidence));
+        if (provider) {
+            dispatch(getBlockPrices({ network: getEthereumNetwork(), provider }));
         }
-        getEstimatedGasPrices();
-    }, [provider, defaultGasConfidence, getBlockPrices]);
+    }, [provider]);
 
+    const blockPrices = useAppSelector((state) => state.transactions.blockPrices);
     const [gasPriceOfTXInETH, setGasPriceOfTxInETH] = useState('');
     const [gasLimit, setGasLimit] = useState(ETHTransferGasLimit);
 
     React.useEffect(() => {
         if (blockPrices) {
-            const gasInEth = Number(utils.formatUnits(Number(blockPrices.maxFeePerGas) * gasLimit, 'ether'));
+            const selectedGasFeeSpeedPrice = blockPrices.estimatedPrices.find((e) =>
+                e.confidence === defaultGasConfidence);
 
-            setGasPriceOfTxInETH(gasInEth.toFixed(8));
+            if (selectedGasFeeSpeedPrice) {
+                const gasInEth = Number(utils.formatUnits(Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether'));
+
+                setGasPriceOfTxInETH(gasInEth.toFixed(5));
+            }
         }
-    }, [blockPrices, gasLimit, setGasPriceOfTxInETH]);
+    }, [blockPrices, gasLimit, defaultGasConfidence]);
+
+    // gas settings modal
+    const [show, setShow] = useState(false);
+    const handleClose = () => {
+        setShow(false);
+    };
 
     return (
         <div className="App">
@@ -164,15 +175,25 @@ const Send = (): React.ReactElement => {
                             name="password"
                             onChange={(e) => setPassword(e.target.value)} />
                     </Form.Group>
-                    <Row>
-                        <Col>
+                    <Form.Group>
+                        <Form.Label>
                             Estimated Fee:
                             {' '}
                             {gasPriceOfTXInETH}
                             {' '}
                             ETH
-                        </Col>
-                    </Row>
+                        </Form.Label>
+                        <Button
+                            variant="link"
+                            type="button"
+                            onClick={() => setShow(true)}>
+                            Fee Settings
+                        </Button>
+                        <GasSettings
+                            gasLimit={gasLimit}
+                            show={show}
+                            close={handleClose} />
+                    </Form.Group>
                     <Button
                         disabled={!utils.isAddress(recipient)}
                         type="submit"
