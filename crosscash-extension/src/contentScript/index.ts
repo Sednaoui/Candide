@@ -1,7 +1,5 @@
-import connectStreams from './connectStreams';
-import injectInpage from './injectInpage';
-
-injectInpage();
 connectStreams();
 
-export { };
+export default function connectStreams(): void {
+    console.log('connectStreams');
+}
