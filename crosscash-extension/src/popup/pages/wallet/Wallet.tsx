@@ -11,6 +11,7 @@ import {
 } from '../../components';
 import { useAppSelector } from '../../store';
 import { changeNetwork } from '../../store/settings/actions';
+import ConnectWallet from '../connections/ConnectWallet';
 import WalletNavBar from './WalletNavBar';
 
 const Wallet = (): React.ReactElement => {
@@ -66,6 +67,9 @@ const Wallet = (): React.ReactElement => {
                         </Button>
                     </Stack>
                     <WalletNavBar />
+                </Stack>
+                <Stack gap={2}>
+                    <ConnectWallet />
                 </Stack>
             </header>
         </div>
