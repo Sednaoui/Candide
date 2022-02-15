@@ -199,7 +199,7 @@ const Send = (): React.ReactElement => {
                     <Button
                         disabled={!utils.isAddress(recipient)}
                         type="submit"
-                        className='mt-3'>
+                        className="mt-3">
                         Send
                     </Button>
                 </Form>

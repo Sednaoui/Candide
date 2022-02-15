@@ -57,7 +57,7 @@ const ImportWallet = (): ReactElement => {
                             Choose a password to encrypt your wallet
                         </Form.Label>
                         <Form.Control
-                            className='mt-3'
+                            className="mt-3"
                             type="password"
                             placeholder="password"
                             name="password"
@@ -65,7 +65,7 @@ const ImportWallet = (): ReactElement => {
                                 setPassword(e.target.value);
                             }} />
                         <Button
-                            className='mt-3'
+                            className="mt-3"
                             disabled={!isValidMnemonic(mnemonic) || !password}
                             type="submit">
                             Import

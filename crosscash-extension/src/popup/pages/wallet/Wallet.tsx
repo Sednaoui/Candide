@@ -28,7 +28,7 @@ const Wallet = (): React.ReactElement => {
 
     return (
         <div>
-            <header className='App-header'>
+            <header className="App-header">
                 <Stack gap={2}>
                     {`Network: ${CURRENT_NETWORK}`}
                     <Stack direction="horizontal" gap={2}>
