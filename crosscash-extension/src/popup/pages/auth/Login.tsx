@@ -21,7 +21,7 @@ function Login(): React.ReactElement {
 
     return (
         <div>
-            <header className='App-header'>
+            <header className="App-header">
                 <p>
                     Type your password to login into your wallet
                 </p>
@@ -42,7 +42,7 @@ function Login(): React.ReactElement {
                     {' '}
                     <Button
                         type="submit"
-                        className='mt-3'>
+                        className="mt-3">
                         Login
                     </Button>
                 </Form>

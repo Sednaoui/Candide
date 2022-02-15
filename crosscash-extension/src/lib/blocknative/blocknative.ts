@@ -24,10 +24,6 @@ export const BLOCKNATIVE_API_KEY = '';
  * feedback from the Blocknative system to minimize usage when possible.
  */
 export default class Blocknative {
-    private blocknative: BlocknativeSdk
-
-    private apiKey: string
-
     private constructor(apiKey: string, networkId: number) {
         // TODO Handle lazy connection, disconnects, resubscribing, rate limits,
         // TODO etc.
@@ -38,6 +34,10 @@ export default class Blocknative {
 
         this.apiKey = apiKey;
     }
+
+    private blocknative: BlocknativeSdk;
+
+    private apiKey: string;
 
     static connect(apiKey: string, networkId: number): Blocknative {
         const connection = new this(apiKey, networkId);

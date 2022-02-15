@@ -53,7 +53,9 @@ const GasSettings = ({ show, close, gasLimit }: Props): React.ReactElement => {
                 e.confidence === defaultGasSpeed.confidence);
 
             if (selectedGasFeeSpeedPrice) {
-                const gasInEth = Number(utils.formatUnits(Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether'));
+                const gasInEth = Number(utils.formatUnits(
+                    Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether',
+                ));
 
                 setGasPriceOfTxInETH(gasInEth.toFixed(8));
             }

@@ -76,7 +76,9 @@ const Send = (): React.ReactElement => {
                 e.confidence === defaultGasConfidence);
 
             if (selectedGasFeeSpeedPrice) {
-                const gasInEth = Number(utils.formatUnits(Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether'));
+                const gasInEth = Number(utils.formatUnits(
+                    Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether',
+                ));
 
                 setGasPriceOfTxInETH(gasInEth.toFixed(5));
             }
@@ -197,7 +199,7 @@ const Send = (): React.ReactElement => {
                     <Button
                         disabled={!utils.isAddress(recipient)}
                         type="submit"
-                        className='mt-3'>
+                        className="mt-3">
                         Send
                     </Button>
                 </Form>

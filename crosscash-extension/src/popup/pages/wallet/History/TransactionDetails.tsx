@@ -33,13 +33,13 @@ export const TransactionDetails = ({
     return (
         <Offcanvas
             show={show}
-            placement='end'
+            placement="end"
             onHide={() => close()}>
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>
                     <Button
-                        type='button'
-                        variant='link'
+                        type="button"
+                        variant="link"
                         onClick={openExplorer}>
                         Etherscan
                     </Button>
