@@ -1,5 +1,11 @@
 module.exports = {
-    extends: ['eslint-config-willo-react', 'plugin:@typescript-eslint/recommended', 'eslint-config-willo-base'],
+    extends: [
+        'plugin:@typescript-eslint/recommended',
+        'eslint-config-willo-base',
+        './eslintRules/react',
+        './eslintRules/react-a11y',
+        './eslintRules/react-hooks',
+    ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaFeatures: {
