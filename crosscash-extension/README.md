@@ -31,13 +31,14 @@ Quick Start:
 
     npm install -g yarn # if you don't have yarn globally installed
     yarn install
-    yarn start
+    yarn build
+    yarn watch
 
 Once the app is running, you can install the extension in your browser of choice:
 - [Firefox instructions](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/)
 - [Chrome, Brave, and Opera instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest)
     - Note that these instructions are for Chrome, but substituting brave://extensions or opera://extensions for chrome://extensions depending on browser should get you to the same buttons.
-    - Also note that the extension will only work if you load the dev folder instead of the directory of the wallet extension.
+    - Also note that the extension will only work if you load the build folder instead of the directory of the wallet extension.
 
 ### `yarn test`
 
@@ -58,8 +59,6 @@ It correctly bundles React in production mode and optimizes the build for the be
     - Includes API services, helper functions and global constants
 - assets
     - images and logos
-- background, contentscript, inpage
-    - everything related to extention scripts. TBD
 
 ## Wallet currently suppports as of 30/01/2021:
 - Importing / creating a wallet
