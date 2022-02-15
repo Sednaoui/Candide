@@ -76,7 +76,9 @@ const Send = (): React.ReactElement => {
                 e.confidence === defaultGasConfidence);
 
             if (selectedGasFeeSpeedPrice) {
-                const gasInEth = Number(utils.formatUnits(Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether'));
+                const gasInEth = Number(utils.formatUnits(
+                    Number(selectedGasFeeSpeedPrice.maxFeePerGas) * gasLimit, 'ether',
+                ));
 
                 setGasPriceOfTxInETH(gasInEth.toFixed(5));
             }

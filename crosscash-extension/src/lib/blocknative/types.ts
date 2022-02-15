@@ -1,4 +1,5 @@
-import { EthereumTransactionData as BlocknativeEthereumTransactionData } from 'bnc-sdk/dist/types/src/interfaces';
+import { EthereumTransactionData as BlocknativeEthereumTransactionData }
+    from 'bnc-sdk/dist/types/src/interfaces';
 
 type TransferDetails = {
     counterparty: string
