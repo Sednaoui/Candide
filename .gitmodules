@@ -1,3 +1,3 @@
-[submodule "simple-dapp-tutorial"]
-	path = simple-dapp-tutorial
-	url = https://github.com/BboyAkers/simple-dapp-tutorial.git
+[submodule "oui-dapp"]
+	path = oui-dapp
+	url = https://github.com/toyv0/oui-dapp.git
