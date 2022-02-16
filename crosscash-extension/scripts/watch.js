@@ -29,6 +29,17 @@ if (config.entry.filter) {
     });
 }
 
+// fallback to buffer
+config.resolve.fallback = {
+    buffer: require.resolve('buffer/'),
+};
+
+config.plugins.push(
+    new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+    }),
+);
+
 // Edit the Webpack config by setting the output directory to "./build".
 config.output.path = paths.appBuild;
 paths.publicUrl = paths.appBuild + "/";
