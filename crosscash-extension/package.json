@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^6.4.3",
     "@ethersproject/providers": "^5.5.1",
     "@ethersproject/web": "^5.5.1",
     "@metamask/post-message-stream": "^4.0.0",
@@ -39,7 +40,7 @@
   "scripts": {
     "start": "react-scripts start",
     "watch": "node ./scripts/watch.js",
-    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build",
+    "build": "INLINE_RUNTIME_CHUNK=false craco build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint:fix": "npx eslint --fix --ext .ts --ext .tsx src/",
