@@ -38,6 +38,7 @@ export type Asset = {
     decimals: number,
     symbol: string
     name: string
+    address?: HexString,
     metadata?: AssetMetadata
 }
 
