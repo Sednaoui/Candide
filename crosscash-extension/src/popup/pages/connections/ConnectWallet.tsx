@@ -1,16 +1,17 @@
 import WalletConnect from '@walletconnect/client';
-import React, {
-    useEffect, useState,
-} from 'react';
+import React, { useState } from 'react';
 
 import { getEthereumNetwork } from '../../../lib/helpers';
-import { Button } from '../../components';
+import {
+    Button, Row, Col,
+} from '../../components';
 import { useAppSelector } from '../../store';
 
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
-    const [connected, setConnected] = useState<boolean>();
-    // const [connector, setConnector] = useState<any>(); // type Connector from @walletconnect/core
+    const [walletConnector, setWalletConnector] = useState<any>();
+
+    // const [modalActive, setModalActive] = useState<boolean>(false);
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
 
@@ -20,8 +21,6 @@ const ConnectWallet = (): React.ReactElement => {
     };
 
     const handleConnect = async () => {
-        console.log('connect URI: ', connectUrl);
-
         const sessionDetails = {
             uri: connectUrl,
             clientMeta: {
@@ -34,6 +33,11 @@ const ConnectWallet = (): React.ReactElement => {
 
         const connector = new WalletConnect(sessionDetails);
 
+        setWalletConnector(connector);
+
+        // hack for testing
+        (window as any).walletconnect = connector;
+
         if (!connector.session) {
             console.log('connecting?');
             await connector.createSession();
@@ -44,8 +48,6 @@ const ConnectWallet = (): React.ReactElement => {
         // get chainId
         const ethNetwork = getEthereumNetwork();
         const chainId = Number(ethNetwork.chainID);
-
-        console.log('address: ', walletInstance!.address);
 
         // Subscribe to session requests, abstract away somewhere along with connecting?
         connector.on('session_request', (error, payload) => {
@@ -62,7 +64,6 @@ const ConnectWallet = (): React.ReactElement => {
                 chainId,
             });
 
-            setConnected(true);
             console.log('session? ', connector.session);
         });
 
@@ -86,28 +87,40 @@ const ConnectWallet = (): React.ReactElement => {
         });
     };
 
-    useEffect(() => {
-        if (connected) {
-            console.log('yay connected?');
+    const handleDisconnect = async () => {
+        if (walletConnector) {
+            walletConnector.killSession();
         } else {
-            console.log('no not connected...');
+            console.log('connector not accessable in state');
         }
-    }, [connectUrl]);
+    };
 
     return (
-        <div>
-            <input
-                name="connectUrl"
-                type="text"
-                placeholder="enter walletconnect url (copy QR-code)"
-                onChange={handleChange} />
-            <Button
-                type="button"
-                className="btn-primary"
-                onClick={handleConnect}>
-                Connect
-            </Button>
-        </div>
+        <Row>
+            <Col>
+                <input
+                    name="connectUrl"
+                    type="text"
+                    placeholder="enter walletconnect url (copy QR-code)"
+                    onChange={handleChange} />
+            </Col>
+            <Col>
+                <Button
+                    type="button"
+                    className="btn-primary"
+                    onClick={handleConnect}>
+                    Connect
+                </Button>
+            </Col>
+            <Col>
+                <Button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={handleDisconnect}>
+                    Disconnect
+                </Button>
+            </Col>
+        </Row>
     );
 };
 
