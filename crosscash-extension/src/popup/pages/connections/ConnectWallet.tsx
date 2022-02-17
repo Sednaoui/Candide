@@ -6,12 +6,14 @@ import {
     Button, Row, Col,
 } from '../../components';
 import { useAppSelector } from '../../store';
+import ConfirmModal from './ConfirmModal';
 
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
     const [walletConnector, setWalletConnector] = useState<any>();
 
-    // const [modalActive, setModalActive] = useState<boolean>(false);
+    const [modalActive, setModalActive] = useState(false);
+    const [txInfo, setTxInfo] = useState<string>();
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
 
@@ -73,6 +75,17 @@ const ConnectWallet = (): React.ReactElement => {
             }
 
             console.log('REQUEST PERMISSION TO:', payload.params[0]);
+
+            const tx = JSON.stringify(payload.params, null, 2);
+
+            setTxInfo(tx);
+            setModalActive(true);
+
+            setTimeout(() => {
+                setModalActive(false);
+            }, 10000);
+
+            // TODO depending on accept/reject in modal, send tx with wallet provider
         });
 
         connector.on('disconnect', (error, payload) => {
@@ -96,31 +109,39 @@ const ConnectWallet = (): React.ReactElement => {
     };
 
     return (
-        <Row>
-            <Col>
-                <input
-                    name="connectUrl"
-                    type="text"
-                    placeholder="enter walletconnect url (copy QR-code)"
-                    onChange={handleChange} />
-            </Col>
-            <Col>
-                <Button
-                    type="button"
-                    className="btn-primary"
-                    onClick={handleConnect}>
-                    Connect
-                </Button>
-            </Col>
-            <Col>
-                <Button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={handleDisconnect}>
-                    Disconnect
-                </Button>
-            </Col>
-        </Row>
+        modalActive ? (
+            <ConfirmModal
+                modalActive={modalActive}
+                setModalActive={setModalActive}
+                txInfo={txInfo} />
+        )
+            : (
+                <Row>
+                    <Col>
+                        <input
+                            name="connectUrl"
+                            type="text"
+                            placeholder="enter walletconnect url (copy QR-code)"
+                            onChange={handleChange} />
+                    </Col>
+                    <Col>
+                        <Button
+                            type="button"
+                            className="btn-primary"
+                            onClick={handleConnect}>
+                            Connect
+                        </Button>
+                    </Col>
+                    <Col>
+                        <Button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={handleDisconnect}>
+                            Disconnect
+                        </Button>
+                    </Col>
+                </Row>
+            )
     );
 };
 
