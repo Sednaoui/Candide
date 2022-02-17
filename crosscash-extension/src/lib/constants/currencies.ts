@@ -16,3 +16,16 @@ export const ETH: FungibleAsset = {
         websiteURL: 'https://ethereum.org',
     },
 };
+
+export const MATIC: FungibleAsset = {
+    name: 'Matic',
+    symbol: 'MATIC',
+    decimals: 18,
+    address: baseAddress,
+    metadata: {
+        coinGeckoID: 'matic-network',
+        logoURL: 'https://polygontechnology.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F938afd3e-e620-4946-9206-41d9f00e581e%2FPrimary_Token.svg?table=block&id=620f7178-47ea-4f35-b85f-ccbdb5bf47c3&spaceId=51562dc1-1dc5-4484-bf96-2aeac848ae2f&userId=&cache=v2',
+        tokenLists: [],
+        websiteURL: 'https://matic.network',
+    },
+};
