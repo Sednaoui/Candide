@@ -10,7 +10,7 @@ import { useAppSelector } from '../../store';
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
     const [connected, setConnected] = useState<boolean>();
-    const [connector, setConnector] = useState<any>(); // type Connector from @walletconnect/core
+    // const [connector, setConnector] = useState<any>(); // type Connector from @walletconnect/core
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
 
@@ -19,8 +19,8 @@ const ConnectWallet = (): React.ReactElement => {
         setConnectUrl(e.target.value);
     };
 
-    const handleConnect = () => {
-        console.log('hey dickface:: ', connectUrl);
+    const handleConnect = async () => {
+        console.log('connect URI: ', connectUrl);
 
         const sessionDetails = {
             uri: connectUrl,
@@ -32,17 +32,23 @@ const ConnectWallet = (): React.ReactElement => {
             },
         };
 
-        const conn = new WalletConnect(sessionDetails);
+        const connector = new WalletConnect(sessionDetails);
 
-        setConnector(conn);
-        console.log('connector: ', conn);
+        if (!connector.session) {
+            console.log('connecting?');
+            await connector.createSession();
+        }
+
+        console.log('connector: ', connector);
 
         // get chainId
         const ethNetwork = getEthereumNetwork();
-        const chainId = ethNetwork.chainID;
+        const chainId = Number(ethNetwork.chainID);
+
+        console.log('address: ', walletInstance!.address);
 
         // Subscribe to session requests, abstract away somewhere along with connecting?
-        connector.on('session_request', (error: any, payload: any) => {
+        connector.on('session_request', (error, payload) => {
             if (error) {
                 throw error;
             }
@@ -55,13 +61,34 @@ const ConnectWallet = (): React.ReactElement => {
                 ],
                 chainId,
             });
+
             setConnected(true);
+            console.log('session? ', connector.session);
+        });
+
+        connector.on('call_request', async (error, payload) => {
+            if (error) {
+                throw error;
+            }
+
+            console.log('REQUEST PERMISSION TO:', payload.params[0]);
+        });
+
+        connector.on('disconnect', (error, payload) => {
+            if (error) {
+                throw error;
+            }
+            console.log('disconnecting ', payload);
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1);
         });
     };
 
     useEffect(() => {
         if (connected) {
-            console.log('yay connected!', connector);
+            console.log('yay connected?');
         } else {
             console.log('no not connected...');
         }
