@@ -62,7 +62,10 @@ const Send = (): React.ReactElement => {
 
     React.useEffect(() => {
         if (provider) {
-            dispatch(getBlockPrices({ network: getEthereumNetwork(), provider }));
+            dispatch(getBlockPrices({
+                network: getEthereumNetwork(provider.network.chainId),
+                provider,
+            }));
         }
     }, [provider]);
 
