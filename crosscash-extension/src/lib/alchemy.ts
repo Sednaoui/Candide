@@ -37,21 +37,38 @@ export async function getTokenMetadata(
     provider: AlchemyProvider | AlchemyWebSocketProvider,
     contractAddress: HexString,
 ): Promise<SmartContractFungibleAsset> {
-    const json: TokenMetaData = await provider.send('alchemy_getTokenMetadata', [
-        contractAddress,
-    ]);
+    const network = getEthereumNetwork(provider.network.chainId);
 
-    return {
-        decimals: json.decimals,
-        name: json.name,
-        symbol: json.symbol,
-        metadata: {
-            tokenLists: [],
-            ...(json.logo ? { logoURL: json.logo } : {}),
-        },
-        homeNetwork: getEthereumNetwork(), // TODO make multi-network friendly
-        contractAddress,
-    };
+    try {
+        const json: TokenMetaData = await provider.send('alchemy_getTokenMetadata', [
+            contractAddress,
+        ]);
+
+        return {
+            decimals: json.decimals,
+            name: json.name,
+            symbol: json.symbol,
+            metadata: {
+                tokenLists: [],
+                ...(json.logo ? { logoURL: json.logo } : {}),
+            },
+            homeNetwork: network,
+            contractAddress,
+        };
+    } catch (e) {
+        // TODO: Token metadata is not available for all networks. Need to find another service
+        // for now, we return an empty object to indicate that we don't have metadata for this token
+        return {
+            decimals: 0,
+            name: '',
+            symbol: '',
+            metadata: {
+                tokenLists: [],
+            },
+            homeNetwork: network,
+            contractAddress,
+        };
+    }
 }
 
 /**
@@ -116,7 +133,7 @@ export async function getAssetTransfers(
                 return null;
             }
 
-            const ethereumNetwork = getEthereumNetwork();
+            const ethereumNetwork = getEthereumNetwork(provider.network.chainId);
 
             const asset = transfer.rawContract.address
                 ? {
