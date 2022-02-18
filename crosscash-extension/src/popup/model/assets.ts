@@ -1,14 +1,18 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 
 import { HexString } from '../../lib/accounts';
-import { getTokenMetadata } from '../../lib/alchemy';
+import { getTokenMetadata as getTokenMetadataAlchemy } from '../../lib/alchemy';
 import { AnyAssetAmount } from '../../lib/assets';
 import {
     baseAddress,
     ETH,
     MATIC,
 } from '../../lib/constants/currencies';
-import { POLYGON } from '../../lib/constants/networks';
+import {
+    MAINNET,
+    POLYGON,
+} from '../../lib/constants/networks';
+import { getTokenMetadata as getTokenMetadataTrust } from '../../lib/trustwallet';
 import { getBalances } from '../../lib/zapper';
 
 /**
@@ -24,10 +28,11 @@ export async function retrieveTokenBalances(
     provider: AlchemyProvider,
     address: HexString,
 ): Promise<AnyAssetAmount[]> {
+    const { chainId } = provider.network;
     // get base asset balance and ERC-20 balances
     const balances = await getBalances(
         address,
-        provider.network.chainId,
+        chainId,
     );
 
     // get base asset balance
@@ -35,7 +40,7 @@ export async function retrieveTokenBalances(
         contractAddress === baseAddress)?.amount || 0;
 
     const baseAssetAmount = {
-        asset: provider.network.chainId === Number(POLYGON.chainID) ? MATIC : ETH,
+        asset: chainId === POLYGON.chainID ? MATIC : ETH,
         amount: baseAssetBalance,
     };
 
@@ -48,10 +53,34 @@ export async function retrieveTokenBalances(
         contractAddress,
         amount,
     }) => {
-        const token = await getTokenMetadata(provider, contractAddress);
+        const tokenMetaDataTrust = await getTokenMetadataTrust(chainId, contractAddress);
 
+        if (tokenMetaDataTrust) {
+            return {
+                asset: tokenMetaDataTrust,
+                amount,
+            };
+        }
+
+        // if token not found using trust wallet asset list, try alchemy on mainnet
+        if (!tokenMetaDataTrust && chainId === MAINNET.chainID) {
+            const tokenMetadataAlchemy = await getTokenMetadataAlchemy(provider, contractAddress);
+
+            return {
+                asset: tokenMetadataAlchemy,
+                amount,
+            };
+        }
+
+        // if token not found, return unknow.
+        // TODO: handle this case better
         return {
-            asset: token,
+            asset: {
+                contractAddress,
+                name: 'Unknown',
+                symbol: 'N/A',
+                decimals: 18,
+            },
             amount,
         };
     }));
