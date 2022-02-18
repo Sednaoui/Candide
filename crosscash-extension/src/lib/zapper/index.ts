@@ -29,7 +29,7 @@ export async function getBalances(accountAddress: HexString, chainId: number): P
     );
 
     // for now, we will only accept one address to fetch at a time
-    const zapperAccountAddress = response.data[accountAddress];
+    const zapperAccountAddress = response.data[accountAddress.toLowerCase()];
 
     if (zapperAccountAddress) {
         if (Object.keys(zapperAccountAddress.products).length) {
