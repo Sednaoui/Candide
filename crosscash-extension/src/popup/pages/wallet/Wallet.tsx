@@ -1,13 +1,16 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+import { evmNetworks } from '../../../lib/constants/networks';
 import { trancatAddress } from '../../../lib/helpers';
 import {
+    Form,
     Button,
     Stack,
 } from '../../components';
-import { CURRENT_NETWORK } from '../../model/constants';
 import { useAppSelector } from '../../store';
+import { changeNetwork } from '../../store/settings/actions';
 import WalletNavBar from './WalletNavBar';
 
 const Wallet = (): React.ReactElement => {
@@ -26,11 +29,29 @@ const Wallet = (): React.ReactElement => {
         alert('Address copied to clipboard');
     };
 
+    const dispatch = useDispatch();
+    const currentNetworkChainId = useAppSelector((state) => state.settings.currentNetworkChainId);
+
+    const networkList = evmNetworks.map((n) => (
+        <option
+            key={n.chainID}
+            value={n.chainID}>
+            {n.name}
+        </option>
+    ));
+
     return (
         <div>
             <header className="App-header">
                 <Stack gap={2}>
-                    {`Network: ${CURRENT_NETWORK.name}`}
+                    <Form.Select
+                        required
+                        onChange={(e) => {
+                            dispatch(changeNetwork(Number(e.target.value)));
+                        }}
+                        defaultValue={currentNetworkChainId}>
+                        {networkList}
+                    </Form.Select>
                     <Stack direction="horizontal" gap={2}>
                         <Button type="button" onClick={copy}>
                             {trancatAddress(address)}
