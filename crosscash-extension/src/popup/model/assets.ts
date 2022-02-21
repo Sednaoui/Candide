@@ -73,7 +73,7 @@ export async function retrieveTokenBalances(
         }
 
         // if token not found, return unknow.
-        // TODO: handle this case better
+        // TODO: handle this case better. For now, we just filter out unknown tokens for safety.
         return {
             asset: {
                 contractAddress,
@@ -85,8 +85,13 @@ export async function retrieveTokenBalances(
         };
     }));
 
+    // filter out unknown assets
+    const erc20AssetAmountFiltered = await erc20AssetAmount.then(
+        (a) => a.filter(({ asset }) => asset.name !== 'Unknown'),
+    );
+
     return [
         baseAssetAmount,
-        ...(await erc20AssetAmount),
+        ...(erc20AssetAmountFiltered),
     ];
 }
