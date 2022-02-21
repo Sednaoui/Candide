@@ -1,9 +1,8 @@
 import { utils } from 'ethers';
 
-import { CURRENT_NETWORK } from '../popup/model/constants';
 import {
     MAINNET,
-    ROPSTEN,
+    EVMNetworks,
 } from './constants/networks';
 import { EVMNetwork } from './networks';
 
@@ -15,21 +14,15 @@ export const trancatAddress = (address: string): string => (
 );
 
 /**
- * Determine which Ethereum network should be used based on the .env file
+ * Determine which Ethereum network should be used based user input
  */
-export function getEthereumNetwork(): EVMNetwork {
-    const ethereumNetwork = CURRENT_NETWORK.toUpperCase();
+export function getEthereumNetwork(chainId: number): EVMNetwork {
+    // find the network based on the chainId in EVMNetworks object, default to mainnet
+    const network = Object.values(EVMNetworks).find(
+        (n: EVMNetwork) => n.chainID === chainId,
+    );
 
-    if (ethereumNetwork === 'MAINNET') {
-        return MAINNET;
-    }
-
-    if (ethereumNetwork === 'ROPSTEN') {
-        return ROPSTEN;
-    }
-
-    // Default to ROPSTEN
-    return ROPSTEN;
+    return network || MAINNET;
 }
 
 /**

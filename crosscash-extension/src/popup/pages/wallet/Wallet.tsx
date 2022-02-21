@@ -30,7 +30,7 @@ const Wallet = (): React.ReactElement => {
         <div>
             <header className="App-header">
                 <Stack gap={2}>
-                    {`Network: ${CURRENT_NETWORK}`}
+                    {`Network: ${CURRENT_NETWORK.name}`}
                     <Stack direction="horizontal" gap={2}>
                         <Button type="button" onClick={copy}>
                             {trancatAddress(address)}

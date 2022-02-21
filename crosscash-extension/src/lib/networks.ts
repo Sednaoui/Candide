@@ -69,7 +69,7 @@ export type Network = {
     name: string
     baseAsset: NetworkBaseAsset
     family: NetworkFamily
-    chainID?: string
+    chainID?: number
 }
 
 /**
@@ -94,7 +94,7 @@ export type SmartContract = NetworkSpecific & {
  * An EVM-style network which *must* include a chainID.
  */
 export type EVMNetwork = Network & {
-    chainID: string
+    chainID: number
     family: 'EVM'
 }
 

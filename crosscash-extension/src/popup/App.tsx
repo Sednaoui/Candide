@@ -11,6 +11,7 @@ import { Provider as Web3Provider } from 'wagmi';
 import './index.css';
 import { getEthereumNetwork } from '../lib/helpers';
 import { EVMNetwork } from '../lib/networks';
+import { CURRENT_NETWORK } from './model/constants';
 import { AuthProvider } from './pages/auth/AuthProvider';
 import {
     RequireAuth,
@@ -25,12 +26,12 @@ import store from './store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = (): React.ReactElement => {
-    const provider = ({ name }: EVMNetwork) => new providers.AlchemyProvider(
-        name.toLocaleLowerCase(),
+    const provider = ({ chainID }: EVMNetwork) => new providers.AlchemyProvider(
+        chainID,
         process.env.REACT_APP_ALCHEMY_API_KEY,
     );
 
-    const ethNetwork = getEthereumNetwork();
+    const ethNetwork = getEthereumNetwork(CURRENT_NETWORK.chainID);
 
     return (
         <ReduxProvider store={store.store}>
