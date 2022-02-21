@@ -1,8 +1,10 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 
+import { MAINNET } from '../../../lib/constants/networks';
 import {
     GasSpeed,
     SET_DEFAULT_GAS_SPEED,
+    CHANGE_NETWORK,
 } from './actions';
 
 const initialState: SettingsState = {
@@ -10,19 +12,25 @@ const initialState: SettingsState = {
         speed: 'fast',
         confidence: 99,
     },
+    currentNetworkChainId: MAINNET.chainID,
     loading: false,
     error: null,
 };
 
 const settingsReducer = (
     state = initialState,
-    action: PayloadAction<GasSpeed & Error>,
+    action: PayloadAction<GasSpeed & number & Error>,
 ): SettingsState => {
     switch (action.type) {
         case SET_DEFAULT_GAS_SPEED:
             return {
                 ...state,
                 defaultGasSpeed: action.payload,
+            };
+        case CHANGE_NETWORK:
+            return {
+                ...state,
+                currentNetworkChainId: action.payload,
             };
         default:
             return state;
@@ -32,6 +40,7 @@ const settingsReducer = (
 export type SettingsState = {
     defaultGasSpeed: GasSpeed;
     loading: boolean;
+    currentNetworkChainId: number;
     error: Error | null;
 }
 
