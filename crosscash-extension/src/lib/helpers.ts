@@ -2,7 +2,7 @@ import { utils } from 'ethers';
 
 import {
     MAINNET,
-    EVMNetworks,
+    evmNetworks,
 } from './constants/networks';
 import { EVMNetwork } from './networks';
 
@@ -17,8 +17,8 @@ export const trancatAddress = (address: string): string => (
  * Determine which Ethereum network should be used based user input
  */
 export function getEthereumNetwork(chainId: number): EVMNetwork {
-    // find the network based on the chainId in EVMNetworks object, default to mainnet
-    const network = Object.values(EVMNetworks).find(
+    // find the network based on the chainId in evmNetworks object, default to mainnet
+    const network = evmNetworks.find(
         (n: EVMNetwork) => n.chainID === chainId,
     );
 

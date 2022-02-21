@@ -36,10 +36,10 @@ export const POLYGON: EVMNetwork = {
     family: 'EVM',
 };
 
-export const EVMNetworks = {
-    arbitrum: ARBITRUM,
-    mainnet: MAINNET,
-    optimism: OPTIMISM,
-    polgon: POLYGON,
-};
+export const evmNetworks = [
+    ARBITRUM,
+    MAINNET,
+    OPTIMISM,
+    POLYGON,
+];
 
