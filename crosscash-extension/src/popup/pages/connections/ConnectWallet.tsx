@@ -6,6 +6,7 @@ import { useProvider } from 'wagmi';
 import {
     Button, Row, Col,
 } from '../../components';
+import { transferTokens } from '../../model/transactions';
 import { useAppSelector } from '../../store';
 import ConfirmModal from './ConfirmModal';
 
@@ -15,6 +16,7 @@ const ConnectWallet = (): React.ReactElement => {
 
     const [modalActive, setModalActive] = useState(false);
     const [txInfo, setTxInfo] = useState<JSON>();
+    const [txApproved, setTxApproved] = useState(true);
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
     const provider = useProvider() as AlchemyProvider;
@@ -51,6 +53,8 @@ const ConnectWallet = (): React.ReactElement => {
 
         // get chainId
         const { chainId } = provider.network;
+
+        console.log('chainID baby: ', chainId);
 
         // Subscribe to session requests, abstract away somewhere along with connecting?
         connector.on('session_request', (error, payload) => {
@@ -92,6 +96,24 @@ const ConnectWallet = (): React.ReactElement => {
                 setTxInfo(tx);
                 setModalActive(true);
 
+                if (txApproved) {
+                    // example with injected provider
+                    // const result = await provider.send(payload.method, payload.params);
+                    const { value, to } = payload.params[0];
+
+                    console.log('private key lol: ', walletInstance?.privateKey);
+                    const txResult = transferTokens(provider,
+                                                    (value), to, walletInstance!.privateKey);
+
+                    console.log('tx result? ', txResult);
+
+                    connector.approveRequest({
+                        id: payload.id,
+                        result: txResult,
+                    });
+
+                    console.log('tx hash: ', txResult); // TransactionDetail type is weird
+                }
                 // executing the transaction once getting a confirm from modal is messy,
                 // will call sendTx() from ConfirmModal instead?
             } else {
@@ -106,10 +128,6 @@ const ConnectWallet = (): React.ReactElement => {
                 throw error;
             }
             console.log('disconnecting ', payload);
-
-            setTimeout(() => {
-                window.location.reload();
-            }, 1);
         });
     };
 
@@ -126,7 +144,8 @@ const ConnectWallet = (): React.ReactElement => {
             <ConfirmModal
                 modalActive={modalActive}
                 setModalActive={setModalActive}
-                txInfo={txInfo} />
+                txInfo={txInfo}
+                setTxApproved={setTxApproved} />
         )
             : (
                 <Row>
