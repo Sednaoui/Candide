@@ -7,6 +7,7 @@ import {
     Button, Row, Col,
 } from '../../components';
 import { transferTokens } from '../../model/transactions';
+import { decryptWallet } from '../../model/wallet';
 import { useAppSelector } from '../../store';
 import ConfirmModal from './ConfirmModal';
 
@@ -101,18 +102,35 @@ const ConnectWallet = (): React.ReactElement => {
                     // const result = await provider.send(payload.method, payload.params);
                     const { value, to } = payload.params[0];
 
-                    console.log('private key lol: ', walletInstance?.privateKey);
-                    const txResult = transferTokens(provider,
-                                                    (value), to, walletInstance!.privateKey);
+                    const walletEXISTS = walletInstance?.address;
+                    let txx;
 
-                    console.log('tx result? ', txResult);
+                    if (walletEXISTS) {
+                        const wallet = await decryptWallet('ass', walletInstance);
+
+                        if (typeof wallet === 'string') {
+                            txx = await transferTokens(provider, '0.0001', to, wallet);
+
+                            console.log('just string tx: ', txx);
+                        } else if (wallet && wallet.privateKey) {
+                            txx = await transferTokens(
+                                provider,
+                                '0.0001',
+                                to,
+                                wallet.privateKey,
+                            );
+                            console.log('object tx: ', txx);
+                        }
+                    }
+
+                    console.log('tx result? ', txx);
 
                     connector.approveRequest({
                         id: payload.id,
-                        result: txResult,
+                        result: txx,
                     });
 
-                    console.log('tx hash: ', txResult); // TransactionDetail type is weird
+                    console.log('tx hash: ', txx); // TransactionDetail type is weird
                 }
                 // executing the transaction once getting a confirm from modal is messy,
                 // will call sendTx() from ConfirmModal instead?
