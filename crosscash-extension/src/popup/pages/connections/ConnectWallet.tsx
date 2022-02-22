@@ -1,7 +1,8 @@
+import { AlchemyProvider } from '@ethersproject/providers';
 import WalletConnect from '@walletconnect/client';
 import React, { useState } from 'react';
+import { useProvider } from 'wagmi';
 
-import { getEthereumNetwork } from '../../../lib/helpers';
 import {
     Button, Row, Col,
 } from '../../components';
@@ -13,9 +14,10 @@ const ConnectWallet = (): React.ReactElement => {
     const [walletConnector, setWalletConnector] = useState<any>();
 
     const [modalActive, setModalActive] = useState(false);
-    const [txInfo, setTxInfo] = useState<string>();
+    const [txInfo, setTxInfo] = useState<JSON>();
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
+    const provider = useProvider() as AlchemyProvider;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -48,8 +50,7 @@ const ConnectWallet = (): React.ReactElement => {
         console.log('connector: ', connector);
 
         // get chainId
-        const ethNetwork = getEthereumNetwork();
-        const chainId = Number(ethNetwork.chainID);
+        const { chainId } = provider.network;
 
         // Subscribe to session requests, abstract away somewhere along with connecting?
         connector.on('session_request', (error, payload) => {
@@ -76,7 +77,7 @@ const ConnectWallet = (): React.ReactElement => {
 
             console.log('REQUEST PERMISSION TO:', payload.params[0]);
 
-            const tx = JSON.stringify(payload.params, null, 2);
+            const tx = payload.params;
 
             setTxInfo(tx);
             setModalActive(true);
