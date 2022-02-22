@@ -18,7 +18,11 @@ const ConfirmModal = ({ modalActive, setModalActive, txInfo }:
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {txInfo}
+                    gas: {txInfo[0].gas}
+                    value: {txInfo[0].value}
+                    from: {txInfo[0].from}
+                    to: {txInfo[0].to}
+                    data: {txInfo[0].data}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button type="button" onClick={handleClose}>

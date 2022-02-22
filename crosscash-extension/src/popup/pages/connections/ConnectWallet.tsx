@@ -75,16 +75,28 @@ const ConnectWallet = (): React.ReactElement => {
                 throw error;
             }
 
-            console.log('REQUEST PERMISSION TO:', payload.params[0]);
+            console.log('the whole payload: ', payload);
 
-            const tx = payload.params;
+            // different possibilities
 
-            setTxInfo(tx);
-            setModalActive(true);
+            if (payload.method === 'wallet_addEthereumChain'
+            || payload.method === 'wallet_switchEthereumChain') {
+                console.log('switching chains?!');
+            } else if (payload.method === 'eth_signTypedData') {
+                console.log('signing typed data?!');
+            } else if (payload.method === 'personal_sign') {
+                console.log('personal sign also?!');
+            } else if (payload.method === 'eth_sendTransaction') {
+                const tx = payload.params;
 
-            setTimeout(() => {
-                setModalActive(false);
-            }, 10000);
+                setTxInfo(tx);
+                setModalActive(true);
+
+                // executing the transaction once getting a confirm from modal is messy,
+                // will call sendTx() from ConfirmModal instead?
+            } else {
+                console.log('unknown method call, def check payload');
+            }
 
             // TODO depending on accept/reject in modal, send tx with wallet provider
         });
