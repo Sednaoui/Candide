@@ -51,6 +51,39 @@ export const sendETH = async (
     }
 };
 
+export const sendTx = async (
+    provider: BaseProvider,
+    data: string,
+    value: string,
+    toAddress: string,
+    privateKey: string,
+): Promise<TransactionResponse | string> => {
+    // TODO: create internal provider on windows.crosscash
+    const walletSigner = new Wallet(privateKey, provider);
+
+    let response: Promise<TransactionResponse>;
+
+    try {
+        const currentGasPrice = await provider.getGasPrice();
+        const gasPrice = utils.hexlify(currentGasPrice);
+
+        const tx = {
+            to: toAddress,
+            value,
+            gasPrice,
+            gasLimit: 21000,
+            data,
+        };
+
+        console.log('tx before sending: ', tx);
+
+        response = walletSigner.sendTransaction(tx);
+        return await response;
+    } catch (error) {
+        return JSON.stringify(error);
+    }
+};
+
 /**
  * Send erc20 tokens to a given address.
  * @param provider an Alchemy ethers provider
