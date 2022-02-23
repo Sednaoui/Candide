@@ -9059,6 +9059,11 @@ react-bootstrap@^2.0.4:
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
+react-confirm-decorator@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-confirm-decorator/-/react-confirm-decorator-1.0.4.tgz#02e959fbc322b0913bc5cfcb480cfb95e2437881"
+  integrity sha512-+gHE5EqqQscKgGB7v00vlf7g31HvbfdaxXiS6HFO7eYlw7gm0EM3cr2J3StY3WwqWbs85wgVEF9VSUEcur92/A==
+
 react-dev-utils@^12.0.0:
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-12.0.0.tgz#4eab12cdb95692a077616770b5988f0adf806526"
