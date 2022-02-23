@@ -9,15 +9,11 @@ import {
 import { sendTx } from '../../model/transactions';
 import { decryptWallet } from '../../model/wallet';
 import { useAppSelector } from '../../store';
-import ConfirmModal from './ConfirmModal';
+import { confirmation } from './ConfirmModal';
 
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
     const [walletConnector, setWalletConnector] = useState<any>();
-
-    const [modalActive, setModalActive] = useState(false);
-    const [txInfo, setTxInfo] = useState<JSON>();
-    const [txApproved, setTxApproved] = useState(true);
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
     const provider = useProvider() as AlchemyProvider;
@@ -94,10 +90,9 @@ const ConnectWallet = (): React.ReactElement => {
             } else if (payload.method === 'eth_sendTransaction') {
                 const tx = payload.params;
 
-                setTxInfo(tx);
-                setModalActive(true);
+                const isConfirmed = await confirmation({ txInfo: tx });
 
-                if (txApproved) {
+                if (isConfirmed) {
                     // example with injected provider
                     // const result = await provider.send(payload.method, payload.params);
                     const { value, to, data } = payload.params[0];
@@ -111,6 +106,15 @@ const ConnectWallet = (): React.ReactElement => {
                     connector.approveRequest({
                         id: payload.id,
                         result: txResult,
+                    });
+                } else {
+                    console.log('user cancelled tx');
+                    connector.rejectRequest({
+                        id: payload.id,
+                        error: {
+                            code: 69,
+                            message: 'lol user denied u too bad',
+                        },
                     });
                 }
                 // executing the transaction once getting a confirm from modal is messy,
@@ -139,40 +143,31 @@ const ConnectWallet = (): React.ReactElement => {
     };
 
     return (
-        modalActive ? (
-            <ConfirmModal
-                modalActive={modalActive}
-                setModalActive={setModalActive}
-                txInfo={txInfo}
-                setTxApproved={setTxApproved} />
-        )
-            : (
-                <Row>
-                    <Col>
-                        <input
-                            name="connectUrl"
-                            type="text"
-                            placeholder="enter walletconnect url (copy QR-code)"
-                            onChange={handleChange} />
-                    </Col>
-                    <Col>
-                        <Button
-                            type="button"
-                            className="btn-primary"
-                            onClick={handleConnect}>
-                            Connect
-                        </Button>
-                    </Col>
-                    <Col>
-                        <Button
-                            type="button"
-                            className="btn-secondary"
-                            onClick={handleDisconnect}>
-                            Disconnect
-                        </Button>
-                    </Col>
-                </Row>
-            )
+        <Row>
+            <Col>
+                <input
+                    name="connectUrl"
+                    type="text"
+                    placeholder="enter walletconnect url (copy QR-code)"
+                    onChange={handleChange} />
+            </Col>
+            <Col>
+                <Button
+                    type="button"
+                    className="btn-primary"
+                    onClick={handleConnect}>
+                    Connect
+                </Button>
+            </Col>
+            <Col>
+                <Button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={handleDisconnect}>
+                    Disconnect
+                </Button>
+            </Col>
+        </Row>
     );
 };
 
