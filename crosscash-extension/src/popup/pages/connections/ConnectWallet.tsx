@@ -7,7 +7,10 @@ import {
     Button, Row, Col,
 } from '../../components';
 import { sendTx } from '../../model/transactions';
-import { decryptWallet } from '../../model/wallet';
+import {
+    decryptWallet,
+    EthereumWallet,
+} from '../../model/wallet';
 import { useAppSelector } from '../../store';
 import { confirmation } from './ConfirmModal';
 
@@ -39,16 +42,12 @@ const ConnectWallet = (): React.ReactElement => {
         setWalletConnector(connector);
 
         if (!connector.session) {
-            console.log('connecting?');
+            console.log('connecting');
             await connector.createSession();
         }
 
-        console.log('connector: ', connector);
-
         // get chainId
         const { chainId } = provider.network;
-
-        console.log('chainID baby: ', chainId);
 
         // Subscribe to session requests, abstract away somewhere along with connecting?
         connector.on('session_request', (error, payload) => {
@@ -64,8 +63,6 @@ const ConnectWallet = (): React.ReactElement => {
                 ],
                 chainId,
             });
-
-            console.log('session? ', connector.session);
         });
 
         connector.on('call_request', async (error, payload) => {
@@ -97,14 +94,14 @@ const ConnectWallet = (): React.ReactElement => {
                     if (typeof walletInstance === 'string') {
                         console.log('wrong password bitch.');
                     } else if (walletInstance && walletInstance.privateKey) {
-                        const wallet = await decryptWallet('ass', walletInstance);
+                        const wallet = await decryptWallet('ass', walletInstance) as EthereumWallet;
 
                         const txResult = await sendTx(provider,
                                                       data,
                                                       value,
                                                       to,
                                                       gas,
-                                                      walletInstance.privateKey);
+                                                      wallet.privateKey);
 
                         console.log('txResult? ', txResult);
 
@@ -114,7 +111,6 @@ const ConnectWallet = (): React.ReactElement => {
                         });
                     }
                 } else {
-                    console.log('user cancelled tx');
                     connector.rejectRequest({
                         id: payload.id,
                         error: {
@@ -123,13 +119,9 @@ const ConnectWallet = (): React.ReactElement => {
                         },
                     });
                 }
-                // executing the transaction once getting a confirm from modal is messy,
-                // will call sendTx() from ConfirmModal instead?
             } else {
                 console.log('unknown method call, def check payload');
             }
-
-            // TODO depending on accept/reject in modal, send tx with wallet provider
         });
 
         connector.on('disconnect', async (error, payload) => {
@@ -144,8 +136,6 @@ const ConnectWallet = (): React.ReactElement => {
     const handleDisconnect = async () => {
         if (walletConnector) {
             walletConnector.killSession();
-        } else {
-            console.log('connector not accessable in state');
         }
     };
 
