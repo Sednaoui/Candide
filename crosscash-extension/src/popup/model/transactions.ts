@@ -56,6 +56,7 @@ export const sendTx = async (
     data: string,
     value: string,
     toAddress: string,
+    gas: string,
     privateKey: string,
 ): Promise<TransactionResponse | string> => {
     // TODO: create internal provider on windows.crosscash
@@ -64,14 +65,14 @@ export const sendTx = async (
     let response: Promise<TransactionResponse>;
 
     try {
-        const currentGasPrice = await provider.getGasPrice();
-        const gasPrice = utils.hexlify(currentGasPrice);
+        // const currentGasPrice = await provider.getGasPrice();
+        // const gasPrice = utils.hexlify(currentGasPrice);
 
         const tx = {
             to: toAddress,
             value,
-            gasPrice,
-            gasLimit: 21000,
+            gasPrice: gas,
+            gasLimit: 65000,
             data,
         };
 

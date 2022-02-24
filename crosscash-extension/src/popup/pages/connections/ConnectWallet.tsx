@@ -13,7 +13,7 @@ import { confirmation } from './ConfirmModal';
 
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
-    const [walletConnector, setWalletConnector] = useState<any>();
+    const [walletConnector, setWalletConnector] = useState<WalletConnect>();
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
     const provider = useProvider() as AlchemyProvider;
@@ -37,9 +37,6 @@ const ConnectWallet = (): React.ReactElement => {
         const connector = new WalletConnect(sessionDetails);
 
         setWalletConnector(connector);
-
-        // hack for testing
-        (window as any).walletconnect = connector;
 
         if (!connector.session) {
             console.log('connecting?');
@@ -95,18 +92,27 @@ const ConnectWallet = (): React.ReactElement => {
                 if (isConfirmed) {
                     // example with injected provider
                     // const result = await provider.send(payload.method, payload.params);
-                    const { value, to, data } = payload.params[0];
-                    // @ts-ignore // the possibility of null in these makes it a nightmare
-                    const wallet = await decryptWallet('ass', walletInstance); 
-                    // @ts-ignore 
-                    const txResult = await sendTx(provider, data, value, to, wallet.privateKey);
+                    const { value, to, data, gas } = payload.params[0];
 
-                    console.log('txResult? ', txResult);
+                    if (typeof walletInstance === 'string') {
+                        console.log('wrong password bitch.');
+                    } else if (walletInstance && walletInstance.privateKey) {
+                        const wallet = await decryptWallet('ass', walletInstance);
 
-                    connector.approveRequest({
-                        id: payload.id,
-                        result: txResult,
-                    });
+                        const txResult = await sendTx(provider,
+                                                      data,
+                                                      value,
+                                                      to,
+                                                      gas,
+                                                      walletInstance.privateKey);
+
+                        console.log('txResult? ', txResult);
+
+                        connector.approveRequest({
+                            id: payload.id,
+                            result: txResult,
+                        });
+                    }
                 } else {
                     console.log('user cancelled tx');
                     connector.rejectRequest({
@@ -126,11 +132,12 @@ const ConnectWallet = (): React.ReactElement => {
             // TODO depending on accept/reject in modal, send tx with wallet provider
         });
 
-        connector.on('disconnect', (error, payload) => {
+        connector.on('disconnect', async (error, payload) => {
             if (error) {
                 throw error;
             }
             console.log('disconnecting ', payload);
+            await handleDisconnect();
         });
     };
 
