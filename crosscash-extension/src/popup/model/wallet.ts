@@ -63,6 +63,8 @@ export const createEncryptedWallet = async (
  * @param encryptedWallet
  * @returns decrypted wallet
  */
+
+// TODO throw error instead of returning string
 export const decryptWallet = async (
     password: Password,
     encryptedWallet: EthereumWallet,
