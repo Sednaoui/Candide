@@ -26,7 +26,7 @@ export const Routes = () => {
         process.env.REACT_APP_ALCHEMY_API_KEY,
     );
 
-    const currentChainID = useAppSelector((state) => state.settings.currentNetworkChainId);
+    const currentChainID = useAppSelector((state) => state.wallet.currentNetworkChainId);
 
     const ethNetwork = getEthereumNetwork(currentChainID);
 

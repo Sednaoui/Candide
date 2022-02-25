@@ -17,16 +17,4 @@ export const setDefaultGasSpeed = (g: GasSpeed): SettingsActionTypes => ({
     type: SET_DEFAULT_GAS_SPEED,
 });
 
-export const CHANGE_NETWORK = 'CHANGE_NETWORK';
-
-type NetworkActionType = {
-    payload: number;
-    type: typeof CHANGE_NETWORK;
-};
-
-export const changeNetwork = (chainId: number): SettingsActionTypes => ({
-    payload: chainId,
-    type: CHANGE_NETWORK,
-});
-
-export type SettingsActionTypes = GasActionType | NetworkActionType;
+export type SettingsActionTypes = GasActionType;

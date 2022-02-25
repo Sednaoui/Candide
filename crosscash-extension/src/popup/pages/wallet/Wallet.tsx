@@ -10,7 +10,7 @@ import {
     Stack,
 } from '../../components';
 import { useAppSelector } from '../../store';
-import { changeNetwork } from '../../store/settings/actions';
+import { changeNetwork } from '../../store/wallet/actions';
 import ConnectWallet from '../connections/ConnectWallet';
 import WalletNavBar from './WalletNavBar';
 
@@ -31,7 +31,7 @@ const Wallet = (): React.ReactElement => {
     };
 
     const dispatch = useDispatch();
-    const currentNetworkChainId = useAppSelector((state) => state.settings.currentNetworkChainId);
+    const currentNetworkChainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
 
     const networkList = evmNetworks.map((n) => (
         <option
