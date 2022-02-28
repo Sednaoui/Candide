@@ -1,14 +1,21 @@
 import { PayloadAction } from '@reduxjs/toolkit';
+import WalletConnect from '@walletconnect/client';
 
 import { MAINNET } from '../../../lib/constants/networks';
 import { EthereumWallet } from '../../model/wallet';
 import {
     createWallet,
+    createWalletconnectSession,
     CHANGE_NETWORK,
     WalletPayloadAction,
 } from './actions';
 
+type WalletConnectSession = {
+    [peerId: string]: WalletConnect['session'];
+}
+
 const initialState: WalletState = {
+    sessions: null,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -42,12 +49,33 @@ export const walletReducer = (
                 ...state,
                 currentNetworkChainId: action.payload,
             };
+        case createWalletconnectSession.TRIGGER:
+            return { ...state, loading: true };
+        case createWalletconnectSession.SUCCESS:
+            return {
+                ...state,
+                sessions: {
+                    ...state.sessions,
+                    [action.payload.peerId]: action.payload,
+                },
+            };
+        case createWalletconnectSession.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case createWalletconnectSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
+            };
         default:
             return state;
     }
 };
 
 export interface WalletState {
+    sessions: WalletConnectSession | null;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;

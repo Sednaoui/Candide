@@ -1,3 +1,4 @@
+import WalletConnect from '@walletconnect/client';
 import { createRoutine } from 'redux-saga-routines';
 
 import { Network } from '../../../lib/networks';
@@ -17,4 +18,10 @@ export const changeNetwork = (chainId: number): NetworkActionType => ({
     type: CHANGE_NETWORK,
 });
 
-export type WalletPayloadAction = EthereumWallet & Network['chainID'] & Error;
+export const createWalletconnectSession = createRoutine('CREATE_WALLETCONNECT_SESSION');
+
+export type WalletPayloadAction = EthereumWallet
+    & Network['chainID']
+    & WalletConnect['session']
+    & Error;
+

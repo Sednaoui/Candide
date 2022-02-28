@@ -7,8 +7,12 @@ import {
     spawn,
 } from 'redux-saga/effects';
 
+import { initiateWalletConnect } from '../../../lib/walletconnect';
 import { createEncryptedWallet } from '../../model/wallet';
-import { createWallet } from './actions';
+import {
+    createWallet,
+    createWalletconnectSession,
+} from './actions';
 import { EncryptedWallet } from './type';
 
 function* fetchCreateWallet({ payload }: PayloadAction<EncryptedWallet>): Generator {
@@ -28,9 +32,27 @@ function* watchCreateWallet(): Generator {
     yield takeEvery(createWallet.TRIGGER, fetchCreateWallet);
 }
 
+function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): Generator {
+    try {
+        yield put(createWalletconnectSession.request());
+        const channel = yield call(initiateWalletConnect, payload.uri);
+
+        yield put(createWalletconnectSession.success(channel));
+    } catch (err) {
+        yield put(createWalletconnectSession.success(err));
+    } finally {
+        yield put(createWalletconnectSession.fulfill());
+    }
+}
+
+function* watchWalletConnectInit(): Generator {
+    yield takeEvery(createWalletconnectSession.TRIGGER, listenWalletConnectInit);
+}
+
 export default function* logSaga(): Generator {
     const sagas = [
         watchCreateWallet,
+        watchWalletConnectInit,
     ];
 
     yield all(sagas.map((saga) => (
