@@ -1,5 +1,7 @@
 import WalletConnect from '@walletconnect/client';
 
+import { IConnector } from './types';
+
 export const getSessionDetails = (uri: string) => ({
     uri,
     clientMeta: {
@@ -11,17 +13,15 @@ export const getSessionDetails = (uri: string) => ({
     },
 });
 
-export const initiateWalletConnect = async (uri: string) => {
-    try {
-        const details = getSessionDetails(uri);
-        const walletConnector = new WalletConnect(details);
+export const initiateWalletConnect = async (uri: string): Promise<IConnector> => {
+    const details = getSessionDetails(uri);
+    const walletConnector = new WalletConnect(details);
 
-        if (!walletConnector.session) {
-            await walletConnector.createSession();
-        }
+    if (!walletConnector.session) {
+        await walletConnector.createSession();
 
-        return walletConnector.session;
-    } catch (err) {
-        return err;
+        return walletConnector;
     }
+
+    return walletConnector;
 };
