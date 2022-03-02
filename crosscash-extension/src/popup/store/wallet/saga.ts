@@ -1,5 +1,4 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { parseWalletConnectUri } from '@walletconnect/utils';
 import {
     eventChannel,
     END,
@@ -16,7 +15,7 @@ import {
 
 import { HexString } from '../../../lib/accounts';
 import {
-    getAllValidWalletConnectSessions,
+    getLocalWalletConnectSession,
     initiateWalletConnect,
 } from '../../../lib/walletconnect';
 import {
@@ -70,18 +69,10 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
     try {
         // Don't initiate a new session if we have already established one using this wc URI
         // TODO: type the yield calls!
-        const localSession: any = yield call(getAllValidWalletConnectSessions);
-
-        const wcUri = parseWalletConnectUri(payload.uri);
+        const localSession: any = yield call(getLocalWalletConnectSession, payload.uri);
 
         if (localSession) {
-            const alreadyConnected = (localSession.handshakeTopic === wcUri.handshakeTopic)
-                && (localSession.key === wcUri.key);
-
-            if (alreadyConnected) {
-                // delete pending Request if any
-                return yield put(createPendingSession.failure());
-            }
+            return yield put(createPendingSession.success(localSession));
         }
 
         const connector = yield call(initiateWalletConnect, payload.uri);
@@ -99,7 +90,7 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
             yield put(sendRequestSessionWithDapp(session));
         }
     } catch (err) {
-        return err;
+        return yield put(createPendingSession.failure(err));
     } finally {
         yield put(createPendingSession.fulfill());
     }
