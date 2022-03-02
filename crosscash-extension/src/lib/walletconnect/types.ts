@@ -2,6 +2,7 @@ import {
     IJsonRpcRequest,
     ISessionParams,
     IConnector,
+    IWalletConnectOptions,
 } from '@walletconnect/types';
 
 type RequestSessionPayload = IJsonRpcRequest & {
@@ -11,4 +12,5 @@ type RequestSessionPayload = IJsonRpcRequest & {
 export type {
     RequestSessionPayload,
     IConnector,
+    IWalletConnectOptions,
 };

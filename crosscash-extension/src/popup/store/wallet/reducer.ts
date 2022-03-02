@@ -65,6 +65,7 @@ export const walletReducer = (
         case createPendingSession.FAILURE:
             return {
                 ...state,
+                pendingConnector: null,
                 error: action.payload,
             };
         case createPendingSession.FULFILL:
