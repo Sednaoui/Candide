@@ -15,7 +15,7 @@ import {
 } from './actions';
 
 type WalletConnectSession = {
-    [peerId: string]: WalletConnect;
+    [peerId: string]: WalletConnect['session'];
 }
 
 const initialState: WalletState = {
@@ -84,7 +84,7 @@ export const walletReducer = (
                 pendingRequest: null,
                 sessions: {
                     ...state.sessions,
-                    [action.payload.connector.peerId]: action.payload.connector,
+                    [action.payload.connector.session.peerId]: action.payload.connector.session,
                 },
             };
         case DENY_REQUEST_SESSION_WITH_DAPP:
