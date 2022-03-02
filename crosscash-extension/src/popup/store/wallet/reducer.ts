@@ -21,7 +21,7 @@ type WalletConnectSession = {
 const initialState: WalletState = {
     sessions: null,
     pendingRequest: null,
-    pendingConnector: null,
+    connector: null,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -60,12 +60,12 @@ export const walletReducer = (
         case createPendingSession.SUCCESS:
             return {
                 ...state,
-                pendingConnector: action.payload,
+                connector: action.payload,
             };
         case createPendingSession.FAILURE:
             return {
                 ...state,
-                pendingConnector: null,
+                connector: null,
                 error: action.payload,
             };
         case createPendingSession.FULFILL:
@@ -82,7 +82,6 @@ export const walletReducer = (
             return {
                 ...state,
                 pendingRequest: null,
-                pendingConnector: null,
                 sessions: {
                     ...state.sessions,
                     [action.payload.connector.peerId]: action.payload.connector,
@@ -92,7 +91,7 @@ export const walletReducer = (
             return {
                 ...state,
                 pendingRequest: null,
-                pendingConnector: null,
+                connector: null,
             };
         default:
             return state;
@@ -102,7 +101,7 @@ export const walletReducer = (
 export interface WalletState {
     sessions: WalletConnectSession | null;
     pendingRequest: RequestSessionPayload | null;
-    pendingConnector: WalletConnect | null;
+    connector: WalletConnect | null;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;
