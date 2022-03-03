@@ -99,3 +99,7 @@ export const approvesSessionRequest = async ({ connector, address, chainId }: {
 
 export const rejectSessionRequest = async (connector: IConnector) =>
     connector.rejectSession({ message: 'USER_DENIED_SESSION' });
+
+export const disconnectSession = async (connector: IConnector) => {
+    await connector.killSession();
+};

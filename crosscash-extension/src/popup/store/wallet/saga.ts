@@ -21,6 +21,7 @@ import {
     getInternalWalletConnectSessionFromUri,
     getLocalWalletConnectSession,
     initiateWalletConnect,
+    disconnectSession,
 } from '../../../lib/walletconnect';
 import {
     RequestSessionPayload,
@@ -154,6 +155,23 @@ function* watchWalletConnectDisconnect(): Generator {
     yield takeEvery(confirmRequestSession.FULFILL, listenWalletConnectDisconnect);
 }
 
+function* walletConnectDisconnectSession(): Generator {
+    try {
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        yield call(disconnectSession, connector);
+        yield put(disconnectSessionAction.success(connector));
+    } catch (err) {
+        yield put(disconnectSessionAction.failure(err));
+    } finally {
+        yield put(disconnectSessionAction.fulfill());
+    }
+}
+
+function* watchWalletConnectDisconnectSession(): Generator {
+    yield takeEvery(disconnectSessionAction.TRIGGER, walletConnectDisconnectSession);
+}
+
 function* walletConnectApprovesSessionRequest({ payload }: PayloadAction<{
     address: HexString,
     chainId: number,
@@ -204,6 +222,7 @@ export default function* logSaga(): Generator {
         watchWalletConnectApproveSessionRequest,
         watchWalletConnectDenySessionRequest,
         watchWalletConnectDisconnect,
+        watchWalletConnectDisconnectSession,
     ];
 
     yield all(sagas.map((saga) => (
