@@ -16,6 +16,7 @@ import {
 
 import { HexString } from '../../../lib/accounts';
 import {
+    approvesSessionRequest,
     getInternalWalletConnectSessionFromUri,
     getLocalWalletConnectSession,
     initiateWalletConnect,
@@ -29,7 +30,7 @@ import {
     createWallet,
     createPendingSession,
     sendRequestSessionWithDapp,
-    CONFIRM_REQUEST_SESSION_WITH_DAPP,
+    confirmRequestSession,
     DENY_REQUEST_SESSION_WITH_DAPP,
 } from './actions';
 import { EncryptedWallet } from './type';
@@ -110,23 +111,30 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
     }
 }
 
-function approvesSessionRequest({ payload }: PayloadAction<{
-    connector: IConnector,
+function* walletConnectApprovesSessionRequest({ payload }: PayloadAction<{
     address: HexString,
     chainId: number,
-}>) {
+}>): Generator {
     try {
-        return payload.connector.approveSession({
+        yield put(confirmRequestSession.request());
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        yield call(approvesSessionRequest, {
+            connector,
+            address: payload.address,
             chainId: payload.chainId,
-            accounts: [payload.address],
         });
+
+        yield put(confirmRequestSession.success(connector));
     } catch (err) {
-        return err;
+        yield put(confirmRequestSession.failure(err));
+    } finally {
+        yield put(confirmRequestSession.fulfill());
     }
 }
 
 function* watchWalletConnectApproveSessionRequest(): Generator {
-    yield takeEvery(CONFIRM_REQUEST_SESSION_WITH_DAPP, approvesSessionRequest);
+    yield takeEvery(confirmRequestSession.TRIGGER, walletConnectApprovesSessionRequest);
 }
 
 function denySessionRequest({ payload }: PayloadAction<{ connector: IConnector }>) {

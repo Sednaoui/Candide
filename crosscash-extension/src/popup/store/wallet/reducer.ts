@@ -13,7 +13,7 @@ import {
     CHANGE_NETWORK,
     WalletPayloadAction,
     SEND_REQUEST_SESSION_WITH_DAPP,
-    CONFIRM_REQUEST_SESSION_WITH_DAPP,
+    confirmRequestSession,
     DENY_REQUEST_SESSION_WITH_DAPP,
 } from './actions';
 
@@ -21,6 +21,7 @@ const initialState: WalletState = {
     sessions: null,
     pendingRequest: null,
     connector: null,
+    currentSessionApproved: false,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -77,19 +78,40 @@ export const walletReducer = (
                 ...state,
                 pendingRequest: action.payload,
             };
-        case CONFIRM_REQUEST_SESSION_WITH_DAPP:
+        case confirmRequestSession.TRIGGER:
             return {
                 ...state,
                 pendingRequest: null,
+            };
+        case confirmRequestSession.REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case confirmRequestSession.SUCCESS:
+            return {
+                ...state,
                 sessions: {
                     ...state.sessions,
-                    [action.payload.connector.key]: action.payload.connector.session,
+                    [action.payload.key]: action.payload.session,
                 },
+            };
+        case confirmRequestSession.FAILURE:
+            return {
+                ...state,
+                connector: null,
+                error: action.payload,
+            };
+        case confirmRequestSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
             };
         case DENY_REQUEST_SESSION_WITH_DAPP:
             return {
                 ...state,
                 pendingRequest: null,
+                currentSessionApproved: false,
                 connector: null,
             };
         default:
@@ -105,6 +127,7 @@ export interface WalletState {
     sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
     connector: WalletConnect | null;
+    currentSessionApproved: boolean;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;
