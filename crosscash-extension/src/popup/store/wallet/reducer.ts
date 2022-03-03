@@ -1,5 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import WalletConnect from '@walletconnect/client';
+import { omit } from 'lodash';
 
 import { MAINNET } from '../../../lib/constants/networks';
 import {
@@ -15,6 +16,7 @@ import {
     SEND_REQUEST_SESSION_WITH_DAPP,
     confirmRequestSession,
     rejectRequestSession,
+    disconnectSession,
 } from './actions';
 
 const initialState: WalletState = {
@@ -130,6 +132,29 @@ export const walletReducer = (
                 error: action.payload,
             };
         case rejectRequestSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
+            };
+        // disconnect
+        case disconnectSession.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case disconnectSession.SUCCESS:
+            return {
+                ...state,
+                connector: null,
+                currentSessionApproved: false,
+                sessions: omit(state.sessions, action.payload.key),
+            };
+        case disconnectSession.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case disconnectSession.FULFILL:
             return {
                 ...state,
                 loading: false,

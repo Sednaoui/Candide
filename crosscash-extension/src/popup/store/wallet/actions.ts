@@ -45,6 +45,9 @@ export const confirmRequestSession = createRoutine('CONFIRM_REQUEST_SESSION_WITH
 // deny a pending request to connect with dapp
 export const rejectRequestSession = createRoutine('REJECT_REQUEST_SESSION_WITH_DAPP');
 
+// disconnect from walletconnect
+export const disconnectSession = createRoutine('DISCONNECT_SESSION');
+
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']
     & WalletConnect

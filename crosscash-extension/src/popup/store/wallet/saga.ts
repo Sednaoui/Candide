@@ -33,6 +33,7 @@ import {
     sendRequestSessionWithDapp,
     confirmRequestSession,
     rejectRequestSession as rejectRequestSessionAction,
+    disconnectSession as disconnectSessionAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -116,6 +117,43 @@ function* watchWalletConnectInit(): Generator {
     yield takeEvery(createPendingSession.TRIGGER, listenWalletConnectInit);
 }
 
+const sessionDisconnect = async (connector: IConnector) => eventChannel((emitter) => {
+    connector.on('disconnect', (_error, p) => {
+        if (p) {
+            emitter(p);
+        } else {
+            emitter(END);
+        }
+    });
+    return () => {
+        // unsubscribe from connector once saga is cancelled
+        connector.killSession();
+    };
+});
+
+function* listenWalletConnectDisconnect(): Generator {
+    try {
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        const channel = yield call(sessionDisconnect, connector);
+
+        while (true) {
+            // @ts-expect-error:TODO: type redux-saga yield take
+            yield take(channel);
+
+            yield put(disconnectSessionAction.success(connector));
+        }
+    } catch (err) {
+        return yield put(disconnectSessionAction.failure(err));
+    } finally {
+        yield put(disconnectSessionAction.fulfill());
+    }
+}
+
+function* watchWalletConnectDisconnect(): Generator {
+    yield takeEvery(confirmRequestSession.FULFILL, listenWalletConnectDisconnect);
+}
+
 function* walletConnectApprovesSessionRequest({ payload }: PayloadAction<{
     address: HexString,
     chainId: number,
@@ -165,6 +203,7 @@ export default function* logSaga(): Generator {
         watchWalletConnectInit,
         watchWalletConnectApproveSessionRequest,
         watchWalletConnectDenySessionRequest,
+        watchWalletConnectDisconnect,
     ];
 
     yield all(sagas.map((saga) => (
