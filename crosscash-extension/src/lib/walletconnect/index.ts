@@ -1,6 +1,7 @@
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 
+import { WalletConnectSessions } from '../../popup/store/wallet/reducer';
 import {
     getLocal,
     removeLocal,
@@ -64,5 +65,24 @@ export const getValidWalletConnectSession = async () => {
     } else {
         return null;
     }
+    return null;
+};
+
+export const getInternalWalletConnectSessionFromUri = async (
+    sessions: WalletConnectSessions, uri: string,
+): Promise<IConnector | null> => {
+    const wcUri = parseWalletConnectUri(uri);
+
+    // find out if we have a session with the same key
+    try {
+        const session = sessions[wcUri.key];
+
+        if (session) {
+            return new WalletConnect({ session });
+        }
+    } catch (err) {
+        return null;
+    }
+
     return null;
 };

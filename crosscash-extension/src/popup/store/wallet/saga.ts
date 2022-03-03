@@ -11,10 +11,12 @@ import {
     takeEvery,
     spawn,
     take,
+    select,
 } from 'redux-saga/effects';
 
 import { HexString } from '../../../lib/accounts';
 import {
+    getInternalWalletConnectSessionFromUri,
     getLocalWalletConnectSession,
     initiateWalletConnect,
 } from '../../../lib/walletconnect';
@@ -73,6 +75,18 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
 
         if (localSession) {
             return yield put(createPendingSession.success(localSession));
+        }
+
+        // TODO: type the yield select
+        const internalSessions: any = yield select((state) => state.wallet.sessions);
+
+        const internalSession = yield call(
+            getInternalWalletConnectSessionFromUri,
+            internalSessions, payload.uri,
+        );
+
+        if (internalSession) {
+            return yield put(createPendingSession.success(internalSession));
         }
 
         const connector = yield call(initiateWalletConnect, payload.uri);
