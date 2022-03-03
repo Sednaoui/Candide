@@ -112,6 +112,10 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
     }
 }
 
+function* watchWalletConnectInit(): Generator {
+    yield takeEvery(createPendingSession.TRIGGER, listenWalletConnectInit);
+}
+
 function* walletConnectApprovesSessionRequest({ payload }: PayloadAction<{
     address: HexString,
     chainId: number,
@@ -153,10 +157,6 @@ function* walletConnectRejectSessionRequest(): Generator {
 
 function* watchWalletConnectDenySessionRequest(): Generator {
     yield takeEvery(rejectRequestSessionAction.TRIGGER, walletConnectRejectSessionRequest);
-}
-
-function* watchWalletConnectInit(): Generator {
-    yield takeEvery(createPendingSession.TRIGGER, listenWalletConnectInit);
 }
 
 export default function* logSaga(): Generator {
