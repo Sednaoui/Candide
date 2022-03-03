@@ -17,6 +17,7 @@ import {
 import { HexString } from '../../../lib/accounts';
 import {
     approvesSessionRequest,
+    rejectSessionRequest,
     getInternalWalletConnectSessionFromUri,
     getLocalWalletConnectSession,
     initiateWalletConnect,
@@ -31,7 +32,7 @@ import {
     createPendingSession,
     sendRequestSessionWithDapp,
     confirmRequestSession,
-    DENY_REQUEST_SESSION_WITH_DAPP,
+    rejectRequestSession as rejectRequestSessionAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -137,16 +138,21 @@ function* watchWalletConnectApproveSessionRequest(): Generator {
     yield takeEvery(confirmRequestSession.TRIGGER, walletConnectApprovesSessionRequest);
 }
 
-function denySessionRequest({ payload }: PayloadAction<{ connector: IConnector }>) {
+function* walletConnectRejectSessionRequest(): Generator {
     try {
-        return payload.connector.rejectSession({ message: 'USER_DENIED_REQUEST' });
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        yield call(rejectSessionRequest, connector);
+        yield put(rejectRequestSessionAction.success());
     } catch (err) {
-        return err;
+        yield put(rejectRequestSessionAction.failure(err));
+    } finally {
+        yield put(rejectRequestSessionAction.fulfill());
     }
 }
 
 function* watchWalletConnectDenySessionRequest(): Generator {
-    yield takeEvery(DENY_REQUEST_SESSION_WITH_DAPP, denySessionRequest);
+    yield takeEvery(rejectRequestSessionAction.TRIGGER, walletConnectRejectSessionRequest);
 }
 
 function* watchWalletConnectInit(): Generator {

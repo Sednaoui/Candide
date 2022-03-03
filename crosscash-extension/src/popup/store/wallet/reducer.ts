@@ -14,7 +14,7 @@ import {
     WalletPayloadAction,
     SEND_REQUEST_SESSION_WITH_DAPP,
     confirmRequestSession,
-    DENY_REQUEST_SESSION_WITH_DAPP,
+    rejectRequestSession,
 } from './actions';
 
 const initialState: WalletState = {
@@ -91,6 +91,7 @@ export const walletReducer = (
         case confirmRequestSession.SUCCESS:
             return {
                 ...state,
+                currentSessionApproved: true,
                 sessions: {
                     ...state.sessions,
                     [action.payload.key]: action.payload.session,
@@ -107,12 +108,31 @@ export const walletReducer = (
                 ...state,
                 loading: false,
             };
-        case DENY_REQUEST_SESSION_WITH_DAPP:
+        case rejectRequestSession.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case rejectRequestSession.REQUEST:
             return {
                 ...state,
                 pendingRequest: null,
-                currentSessionApproved: false,
+            };
+        case rejectRequestSession.SUCCESS:
+            return {
+                ...state,
                 connector: null,
+                currentSessionApproved: false,
+            };
+        case rejectRequestSession.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case rejectRequestSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
             };
         default:
             return state;
