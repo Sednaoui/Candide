@@ -2,7 +2,10 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import WalletConnect from '@walletconnect/client';
 
 import { MAINNET } from '../../../lib/constants/networks';
-import { RequestSessionPayload } from '../../../lib/walletconnect/types';
+import {
+    RequestSessionPayload,
+    IConnector,
+} from '../../../lib/walletconnect/types';
 import { EthereumWallet } from '../../model/wallet';
 import {
     createWallet,
@@ -13,10 +16,6 @@ import {
     CONFIRM_REQUEST_SESSION_WITH_DAPP,
     DENY_REQUEST_SESSION_WITH_DAPP,
 } from './actions';
-
-type WalletConnectSession = {
-    [peerId: string]: WalletConnect['session'];
-}
 
 const initialState: WalletState = {
     sessions: null,
@@ -84,7 +83,7 @@ export const walletReducer = (
                 pendingRequest: null,
                 sessions: {
                     ...state.sessions,
-                    [action.payload.connector.session.peerId]: action.payload.connector.session,
+                    [action.payload.connector.key]: action.payload.connector.session,
                 },
             };
         case DENY_REQUEST_SESSION_WITH_DAPP:
@@ -98,8 +97,12 @@ export const walletReducer = (
     }
 };
 
+export type WalletConnectSessions = {
+    [peerId: string]: IConnector['session'];
+}
+
 export interface WalletState {
-    sessions: WalletConnectSession | null;
+    sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
     connector: WalletConnect | null;
     walletInstance: EthereumWallet | null;
