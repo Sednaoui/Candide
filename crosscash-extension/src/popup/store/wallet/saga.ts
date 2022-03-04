@@ -35,6 +35,7 @@ import {
     confirmRequestSession,
     rejectRequestSession as rejectRequestSessionAction,
     disconnectSession as disconnectSessionAction,
+    callRequest as callRequestAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -217,6 +218,41 @@ function* watchWalletConnectDenySessionRequest(): Generator {
     yield takeEvery(rejectRequestSessionAction.TRIGGER, walletConnectRejectSessionRequest);
 }
 
+const callRequest = async (connector: IConnector) => eventChannel((emitter) => {
+    connector.on('call_request', (_error, p) => {
+        if (p) {
+            emitter(p);
+        } else {
+            emitter(END);
+        }
+    });
+    return () => {
+        // TODO: unsubscribe from connector if we are disconnected
+    };
+});
+
+function* listenWalletConnectCallRequest(): Generator {
+    yield put(callRequestAction.request());
+    const connector: any = yield select((state) => state.wallet.connector);
+    const channel = yield call(callRequest, connector);
+
+    while (true) {
+        try {
+            // @ts-expect-error:TODO: type redux-saga yield take
+            const request = yield take(channel);
+
+            yield put(callRequestAction.success(request));
+            yield put(callRequestAction.fulfill());
+        } catch (err) {
+            yield put(callRequestAction.failure(err));
+        }
+    }
+}
+
+function* watchWalletConnectCallRequest(): Generator {
+    yield takeEvery(confirmRequestSession.FULFILL, listenWalletConnectCallRequest);
+}
+
 export default function* logSaga(): Generator {
     const sagas = [
         watchCreateWallet,
@@ -225,6 +261,7 @@ export default function* logSaga(): Generator {
         watchWalletConnectDenySessionRequest,
         watchWalletConnectDisconnect,
         watchWalletConnectDisconnectSession,
+        watchWalletConnectCallRequest,
     ];
 
     yield all(sagas.map((saga) => (
