@@ -1,5 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import WalletConnect from '@walletconnect/client';
+import { omit } from 'lodash';
 
 import { MAINNET } from '../../../lib/constants/networks';
 import {
@@ -13,14 +14,16 @@ import {
     CHANGE_NETWORK,
     WalletPayloadAction,
     SEND_REQUEST_SESSION_WITH_DAPP,
-    CONFIRM_REQUEST_SESSION_WITH_DAPP,
-    DENY_REQUEST_SESSION_WITH_DAPP,
+    confirmRequestSession,
+    rejectRequestSession,
+    disconnectSession,
 } from './actions';
 
 const initialState: WalletState = {
     sessions: null,
     pendingRequest: null,
     connector: null,
+    currentSessionApproved: false,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -77,20 +80,84 @@ export const walletReducer = (
                 ...state,
                 pendingRequest: action.payload,
             };
-        case CONFIRM_REQUEST_SESSION_WITH_DAPP:
+        case confirmRequestSession.TRIGGER:
             return {
                 ...state,
                 pendingRequest: null,
+            };
+        case confirmRequestSession.REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case confirmRequestSession.SUCCESS:
+            return {
+                ...state,
+                currentSessionApproved: true,
                 sessions: {
                     ...state.sessions,
-                    [action.payload.connector.key]: action.payload.connector.session,
+                    [action.payload.key]: action.payload.session,
                 },
             };
-        case DENY_REQUEST_SESSION_WITH_DAPP:
+        case confirmRequestSession.FAILURE:
+            return {
+                ...state,
+                connector: null,
+                error: action.payload,
+            };
+        case confirmRequestSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
+            };
+        case rejectRequestSession.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case rejectRequestSession.REQUEST:
             return {
                 ...state,
                 pendingRequest: null,
+            };
+        case rejectRequestSession.SUCCESS:
+            return {
+                ...state,
                 connector: null,
+                currentSessionApproved: false,
+            };
+        case rejectRequestSession.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case rejectRequestSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
+            };
+        // disconnect
+        case disconnectSession.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case disconnectSession.SUCCESS:
+            return {
+                ...state,
+                connector: null,
+                currentSessionApproved: false,
+                sessions: omit(state.sessions, action.payload.key),
+            };
+        case disconnectSession.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case disconnectSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
             };
         default:
             return state;
@@ -105,6 +172,7 @@ export interface WalletState {
     sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
     connector: WalletConnect | null;
+    currentSessionApproved: boolean;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;

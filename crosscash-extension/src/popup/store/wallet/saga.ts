@@ -16,9 +16,12 @@ import {
 
 import { HexString } from '../../../lib/accounts';
 import {
+    approvesSessionRequest,
+    rejectSessionRequest,
     getInternalWalletConnectSessionFromUri,
     getLocalWalletConnectSession,
     initiateWalletConnect,
+    disconnectSession,
 } from '../../../lib/walletconnect';
 import {
     RequestSessionPayload,
@@ -29,8 +32,9 @@ import {
     createWallet,
     createPendingSession,
     sendRequestSessionWithDapp,
-    CONFIRM_REQUEST_SESSION_WITH_DAPP,
-    DENY_REQUEST_SESSION_WITH_DAPP,
+    confirmRequestSession,
+    rejectRequestSession as rejectRequestSessionAction,
+    disconnectSession as disconnectSessionAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -110,39 +114,105 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
     }
 }
 
-function approvesSessionRequest({ payload }: PayloadAction<{
-    connector: IConnector,
+function* watchWalletConnectInit(): Generator {
+    yield takeEvery(createPendingSession.TRIGGER, listenWalletConnectInit);
+}
+
+const sessionDisconnect = async (connector: IConnector) => eventChannel((emitter) => {
+    connector.on('disconnect', (_error, p) => {
+        if (p) {
+            emitter(p);
+        } else {
+            emitter(END);
+        }
+    });
+    return () => {
+        // unsubscribe from connector once saga is cancelled
+        connector.killSession();
+    };
+});
+
+function* listenWalletConnectDisconnect(): Generator {
+    try {
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        const channel = yield call(sessionDisconnect, connector);
+
+        while (true) {
+            // @ts-expect-error:TODO: type redux-saga yield take
+            yield take(channel);
+
+            yield put(disconnectSessionAction.success(connector));
+        }
+    } catch (err) {
+        return yield put(disconnectSessionAction.failure(err));
+    } finally {
+        yield put(disconnectSessionAction.fulfill());
+    }
+}
+
+function* watchWalletConnectDisconnect(): Generator {
+    yield takeEvery(confirmRequestSession.FULFILL, listenWalletConnectDisconnect);
+}
+
+function* walletConnectDisconnectSession(): Generator {
+    try {
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        yield call(disconnectSession, connector);
+        yield put(disconnectSessionAction.success(connector));
+    } catch (err) {
+        yield put(disconnectSessionAction.failure(err));
+    } finally {
+        yield put(disconnectSessionAction.fulfill());
+    }
+}
+
+function* watchWalletConnectDisconnectSession(): Generator {
+    yield takeEvery(disconnectSessionAction.TRIGGER, walletConnectDisconnectSession);
+}
+
+function* walletConnectApprovesSessionRequest({ payload }: PayloadAction<{
     address: HexString,
     chainId: number,
-}>) {
+}>): Generator {
     try {
-        return payload.connector.approveSession({
+        yield put(confirmRequestSession.request());
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        yield call(approvesSessionRequest, {
+            connector,
+            address: payload.address,
             chainId: payload.chainId,
-            accounts: [payload.address],
         });
+
+        yield put(confirmRequestSession.success(connector));
     } catch (err) {
-        return err;
+        yield put(confirmRequestSession.failure(err));
+    } finally {
+        yield put(confirmRequestSession.fulfill());
     }
 }
 
 function* watchWalletConnectApproveSessionRequest(): Generator {
-    yield takeEvery(CONFIRM_REQUEST_SESSION_WITH_DAPP, approvesSessionRequest);
+    yield takeEvery(confirmRequestSession.TRIGGER, walletConnectApprovesSessionRequest);
 }
 
-function denySessionRequest({ payload }: PayloadAction<{ connector: IConnector }>) {
+function* walletConnectRejectSessionRequest(): Generator {
     try {
-        return payload.connector.rejectSession({ message: 'USER_DENIED_REQUEST' });
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        yield call(rejectSessionRequest, connector);
+        yield put(rejectRequestSessionAction.success());
     } catch (err) {
-        return err;
+        yield put(rejectRequestSessionAction.failure(err));
+    } finally {
+        yield put(rejectRequestSessionAction.fulfill());
     }
 }
 
 function* watchWalletConnectDenySessionRequest(): Generator {
-    yield takeEvery(DENY_REQUEST_SESSION_WITH_DAPP, denySessionRequest);
-}
-
-function* watchWalletConnectInit(): Generator {
-    yield takeEvery(createPendingSession.TRIGGER, listenWalletConnectInit);
+    yield takeEvery(rejectRequestSessionAction.TRIGGER, walletConnectRejectSessionRequest);
 }
 
 export default function* logSaga(): Generator {
@@ -151,6 +221,8 @@ export default function* logSaga(): Generator {
         watchWalletConnectInit,
         watchWalletConnectApproveSessionRequest,
         watchWalletConnectDenySessionRequest,
+        watchWalletConnectDisconnect,
+        watchWalletConnectDisconnectSession,
     ];
 
     yield all(sagas.map((saga) => (

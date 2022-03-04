@@ -2,6 +2,7 @@ import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 
 import { WalletConnectSessions } from '../../popup/store/wallet/reducer';
+import { HexString } from '../accounts';
 import {
     getLocal,
     removeLocal,
@@ -85,4 +86,20 @@ export const getInternalWalletConnectSessionFromUri = async (
     }
 
     return null;
+};
+
+export const approvesSessionRequest = async ({ connector, address, chainId }: {
+    connector: IConnector,
+    address: HexString,
+    chainId: number,
+}): Promise<void> => connector.approveSession({
+    chainId,
+    accounts: [address],
+});
+
+export const rejectSessionRequest = async (connector: IConnector) =>
+    connector.rejectSession({ message: 'USER_DENIED_SESSION' });
+
+export const disconnectSession = async (connector: IConnector) => {
+    await connector.killSession();
 };

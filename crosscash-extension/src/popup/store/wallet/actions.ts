@@ -40,20 +40,13 @@ export const sendRequestSessionWithDapp = (
 });
 
 // confirm a pending request to connect with dapp
-export const CONFIRM_REQUEST_SESSION_WITH_DAPP = 'CONFIRM_REQUEST_SESSION_WITH_DAPP';
-export const confirmRequestSession = (payload: RequestSessionWithDapp) => ({
-    payload,
-    type: CONFIRM_REQUEST_SESSION_WITH_DAPP,
-});
+export const confirmRequestSession = createRoutine('CONFIRM_REQUEST_SESSION_WITH_DAPP');
 
 // deny a pending request to connect with dapp
-export const DENY_REQUEST_SESSION_WITH_DAPP = 'DENY_REQUEST_SESSION_WITH_DAPP';
-export const denyRequestSession = (payload: {
-    connector: WalletConnect,
-}) => ({
-    payload,
-    type: DENY_REQUEST_SESSION_WITH_DAPP,
-});
+export const rejectRequestSession = createRoutine('REJECT_REQUEST_SESSION_WITH_DAPP');
+
+// disconnect from walletconnect
+export const disconnectSession = createRoutine('DISCONNECT_SESSION');
 
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']
