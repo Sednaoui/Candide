@@ -1,5 +1,7 @@
 import WalletConnect from '@walletconnect/client';
+import { parseWalletConnectUri } from '@walletconnect/utils';
 
+import { WalletConnectSessions } from '../../popup/store/wallet/reducer';
 import {
     getLocal,
     removeLocal,
@@ -10,12 +12,6 @@ import {
 } from './types';
 
 const WALLETCONNECT = 'walletconnect';
-
-/**
- * Get all walletconnect sessions
- * @return {Object}
- */
-const getAllWalletConnectSessions = () => getLocal(WALLETCONNECT);
 
 export const getSessionDetails = (uri: string): IWalletConnectOptions => ({
     uri,
@@ -30,8 +26,7 @@ export const getSessionDetails = (uri: string): IWalletConnectOptions => ({
 export const initiateWalletConnect = async (uri: string): Promise<IConnector> => {
     const details = getSessionDetails(uri);
 
-    // TODO: this deletes all wallet connect sessions. Need to figure out how to
-    //       handle multiple wallet connect sessions
+    // this rm walletconnect localstorage sessions. doesn't rm intenral redux store sessions
     removeLocal(WALLETCONNECT);
 
     const walletConnector = new WalletConnect(details);
@@ -39,13 +34,55 @@ export const initiateWalletConnect = async (uri: string): Promise<IConnector> =>
     return walletConnector;
 };
 
+export const getLocalWalletConnectSession = async (uri: string): Promise<IConnector | null> => {
+    const localSession = await getValidWalletConnectSession();
+
+    const wcUri = parseWalletConnectUri(uri);
+
+    if (localSession) {
+        const alreadyConnected = (localSession.handshakeTopic === wcUri.handshakeTopic)
+            && (localSession.key === wcUri.key);
+
+        if (alreadyConnected) {
+            return new WalletConnect({ session: localSession });
+        }
+    }
+    return null;
+};
+
 /**
  * Get all valid connected walletconnect sessions
  * @return {Object}
  */
-export const getAllValidWalletConnectSessions = async () => {
+export const getValidWalletConnectSession = async () => {
     // TODO: only returns a single session. How can we get and store multiple sessions?
-    const allSessions = await getAllWalletConnectSessions();
+    const session = await getLocal(WALLETCONNECT);
 
-    return allSessions;
+    if (session) {
+        if (session.connected) {
+            return session;
+        }
+    } else {
+        return null;
+    }
+    return null;
+};
+
+export const getInternalWalletConnectSessionFromUri = async (
+    sessions: WalletConnectSessions, uri: string,
+): Promise<IConnector | null> => {
+    const wcUri = parseWalletConnectUri(uri);
+
+    // find out if we have a session with the same key
+    try {
+        const session = sessions[wcUri.key];
+
+        if (session) {
+            return new WalletConnect({ session });
+        }
+    } catch (err) {
+        return null;
+    }
+
+    return null;
 };

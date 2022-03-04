@@ -2,7 +2,10 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import WalletConnect from '@walletconnect/client';
 
 import { MAINNET } from '../../../lib/constants/networks';
-import { RequestSessionPayload } from '../../../lib/walletconnect/types';
+import {
+    RequestSessionPayload,
+    IConnector,
+} from '../../../lib/walletconnect/types';
 import { EthereumWallet } from '../../model/wallet';
 import {
     createWallet,
@@ -14,14 +17,10 @@ import {
     DENY_REQUEST_SESSION_WITH_DAPP,
 } from './actions';
 
-type WalletConnectSession = {
-    [peerId: string]: WalletConnect;
-}
-
 const initialState: WalletState = {
     sessions: null,
     pendingRequest: null,
-    pendingConnector: null,
+    connector: null,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -60,12 +59,12 @@ export const walletReducer = (
         case createPendingSession.SUCCESS:
             return {
                 ...state,
-                pendingConnector: action.payload,
+                connector: action.payload,
             };
         case createPendingSession.FAILURE:
             return {
                 ...state,
-                pendingConnector: null,
+                connector: null,
                 error: action.payload,
             };
         case createPendingSession.FULFILL:
@@ -82,27 +81,30 @@ export const walletReducer = (
             return {
                 ...state,
                 pendingRequest: null,
-                pendingConnector: null,
                 sessions: {
                     ...state.sessions,
-                    [action.payload.connector.peerId]: action.payload.connector,
+                    [action.payload.connector.key]: action.payload.connector.session,
                 },
             };
         case DENY_REQUEST_SESSION_WITH_DAPP:
             return {
                 ...state,
                 pendingRequest: null,
-                pendingConnector: null,
+                connector: null,
             };
         default:
             return state;
     }
 };
 
+export type WalletConnectSessions = {
+    [peerId: string]: IConnector['session'];
+}
+
 export interface WalletState {
-    sessions: WalletConnectSession | null;
+    sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
-    pendingConnector: WalletConnect | null;
+    connector: WalletConnect | null;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;
