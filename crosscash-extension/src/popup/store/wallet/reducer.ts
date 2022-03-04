@@ -83,12 +83,12 @@ export const walletReducer = (
         case confirmRequestSession.TRIGGER:
             return {
                 ...state,
-                pendingRequest: null,
+                loading: true,
             };
         case confirmRequestSession.REQUEST:
             return {
                 ...state,
-                loading: true,
+                pendingRequest: null,
             };
         case confirmRequestSession.SUCCESS:
             return {
@@ -165,7 +165,7 @@ export const walletReducer = (
 };
 
 export type WalletConnectSessions = {
-    [peerId: string]: IConnector['session'];
+    [key: string]: IConnector['session'];
 }
 
 export interface WalletState {
