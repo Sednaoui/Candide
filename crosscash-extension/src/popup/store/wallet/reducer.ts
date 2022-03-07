@@ -34,6 +34,7 @@ const initialState: WalletState = {
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
     error: null,
+    modalDisplay: null,
 };
 
 export const walletReducer = (
@@ -239,6 +240,13 @@ export type WalletConnectSessions = {
     [key: string]: IConnector['session'];
 }
 
+export interface ConfirmSessionInfo {
+    name: string;
+    url: string;
+    chainId: number | null;
+    icons: string[] | null;
+}
+
 export interface WalletState {
     sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
@@ -250,6 +258,7 @@ export interface WalletState {
     currentNetworkChainId: number;
     loading: boolean;
     error: Error | null;
+    modalDisplay: ConfirmSessionInfo | null;
 }
 
 export default walletReducer;

@@ -1,6 +1,7 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 import WalletConnect from '@walletconnect/client';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useProvider } from 'wagmi';
 
 import {
@@ -12,6 +13,10 @@ import {
     EthereumWallet,
 } from '../../model/wallet';
 import { useAppSelector } from '../../store';
+import {
+    createPendingSession, confirmRequestSession,
+    rejectRequestSession,
+} from '../../store/wallet/actions';
 import { confirmation } from './ConfirmModal';
 
 const ConnectWallet = (): React.ReactElement => {
@@ -19,11 +24,47 @@ const ConnectWallet = (): React.ReactElement => {
     const [walletConnector, setWalletConnector] = useState<WalletConnect>();
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
+    const wallet = useAppSelector((state) => state.wallet)
+    const dispatch = useDispatch();
     const provider = useProvider() as AlchemyProvider;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setConnectUrl(e.target.value);
+    };
+
+    const handleNewConnect = async () => {
+        const sessionDetails = {
+            uri: connectUrl,
+            clientMeta: {
+                description: 'A cross-chain wallet for piggies',
+                url: 'https://github.com/Sednaoui/crosscash/',
+                icons: ['https://freepngimg.com/thumb/pig/15-pig-png-image.png'],
+                name: 'piggycross',
+            },
+        };
+
+        console.log('dispatching .TRIGGER');
+        await dispatch(createPendingSession(sessionDetails));
+    };
+
+    const confirmSessh = async () => {
+        console.log('dispatching confirmSession.Trigger?');
+
+        const add = walletInstance!.address;
+        const chain = wallet.currentNetworkChainId; // works, think about where to store all this
+
+        const payloadObj = {
+            address: add,
+            chainId: chain,
+        };
+
+        dispatch(confirmRequestSession(payloadObj));
+    };
+
+    const denySessh = async () => {
+        console.log('dispatching denySession.Trigger?');
+        dispatch(rejectRequestSession());
     };
 
     const handleConnect = async () => {
@@ -152,7 +193,7 @@ const ConnectWallet = (): React.ReactElement => {
                 <Button
                     type="button"
                     className="btn-primary"
-                    onClick={handleConnect}>
+                    onClick={handleNewConnect}>
                     Connect
                 </Button>
             </Col>
@@ -162,6 +203,22 @@ const ConnectWallet = (): React.ReactElement => {
                     className="btn-secondary"
                     onClick={handleDisconnect}>
                     Disconnect
+                </Button>
+            </Col>
+            <Col>
+                <Button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={confirmSessh}>
+                    confirm
+                </Button>
+            </Col>
+            <Col>
+                <Button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={denySessh}>
+                    deny
                 </Button>
             </Col>
         </Row>
