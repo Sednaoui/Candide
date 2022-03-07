@@ -13,4 +13,5 @@ export type {
     RequestSessionPayload,
     IConnector,
     IWalletConnectOptions,
+    IJsonRpcRequest,
 };

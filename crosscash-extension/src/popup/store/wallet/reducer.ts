@@ -6,6 +6,7 @@ import { MAINNET } from '../../../lib/constants/networks';
 import {
     RequestSessionPayload,
     IConnector,
+    IJsonRpcRequest,
 } from '../../../lib/walletconnect/types';
 import { EthereumWallet } from '../../model/wallet';
 import {
@@ -17,6 +18,7 @@ import {
     confirmRequestSession,
     rejectRequestSession,
     disconnectSession,
+    callRequest,
 } from './actions';
 
 const initialState: WalletState = {
@@ -24,6 +26,7 @@ const initialState: WalletState = {
     pendingRequest: null,
     connector: null,
     currentSessionApproved: false,
+    callRequest: null,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -83,12 +86,12 @@ export const walletReducer = (
         case confirmRequestSession.TRIGGER:
             return {
                 ...state,
-                pendingRequest: null,
+                loading: true,
             };
         case confirmRequestSession.REQUEST:
             return {
                 ...state,
-                loading: true,
+                pendingRequest: null,
             };
         case confirmRequestSession.SUCCESS:
             return {
@@ -159,13 +162,33 @@ export const walletReducer = (
                 ...state,
                 loading: false,
             };
+        case callRequest.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case callRequest.SUCCESS:
+            return {
+                ...state,
+                callRequest: action.payload,
+            };
+        case callRequest.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case callRequest.FULFILL:
+            return {
+                ...state,
+                loading: false,
+            };
         default:
             return state;
     }
 };
 
 export type WalletConnectSessions = {
-    [peerId: string]: IConnector['session'];
+    [key: string]: IConnector['session'];
 }
 
 export interface WalletState {
@@ -173,6 +196,7 @@ export interface WalletState {
     pendingRequest: RequestSessionPayload | null;
     connector: WalletConnect | null;
     currentSessionApproved: boolean;
+    callRequest: IJsonRpcRequest | null;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;

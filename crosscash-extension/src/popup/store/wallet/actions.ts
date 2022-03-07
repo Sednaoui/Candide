@@ -3,7 +3,10 @@ import { createRoutine } from 'redux-saga-routines';
 
 import { HexString } from '../../../lib/accounts';
 import { Network } from '../../../lib/networks';
-import { RequestSessionPayload } from '../../../lib/walletconnect/types';
+import {
+    RequestSessionPayload,
+    IJsonRpcRequest,
+} from '../../../lib/walletconnect/types';
 import { EthereumWallet } from '../../model/wallet';
 
 type NetworkActionType = {
@@ -48,10 +51,13 @@ export const rejectRequestSession = createRoutine('REJECT_REQUEST_SESSION_WITH_D
 // disconnect from walletconnect
 export const disconnectSession = createRoutine('DISCONNECT_SESSION');
 
+export const callRequest = createRoutine('CALL_REQUEST');
+
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']
     & WalletConnect
     & RequestSessionPayload
     & RequestSessionWithDapp
+    & IJsonRpcRequest
     & Error;
 
