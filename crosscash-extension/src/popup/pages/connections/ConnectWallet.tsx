@@ -1,6 +1,6 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 import WalletConnect from '@walletconnect/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useProvider } from 'wagmi';
 
@@ -18,13 +18,15 @@ import {
     rejectRequestSession,
 } from '../../store/wallet/actions';
 import { confirmation } from './ConfirmModal';
+import SessionModal, { SessionInfo } from './SessionModal';
 
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
     const [walletConnector, setWalletConnector] = useState<WalletConnect>();
+    const [showSessionModal, setShowSessionModal] = useState<boolean>(false);
+    const [sessionInfo, setSessionInfo] = useState<SessionInfo>();
 
-    const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
-    const wallet = useAppSelector((state) => state.wallet)
+    const wallet = useAppSelector((state) => state.wallet);
     const dispatch = useDispatch();
     const provider = useProvider() as AlchemyProvider;
 
@@ -51,7 +53,7 @@ const ConnectWallet = (): React.ReactElement => {
     const confirmSessh = async () => {
         console.log('dispatching confirmSession.Trigger?');
 
-        const add = walletInstance!.address;
+        const add = wallet.walletInstance!.address;
         const chain = wallet.currentNetworkChainId; // works, think about where to store all this
 
         const payloadObj = {
@@ -100,7 +102,7 @@ const ConnectWallet = (): React.ReactElement => {
 
             connector.approveSession({
                 accounts: [
-                    walletInstance!.address,
+                    wallet.walletInstance!.address,
                 ],
                 chainId,
             });
@@ -132,17 +134,19 @@ const ConnectWallet = (): React.ReactElement => {
                     // const result = await provider.send(payload.method, payload.params);
                     const { value, to, data, gas } = payload.params[0];
 
-                    if (typeof walletInstance === 'string') {
+                    if (typeof wallet.walletInstance === 'string') {
                         console.log('wrong password bitch.');
-                    } else if (walletInstance && walletInstance.privateKey) {
-                        const wallet = await decryptWallet('ass', walletInstance) as EthereumWallet;
+                    } else if (wallet.walletInstance && wallet.walletInstance.privateKey) {
+                        const wallettt = await decryptWallet(
+                            'ass',
+                            wallet.walletInstance) as EthereumWallet;
 
                         const txResult = await sendTx(provider,
                                                       data,
                                                       value,
                                                       to,
                                                       gas,
-                                                      wallet.privateKey);
+                                                      wallettt.privateKey);
 
                         console.log('txResult? ', txResult);
 
@@ -175,53 +179,82 @@ const ConnectWallet = (): React.ReactElement => {
     };
 
     const handleDisconnect = async () => {
-        if (walletConnector) {
-            walletConnector.killSession();
-        }
+        dispatch(disconnectSession());
     };
 
+    useEffect(() => {
+        if (wallet.pendingRequest?.params) {
+            let chain;
+
+            if (wallet.pendingRequest.params[0].peerMeta.chainId) {
+                chain = wallet.pendingRequest.params[0].peerMeta.chainId;
+            } else {
+                chain = wallet.currentNetworkChainId;
+            }
+
+            const address = wallet.walletInstance?.address;
+
+            const seshInfo = {
+                name: wallet.pendingRequest.params[0].peerMeta.name,
+                url: wallet.pendingRequest.params[0].peerMeta.url,
+                icons: wallet.pendingRequest.params[0].peerMeta.icons,
+                chainId: chain,
+                address,
+            };
+
+            setSessionInfo(seshInfo);
+            setShowSessionModal(true);
+        }
+    }, [wallet.pendingRequest?.params]);
+
     return (
-        <Row>
-            <Col>
-                <input
-                    name="connectUrl"
-                    type="text"
-                    placeholder="enter walletconnect url (copy QR-code)"
-                    onChange={handleChange} />
-            </Col>
-            <Col>
-                <Button
-                    type="button"
-                    className="btn-primary"
-                    onClick={handleNewConnect}>
-                    Connect
-                </Button>
-            </Col>
-            <Col>
-                <Button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={handleDisconnect}>
-                    Disconnect
-                </Button>
-            </Col>
-            <Col>
-                <Button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={confirmSessh}>
-                    confirm
-                </Button>
-            </Col>
-            <Col>
-                <Button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={denySessh}>
-                    deny
-                </Button>
-            </Col>
-        </Row>
+        <>
+            <Row>
+                <Col>
+                    <input
+                        name="connectUrl"
+                        type="text"
+                        placeholder="enter walletconnect url (copy QR-code)"
+                        onChange={handleChange} />
+                </Col>
+                <Col>
+                    <Button
+                        type="button"
+                        className="btn-primary"
+                        onClick={handleNewConnect}>
+                        Connect
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={handleDisconnect}>
+                        Disconnect
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={confirmSessh}>
+                        confirm
+                    </Button>
+                </Col>
+                <Col>
+                    <Button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={denySessh}>
+                        deny
+                    </Button>
+                </Col>
+            </Row>
+            <SessionModal
+                sessionInfo={sessionInfo}
+                show={showSessionModal}
+                setShow={setShowSessionModal} />
+        </>
     );
 };
 
