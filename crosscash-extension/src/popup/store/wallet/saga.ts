@@ -67,8 +67,7 @@ const sessionRequest = async (
         }
     });
     return () => {
-        // unsubscribe from connector once saga is cancelled
-        connector.killSession();
+        // keep connector alive
     };
 });
 
