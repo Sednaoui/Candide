@@ -99,13 +99,15 @@ export const signEthereumRequests = async ({
         default:
             break;
     }
-    if (result) {
+    if (typeof result === 'string') {
         approveCallRequest({ connector, id, result });
     } else {
         let message = 'JSON RPC method not supported';
 
         if (errorMsg) {
             message = errorMsg;
+        } else if (result instanceof Error) {
+            message = result.message;
         }
         rejectCallRequest({ connector, id, message });
         throw new Error(message);
