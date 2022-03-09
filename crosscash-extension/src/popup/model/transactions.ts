@@ -79,6 +79,7 @@ export const signEthereumRequests = async ({
 }): Promise<void> => {
     let transaction;
     let dataToSign;
+    let address;
     let result;
     let errorMsg;
 
@@ -105,13 +106,17 @@ export const signEthereumRequests = async ({
             });
             break;
         case 'personal_sign':
-            [dataToSign] = transactionRequest.params;
-            result = await signPersonalMessage({
-                message: dataToSign,
-                privateKey,
-            });
+        case 'eth_sign':
+            [dataToSign, address] = transactionRequest.params;
+            if (fromAddress.toLowerCase() === address.toLowerCase()) {
+                result = await signPersonalMessage({
+                    message: dataToSign,
+                    privateKey,
+                });
+            } else {
+                errorMsg = 'Address requested does not match active account';
+            }
             break;
-
         default:
             break;
     }
