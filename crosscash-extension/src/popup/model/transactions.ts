@@ -13,7 +13,10 @@ import ERC20ABI from '../../lib/abi/erc20.json';
 import { HexString } from '../../lib/accounts';
 import { getAssetTransfers } from '../../lib/alchemy';
 import { AnyAssetTransfer } from '../../lib/assets';
-import { sendTransaction } from '../../lib/ethers';
+import {
+    sendTransaction,
+    signTransaction,
+} from '../../lib/ethers';
 import { fromFixedPoint } from '../../lib/helpers';
 import {
     approveCallRequest,
@@ -74,7 +77,6 @@ export const signEthereumRequests = async ({
     privateKey: string,
 }): Promise<void> => {
     let transaction;
-    let addressRequested;
     let result;
     let errorMsg;
 
@@ -84,18 +86,23 @@ export const signEthereumRequests = async ({
         case 'eth_sendTransaction':
             [transaction] = transactionRequest.params;
 
-            addressRequested = transaction.from as HexString;
-            if (fromAddress.toLowerCase() === addressRequested.toLowerCase()) {
-                result = await sendTransaction({
-                    provider,
-                    fromAddress,
-                    transaction,
-                    privateKey,
-                });
-            } else {
-                errorMsg = 'Address requested does not match active account';
-            }
+            result = await sendTransaction({
+                provider,
+                fromAddress,
+                transaction,
+                privateKey,
+            });
             break;
+        case 'eth_signTransaction':
+            [transaction] = transactionRequest.params;
+            result = await signTransaction({
+                provider,
+                fromAddress,
+                transaction,
+                privateKey,
+            });
+            break;
+
         default:
             break;
     }
