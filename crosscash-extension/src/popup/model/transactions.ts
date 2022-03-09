@@ -15,6 +15,7 @@ import { getAssetTransfers } from '../../lib/alchemy';
 import { AnyAssetTransfer } from '../../lib/assets';
 import {
     sendTransaction,
+    signPersonalMessage,
     signTransaction,
 } from '../../lib/ethers';
 import { fromFixedPoint } from '../../lib/helpers';
@@ -77,6 +78,7 @@ export const signEthereumRequests = async ({
     privateKey: string,
 }): Promise<void> => {
     let transaction;
+    let dataToSign;
     let result;
     let errorMsg;
 
@@ -99,6 +101,13 @@ export const signEthereumRequests = async ({
                 provider,
                 fromAddress,
                 transaction,
+                privateKey,
+            });
+            break;
+        case 'personal_sign':
+            [dataToSign] = transactionRequest.params;
+            result = await signPersonalMessage({
+                message: dataToSign,
                 privateKey,
             });
             break;

@@ -2,7 +2,11 @@ import {
     BaseProvider,
     TransactionRequest,
 } from '@ethersproject/providers';
-import { Wallet } from 'ethers';
+import {
+    Wallet,
+    utils,
+    Bytes,
+} from 'ethers';
 import { cloneDeep } from 'lodash';
 
 import { HexString } from '../accounts';
@@ -111,6 +115,26 @@ export const signTransaction = async ({
 
         const result = await walletSigner.signTransaction(
             transactionValidated as TransactionRequest,
+        );
+
+        return result;
+    } catch (error: any) {
+        return new Error(error);
+    }
+};
+
+export const signPersonalMessage = async ({
+    message,
+    privateKey,
+}: {
+    message: HexString | Bytes,
+    privateKey: string,
+}) => {
+    try {
+        const walletSigner = new Wallet(privateKey);
+
+        const result = await walletSigner.signMessage(
+            utils.isHexString(message) ? utils.arrayify(message) : message,
         );
 
         return result;
