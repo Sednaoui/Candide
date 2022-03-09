@@ -84,5 +84,37 @@ export const sendTransaction = async ({
         return new Error(error);
     }
 };
+
+export const signTransaction = async ({
+    provider,
+    fromAddress,
+    transaction,
+    privateKey,
+}: {
+    provider: BaseProvider,
+    fromAddress: HexString,
+    transaction: TransactionRequest | ITxData,
+    privateKey: string,
+}) => {
+    try {
+        const transactionValidated = validateTransaction({
+            provider,
+            fromAddress,
+            transaction,
+        });
+
+        // check if transaction is validated
+        if (transactionValidated instanceof Error) {
+            return new Error(transactionValidated as any);
+        }
+        const walletSigner = new Wallet(privateKey, provider);
+
+        const result = await walletSigner.signTransaction(
+            transactionValidated as TransactionRequest,
+        );
+
+        return result;
+    } catch (error: any) {
+        return new Error(error);
     }
 };
