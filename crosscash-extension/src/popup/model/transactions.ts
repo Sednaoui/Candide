@@ -41,7 +41,7 @@ export const sendETH = async (
     sendTokenAmout: string,
     toAddress: string,
     privateKey: string,
-): Promise<TransactionResponse | string> => {
+): Promise<TransactionResponse | Error> => {
     // TODO: create internal provider on windows.crosscash
     const walletSigner = new Wallet(privateKey, provider);
 
@@ -59,8 +59,8 @@ export const sendETH = async (
 
         response = walletSigner.sendTransaction(tx);
         return await response;
-    } catch (error) {
-        return JSON.stringify(error);
+    } catch (error: any) {
+        return new Error(error);
     }
 };
 
@@ -182,7 +182,7 @@ export const sendERC20 = async (
     toAddress: string,
     privateKey: string,
     contractAddress: string,
-): Promise<TransactionResponse | string> => {
+): Promise<TransactionResponse | Error> => {
     const walletSigner = new Wallet(privateKey, provider);
     const amountFormated = utils.parseUnits(sendTokenAmout, 18);
 
@@ -194,8 +194,8 @@ export const sendERC20 = async (
         );
 
         return tokenContract.transfer(toAddress, amountFormated);
-    } catch (error) {
-        return JSON.stringify(error);
+    } catch (error: any) {
+        return new Error(error);
     }
 };
 
@@ -214,7 +214,7 @@ export const transferTokens = async (
     toAddress: string,
     privateKey: string,
     contractAddress?: string,
-): Promise<TransactionResponse | string> => {
+): Promise<TransactionResponse | Error> => {
     if (contractAddress) {
         return sendERC20(provider, sendTokenAmout, toAddress, privateKey, contractAddress);
     } else {

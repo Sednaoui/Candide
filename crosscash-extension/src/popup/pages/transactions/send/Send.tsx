@@ -119,12 +119,13 @@ const Send = (): React.ReactElement => {
                                     contractAddressOfTokenSelected,
                                 );
 
-                                // if transaction failed, tx will return error
-                                if (typeof (tx) === 'string') {
-                                    setTxTransaction(tx);
-                                } else {
-                                    setTxTransaction(tx.hash);
+                                // if transaction failed, tx will return an error
+                                if (tx instanceof Error) {
+                                    setTxTransaction(tx.message);
+                                    return;
                                 }
+
+                                setTxTransaction(tx.hash);
                             }
                         } else {
                             setTxTransaction('no wallet Instance');
