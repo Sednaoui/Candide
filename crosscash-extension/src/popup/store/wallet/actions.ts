@@ -51,7 +51,12 @@ export const rejectRequestSession = createRoutine('REJECT_REQUEST_SESSION_WITH_D
 // disconnect from walletconnect
 export const disconnectSession = createRoutine('DISCONNECT_SESSION');
 
+// listen for callRequest
 export const callRequest = createRoutine('CALL_REQUEST');
+
+// approve or reject call requests
+export const approveCallRequest = createRoutine('APPROVE_CALL_REQUEST');
+export const rejectCallRequest = createRoutine('REJECT_CALL_REQUEST');
 
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']

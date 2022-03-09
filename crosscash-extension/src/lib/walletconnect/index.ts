@@ -103,3 +103,22 @@ export const rejectSessionRequest = async (connector: IConnector) =>
 export const disconnectSession = async (connector: IConnector) => {
     await connector.killSession();
 };
+
+export const approveCallRequest = async ({ connector, id, result }: {
+    connector: IConnector,
+    id: number,
+    result: HexString,
+}) => connector.approveRequest({ id, result });
+
+export const rejectCallRequest = async ({ connector, id, message }: {
+    connector: IConnector,
+    id: number,
+    message: string,
+}) => {
+    connector.rejectRequest({
+        id,
+        error: {
+            message,
+        },
+    });
+};

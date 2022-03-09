@@ -13,7 +13,16 @@ import ERC20ABI from '../../lib/abi/erc20.json';
 import { HexString } from '../../lib/accounts';
 import { getAssetTransfers } from '../../lib/alchemy';
 import { AnyAssetTransfer } from '../../lib/assets';
+import { sendTransaction } from '../../lib/ethers';
 import { fromFixedPoint } from '../../lib/helpers';
+import {
+    approveCallRequest,
+    rejectCallRequest,
+} from '../../lib/walletconnect';
+import {
+    RequestTransactionPayload,
+    IConnector,
+} from '../../lib/walletconnect/types';
 
 /**
  * Tranfer ETH from one account to another.
@@ -51,6 +60,57 @@ export const sendETH = async (
     }
 };
 
+export const signEthereumRequests = async ({
+    connector,
+    provider,
+    transactionRequest,
+    privateKey,
+    fromAddress,
+}: {
+    connector: IConnector,
+    provider: BaseProvider,
+    transactionRequest: RequestTransactionPayload,
+    fromAddress: HexString,
+    privateKey: string,
+}): Promise<void> => {
+    let transaction;
+    let addressRequested;
+    let result;
+    let errorMsg;
+
+    const { id } = transactionRequest;
+
+    switch (transactionRequest.method) {
+        case 'eth_sendTransaction':
+            [transaction] = transactionRequest.params;
+
+            addressRequested = transaction.from as HexString;
+            if (fromAddress.toLowerCase() === addressRequested.toLowerCase()) {
+                result = await sendTransaction({
+                    provider,
+                    fromAddress,
+                    transaction,
+                    privateKey,
+                });
+            } else {
+                errorMsg = 'Address requested does not match active account';
+            }
+            break;
+        default:
+            break;
+    }
+    if (result) {
+        approveCallRequest({ connector, id, result });
+    } else {
+        let message = 'JSON RPC method not supported';
+
+        if (errorMsg) {
+            message = errorMsg;
+        }
+        rejectCallRequest({ connector, id, message });
+        throw new Error(message);
+    }
+};
 export const sendTx = async (
     provider: BaseProvider,
     data: string,

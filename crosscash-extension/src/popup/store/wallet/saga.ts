@@ -1,3 +1,4 @@
+import { BaseProvider } from '@ethersproject/providers';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
     eventChannel,
@@ -22,11 +23,13 @@ import {
     getLocalWalletConnectSession,
     initiateWalletConnect,
     disconnectSession,
+    rejectCallRequest,
 } from '../../../lib/walletconnect';
 import {
     RequestSessionPayload,
     IConnector,
 } from '../../../lib/walletconnect/types';
+import { signEthereumRequests } from '../../model/transactions';
 import { createEncryptedWallet } from '../../model/wallet';
 import {
     createWallet,
@@ -36,6 +39,8 @@ import {
     rejectRequestSession as rejectRequestSessionAction,
     disconnectSession as disconnectSessionAction,
     callRequest as callRequestAction,
+    approveCallRequest as approveCallRequestAction,
+    rejectCallRequest as rejectCallRequestAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -252,6 +257,66 @@ function* watchWalletConnectCallRequest(): Generator {
     yield takeEvery(confirmRequestSession.FULFILL, listenWalletConnectCallRequest);
 }
 
+function* walletConnectApproveCallRequest({ payload }: PayloadAction<{
+    provider: BaseProvider,
+    fromAddress: HexString,
+    privateKey: string,
+}>): Generator {
+    const { provider, fromAddress, privateKey } = payload;
+    const wallet: any = yield select((state) => state.wallet);
+
+    const { connector } = wallet;
+    const transactionRequest = wallet.callRequest;
+
+    try {
+        yield call(signEthereumRequests, {
+            connector,
+            transactionRequest,
+            provider,
+            fromAddress,
+            privateKey,
+        });
+        yield put(approveCallRequestAction.success());
+    } catch (err) {
+        yield put(approveCallRequestAction.failure(err));
+        yield put(rejectCallRequestAction.trigger({
+            connector,
+            id: transactionRequest.id,
+            message: err,
+        }));
+    } finally {
+        yield put(approveCallRequestAction.fulfill());
+    }
+}
+
+function* watchWalletConnectApproveCallRequest(): Generator {
+    yield takeEvery(approveCallRequestAction.TRIGGER, walletConnectApproveCallRequest);
+}
+
+function* walletConnectRejectCallRequest({ payload }: PayloadAction<{
+    message?: string,
+}>): Generator {
+    const error = payload.message || '';
+
+    const wallet: any = yield select((state) => state.wallet);
+
+    const { id } = wallet.callRequest;
+    const { connector } = wallet;
+
+    try {
+        yield call(rejectCallRequest, { connector, id, message: error });
+        yield put(rejectCallRequestAction.success());
+    } catch (err) {
+        yield put(rejectCallRequestAction.failure(err));
+    } finally {
+        yield put(rejectCallRequestAction.fulfill());
+    }
+}
+
+function* watchWalletConnectRejectCallRequest(): Generator {
+    yield takeEvery(rejectCallRequestAction.TRIGGER, walletConnectRejectCallRequest);
+}
+
 export default function* logSaga(): Generator {
     const sagas = [
         watchCreateWallet,
@@ -261,6 +326,8 @@ export default function* logSaga(): Generator {
         watchWalletConnectDisconnect,
         watchWalletConnectDisconnectSession,
         watchWalletConnectCallRequest,
+        watchWalletConnectApproveCallRequest,
+        watchWalletConnectRejectCallRequest,
     ];
 
     yield all(sagas.map((saga) => (

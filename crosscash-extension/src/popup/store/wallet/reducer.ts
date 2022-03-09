@@ -19,6 +19,8 @@ import {
     rejectRequestSession,
     disconnectSession,
     callRequest,
+    approveCallRequest,
+    rejectCallRequest,
 } from './actions';
 
 const initialState: WalletState = {
@@ -27,6 +29,7 @@ const initialState: WalletState = {
     connector: null,
     currentSessionApproved: false,
     callRequest: null,
+    callRequestApproved: false,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
@@ -162,6 +165,7 @@ export const walletReducer = (
                 ...state,
                 loading: false,
             };
+        // call request: listen to incoming transactions
         case callRequest.TRIGGER:
             return {
                 ...state,
@@ -182,6 +186,50 @@ export const walletReducer = (
                 ...state,
                 loading: false,
             };
+        // approve call request
+        case approveCallRequest.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case approveCallRequest.SUCCESS:
+            return {
+                ...state,
+                callRequestApproved: true,
+            };
+        case approveCallRequest.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case approveCallRequest.FULFILL:
+            return {
+                ...state,
+                callRequest: null,
+                loading: false,
+            };
+        // reject call request
+        case rejectCallRequest.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case rejectCallRequest.SUCCESS:
+            return {
+                ...state,
+                callRequestApproved: false,
+            };
+        case rejectCallRequest.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case rejectCallRequest.FULFILL:
+            return {
+                ...state,
+                callRequest: null,
+                loading: false,
+            };
         default:
             return state;
     }
@@ -197,6 +245,7 @@ export interface WalletState {
     connector: WalletConnect | null;
     currentSessionApproved: boolean;
     callRequest: IJsonRpcRequest | null;
+    callRequestApproved: boolean;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;

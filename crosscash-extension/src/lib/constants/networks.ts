@@ -36,10 +36,18 @@ export const POLYGON: EVMNetwork = {
     family: 'EVM',
 };
 
+export const KOVAN: EVMNetwork = {
+    name: 'Kovan',
+    baseAsset: ETH,
+    chainID: 42,
+    family: 'EVM',
+};
+
 export const evmNetworks = [
     ARBITRUM,
     MAINNET,
     OPTIMISM,
     POLYGON,
+    KOVAN,
 ];
 
