@@ -105,9 +105,12 @@ const Send = (): React.ReactElement => {
                             const wallet = await decryptWallet(password, walletInstance);
 
                             // if wrong password, wallet will return error
-                            if (typeof wallet === 'string') {
-                                setTxTransaction(wallet);
-                            } else if (walletAddress && wallet.privateKey) {
+                            if (wallet instanceof Error) {
+                                setTxTransaction(wallet.message);
+                                return;
+                            }
+
+                            if (walletAddress) {
                                 const tx = await transferTokens(
                                     provider,
                                     tokenAmount,
