@@ -105,8 +105,18 @@ export const signEthereumRequests = async ({
                 privateKey,
             });
             break;
-        case 'personal_sign':
         case 'eth_sign':
+            [address, dataToSign] = transactionRequest.params;
+            if (fromAddress.toLowerCase() === address.toLowerCase()) {
+                result = await signPersonalMessage({
+                    message: dataToSign,
+                    privateKey,
+                });
+            } else {
+                errorMsg = 'Address requested does not match active account';
+            }
+            break;
+        case 'personal_sign':
             [dataToSign, address] = transactionRequest.params;
             if (fromAddress.toLowerCase() === address.toLowerCase()) {
                 result = await signPersonalMessage({
