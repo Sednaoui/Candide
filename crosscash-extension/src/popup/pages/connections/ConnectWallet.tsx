@@ -16,8 +16,7 @@ import {
 } from '../../model/wallet';
 import { useAppSelector } from '../../store';
 import {
-    createPendingSession, confirmRequestSession,
-    rejectRequestSession,
+    createPendingSession,
     disconnectSession,
 } from '../../store/wallet/actions';
 import { confirmation } from './ConfirmModal';
@@ -51,25 +50,6 @@ const ConnectWallet = (): React.ReactElement => {
 
         console.log('dispatching .TRIGGER');
         await dispatch(createPendingSession(sessionDetails));
-    };
-
-    const confirmSessh = async () => {
-        console.log('dispatching confirmSession.Trigger?');
-
-        const add = wallet.walletInstance!.address;
-        const chain = wallet.currentNetworkChainId; // works, think about where to store all this
-
-        const payloadObj = {
-            address: add,
-            chainId: chain,
-        };
-
-        dispatch(confirmRequestSession(payloadObj));
-    };
-
-    const denySessh = async () => {
-        console.log('dispatching denySession.Trigger?');
-        dispatch(rejectRequestSession());
     };
 
     const handleConnect = async () => {
@@ -235,22 +215,6 @@ const ConnectWallet = (): React.ReactElement => {
                         className="btn-secondary"
                         onClick={handleDisconnect}>
                         Disconnect
-                    </Button>
-                </Col>
-                <Col>
-                    <Button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={confirmSessh}>
-                        confirm
-                    </Button>
-                </Col>
-                <Col>
-                    <Button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={denySessh}>
-                        deny
                     </Button>
                 </Col>
             </Row>
