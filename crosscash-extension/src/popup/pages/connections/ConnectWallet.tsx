@@ -1,6 +1,8 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 import WalletConnect from '@walletconnect/client';
-import React, { useEffect, useState } from 'react';
+import React, {
+    useEffect, useState,
+} from 'react';
 import { useDispatch } from 'react-redux';
 import { useProvider } from 'wagmi';
 
@@ -16,6 +18,7 @@ import { useAppSelector } from '../../store';
 import {
     createPendingSession, confirmRequestSession,
     rejectRequestSession,
+    disconnectSession,
 } from '../../store/wallet/actions';
 import { confirmation } from './ConfirmModal';
 import SessionModal, { SessionInfo } from './SessionModal';
@@ -139,7 +142,8 @@ const ConnectWallet = (): React.ReactElement => {
                     } else if (wallet.walletInstance && wallet.walletInstance.privateKey) {
                         const wallettt = await decryptWallet(
                             'ass',
-                            wallet.walletInstance) as EthereumWallet;
+                            wallet.walletInstance,
+                        ) as EthereumWallet;
 
                         const txResult = await sendTx(provider,
                                                       data,
@@ -252,6 +256,7 @@ const ConnectWallet = (): React.ReactElement => {
             </Row>
             <SessionModal
                 sessionInfo={sessionInfo}
+                setSessionInfo={setSessionInfo}
                 show={showSessionModal}
                 setShow={setShowSessionModal} />
         </>

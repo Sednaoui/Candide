@@ -1,8 +1,9 @@
 import React from 'react';
+import { Stack } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
 import {
-    Button, Modal,
+    Button, Modal, Image, Row,
 } from '../../components';
 import {
     confirmRequestSession,
@@ -19,11 +20,12 @@ type SessionInfo = {
 
 type ModalProps = {
     sessionInfo: SessionInfo | undefined; // typing is not always positive.
+    setSessionInfo: React.Dispatch<React.SetStateAction<SessionInfo | undefined>>
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const SessionModal = ({ sessionInfo, show, setShow }: ModalProps) => {
+const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps) => {
     const dispatch = useDispatch();
 
     const confirm = () => {
@@ -36,35 +38,63 @@ const SessionModal = ({ sessionInfo, show, setShow }: ModalProps) => {
         };
 
         dispatch(confirmRequestSession(payload));
+        setSessionInfo(undefined);
         setShow(false);
     };
 
     const reject = () => {
         dispatch(rejectRequestSession());
+        setSessionInfo(undefined);
         setShow(false);
     };
 
     console.log('brazil');
     return (
         <>
-            <Modal show={show} onHide={() => setShow(false)}>
+            <Modal show={show} fullscreen onHide={() => setShow(false)}>
                 <Modal.Header>
                     <Modal.Title>
-                        Approve incoming connection?
+                        approve incoming connection
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {sessionInfo?.name}
-                    {sessionInfo?.url}
-                    {sessionInfo?.chainId}
+                    <Stack gap={3}>
+                        <Row>
+                            {sessionInfo?.icons
+                            && <Image src={sessionInfo.icons[0]} height="150" />}
+                        </Row>
+                        <Row>
+                            name:
+                            {' '}
+                            {sessionInfo?.name}
+                        </Row>
+                        <Row>
+                            from:
+                            {' '}
+                            {sessionInfo?.url}
+                        </Row>
+                        <Row>
+                            address:
+                            {' '}
+                            {sessionInfo?.address}
+                        </Row>
+                        <Row>
+                            on chain:
+                            {' '}
+                            {sessionInfo?.chainId}
+                        </Row>
+
+                    </Stack>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button type="button" onClick={reject}>
-                        reject
-                    </Button>
-                    <Button type="button" onClick={confirm}>
-                        accept
-                    </Button>
+                    <Stack direction="horizontal">
+                        <Button type="button" onClick={reject} variant="warning">
+                            reject
+                        </Button>
+                        <Button type="button" onClick={confirm}>
+                            accept
+                        </Button>
+                    </Stack>
                 </Modal.Footer>
             </Modal>
         </>
