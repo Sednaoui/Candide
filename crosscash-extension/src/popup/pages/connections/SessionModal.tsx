@@ -101,5 +101,5 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
     );
 };
 
-export { SessionInfo };
+export type { SessionInfo };
 export default SessionModal;

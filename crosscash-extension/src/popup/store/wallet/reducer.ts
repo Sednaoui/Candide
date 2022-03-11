@@ -124,13 +124,13 @@ export const walletReducer = (
         case rejectRequestSession.REQUEST:
             return {
                 ...state,
-                pendingRequest: null,
             };
         case rejectRequestSession.SUCCESS:
             return {
                 ...state,
                 connector: null,
                 currentSessionApproved: false,
+                pendingRequest: null,
             };
         case rejectRequestSession.FAILURE:
             return {
