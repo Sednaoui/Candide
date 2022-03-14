@@ -103,3 +103,43 @@ export const approveAllowance = async ({
     }
 };
 
+/**
+ * Bridge tokens over hop contracts, assume approval is ok
+ */
+export const bridgeTokens = async ({
+    provider,
+    fromChainId,
+    toChainId,
+    privateKey,
+    asset,
+    amount,
+    recipient,
+}: {
+    provider: BaseProvider,
+    privateKey: string,
+    fromChainId: number,
+    toChainId: number,
+    asset: FungibleAsset,
+    amount: string,
+    recipient: HexString,
+}) => {
+    try {
+        const signer = new Wallet(privateKey, provider);
+        const hop = new Hop('mainnet', signer);
+
+        const fromNetwork = getEthereumNetwork(fromChainId).name.toLowerCase();
+        const toNetwork = getEthereumNetwork(toChainId).name.toLowerCase();
+
+        const bridge = hop.bridge(asset.symbol.toUpperCase());
+        const amountBN = utils.parseUnits(amount, asset.decimals);
+
+        return await bridge.send(
+            amountBN,
+            fromNetwork,
+            toNetwork,
+            { recipient },
+        );
+    } catch (error: any) {
+        return new Error(error);
+    }
+};
