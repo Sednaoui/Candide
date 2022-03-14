@@ -19,8 +19,8 @@ type SessionInfo = {
 };
 
 type ModalProps = {
-    sessionInfo: SessionInfo | undefined; // typing is not always positive.
-    setSessionInfo: React.Dispatch<React.SetStateAction<SessionInfo | undefined>>
+    sessionInfo: SessionInfo | null; // typing is not always positive.
+    setSessionInfo: React.Dispatch<React.SetStateAction<SessionInfo | null>>
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -38,13 +38,13 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
         };
 
         dispatch(confirmRequestSession(payload));
-        setSessionInfo(undefined);
+        setSessionInfo(null);
         setShow(false);
     };
 
     const reject = () => {
         dispatch(rejectRequestSession());
-        setSessionInfo(undefined);
+        setSessionInfo(null);
         setShow(false);
     };
 

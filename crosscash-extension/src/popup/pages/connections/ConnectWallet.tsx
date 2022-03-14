@@ -15,9 +15,8 @@ import SessionModal, { SessionInfo } from './SessionModal';
 
 const ConnectWallet = (): React.ReactElement => {
     const [connectUrl, setConnectUrl] = useState<string>();
-    // const [walletConnector, setWalletConnector] = useState<WalletConnect>();
     const [showSessionModal, setShowSessionModal] = useState<boolean>(false);
-    const [sessionInfo, setSessionInfo] = useState<SessionInfo>();
+    const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
 
     const pendingRequest = useAppSelector((state) => state.wallet.pendingRequest);
     const address = useAppSelector((state) => state.wallet.walletInstance?.address);
