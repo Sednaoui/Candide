@@ -236,7 +236,7 @@ const callRequest = async (connector: IConnector) => eventChannel((emitter) => {
 });
 
 function* listenWalletConnectCallRequest(): Generator {
-    yield put(callRequestAction.request());
+    yield put(callRequestAction.trigger());
     const connector: any = yield select((state) => state.wallet.connector);
     const channel = yield call(callRequest, connector);
 
