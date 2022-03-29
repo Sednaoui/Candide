@@ -10,6 +10,7 @@ import {
     constants,
     Wallet,
     utils,
+    UnsignedTransaction,
 } from 'ethers';
 
 import { HexString } from '../accounts';
@@ -139,6 +140,63 @@ export const bridgeTokens = async ({
             toNetwork,
             { recipient },
         );
+    } catch (error: any) {
+        return new Error(error);
+    }
+};
+
+
+/**
+ * Populate a bridge transaction to send tokens over hop contracts
+ */
+export const populateBridgeTx = async ({
+    sourceChainId,
+    destinationChainId,
+    recipient,
+    asset,
+    value,
+}: {
+    sourceChainId: number,
+    destinationChainId: number,
+    recipient: HexString,
+    asset: FungibleAsset,
+    value: string,
+}): Promise<UnsignedTransaction | Error> => {
+    const hop = new Hop('mainnet');
+
+    const sourceNetwork = getEthereumNetwork(sourceChainId).name.toLowerCase();
+    const destinationNetwork = getEthereumNetwork(destinationChainId).name.toLowerCase();
+
+    try {
+        const bridge = hop.bridge(asset.symbol.toUpperCase());
+
+        const populateSendTx = await bridge.populateSendTx(
+            value,
+            sourceNetwork,
+            destinationNetwork,
+            { recipient },
+        );
+
+        const gasPrice = await bridge.getSendEstimatedGasCost(
+            value,
+            sourceNetwork,
+            destinationNetwork,
+            { recipient },
+        );
+
+        const gas = await bridge.estimateSendGasLimit(
+            value,
+            sourceNetwork, destinationNetwork,
+            { recipient },
+        );
+
+        const tx = {
+            ...populateSendTx,
+            gasPrice,
+            gas,
+        };
+
+        return tx;
     } catch (error: any) {
         return new Error(error);
     }
