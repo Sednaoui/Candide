@@ -159,6 +159,40 @@ export const bridgeTokens = async ({
     }
 };
 
+/**
+ * Populate a transaction with to approve a token allowance
+ */
+export const populateApproveTx = async ({
+    chainId,
+    amount,
+    asset,
+}: {
+    chainId: number,
+    amount?: string,
+    asset: FungibleAsset,
+}): Promise<UnsignedTransaction | Error> => {
+    const hop = new Hop('mainnet');
+    const network = getEthereumNetwork(chainId);
+
+    try {
+        const bridge = hop.bridge(asset.symbol.toUpperCase());
+
+        const networkName = network.name.toLowerCase();
+
+        const spender = await bridge.getSendApprovalAddress(
+            networkName,
+            false,
+        );
+
+        const token = bridge.getCanonicalToken(networkName);
+
+        const tx = token.populateApproveTx(spender, amount || constants.MaxUint256);
+
+        return tx;
+    } catch (error: any) {
+        return new Error(error);
+    }
+};
 
 /**
  * Populate a bridge transaction to send tokens over hop contracts
