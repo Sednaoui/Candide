@@ -13,12 +13,14 @@ import ERC20ABI from '../../lib/abi/erc20.json';
 import { HexString } from '../../lib/accounts';
 import { getAssetTransfers } from '../../lib/alchemy';
 import { AnyAssetTransfer } from '../../lib/assets';
+import { ETH } from '../../lib/constants/currencies';
 import {
     sendTransaction,
     signPersonalMessage,
     signTransaction,
 } from '../../lib/ethers';
 import { fromFixedPoint } from '../../lib/helpers';
+import { checkApprovalAllowance } from '../../lib/hop';
 import {
     approveCallRequest,
     rejectCallRequest,
@@ -339,4 +341,37 @@ export const getTransactionDetails = async (
         blockNumber: Number(tx.blockNumber),
         date,
     };
+};
+
+/**
+ * depending on case method in call request, we need to call different methods
+ * @param payload chainId and transactionRequest
+ * @returns boolean if signing transaction on certain networks &null if signing does not require gas
+ */
+export const checkApprovalAllowenceFromTransactionRequest = async ({
+    chainId,
+    transactionRequest,
+}: {
+    chainId: number;
+    transactionRequest: RequestTransactionPayload;
+}): Promise<boolean | null | Error> => {
+    let from;
+    let value;
+
+    switch (transactionRequest.method) {
+        case 'eth_sendTransaction':
+        case 'eth_signTransaction':
+            // TODO: Need to handle other assets. But how to know which asset is being transfered?
+
+            [from, value] = transactionRequest.params;
+
+            return checkApprovalAllowance({
+                chainId,
+                asset: ETH, // WARNING: only handeling ETH for now
+                amount: value,
+                accountAddress: from,
+            });
+        default:
+            return null;
+    }
 };
