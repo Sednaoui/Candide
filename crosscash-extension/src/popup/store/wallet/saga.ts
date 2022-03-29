@@ -16,6 +16,8 @@ import {
 } from 'redux-saga/effects';
 
 import { HexString } from '../../../lib/accounts';
+import { ETH } from '../../../lib/constants/currencies';
+import { populateBridgeTx } from '../../../lib/hop';
 import {
     approvesSessionRequest,
     rejectSessionRequest,
@@ -29,7 +31,10 @@ import {
     RequestSessionPayload,
     IConnector,
 } from '../../../lib/walletconnect/types';
-import { signEthereumRequests } from '../../model/transactions';
+import {
+    checkApprovalAllowenceFromTransactionRequest,
+    signEthereumRequests,
+} from '../../model/transactions';
 import { createEncryptedWallet } from '../../model/wallet';
 import {
     createWallet,
@@ -240,15 +245,68 @@ function* listenWalletConnectCallRequest(): Generator {
     const connector: any = yield select((state) => state.wallet.connector);
     const channel = yield call(callRequest, connector);
 
+    const walletChainId: any = yield select((state) => state.wallet.currentNetworkChainId);
+    const address: any = yield select((state) => state.wallet.walletInstance.address);
+
     while (true) {
         try {
             // @ts-expect-error:TODO: type redux-saga yield take
-            const request = yield take(channel);
+            const request: any = yield take(channel);
 
-            yield put(callRequestAction.success(request));
-            yield put(callRequestAction.fulfill());
+            // checks if the request is the same as the current network of the wallet
+            if (connector.chainId === walletChainId) {
+                // display the request to the user if same network
+                yield put(callRequestAction.success(request));
+            } else {
+                // display that the request is from a different chainId
+
+                const needsApproved = yield call(checkApprovalAllowenceFromTransactionRequest, {
+                    chainId: walletChainId,
+                    transactionRequest: request,
+                });
+
+                // null returned if not transaction that requires gas is needed
+                if (needsApproved === null) {
+                    // display payload directly to sign transaction
+                    yield put(callRequestAction.success(request));
+                } else if (needsApproved === true) {
+                    // TODO: display to user that they need more allowence for hop contract bridge
+
+                    // const amount = request.params[0].value;
+
+                    // populates approval request tx
+                    // const approvalRequest = yield call(populateApproveTx, {
+                    //     chainId: walletChainId,
+                    //     amount,
+                    //     asset,
+                    // });
+
+                    // yield put(callRequestAction.success(approvalRequest));
+                } else if (needsApproved === false) {
+                    // send the user the briding transaction to approve on hop contracts
+
+                    const tx = yield call(populateBridgeTx, {
+                        sourceChainId: walletChainId,
+                        destinationChainId: connector.chainId,
+                        recipient: address,
+                        asset: ETH, // WARNING: only briding ETH at the moment
+                        value: request.params[0].value,
+                    });
+
+                    const bridgeRequest = {
+                        id: 1,
+                        jsonrpc: '2.0',
+                        method: 'eth_sendTransaction',
+                        params: tx,
+                    };
+
+                    yield put(callRequestAction.success(bridgeRequest));
+                }
+            }
         } catch (err) {
             yield put(callRequestAction.failure(err));
+        } finally {
+            yield put(callRequestAction.fulfill());
         }
     }
 }
