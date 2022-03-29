@@ -15,31 +15,45 @@ import {
 
 import { HexString } from '../accounts';
 import { FungibleAsset } from '../assets';
+import {
+    ETH,
+    MATIC,
+} from '../constants/currencies';
+import {
+    MAINNET,
+    POLYGON,
+} from '../constants/networks';
 import { getEthereumNetwork } from '../helpers';
 
 /**
  * checks for approval allowence to send tokens over hop contracts
  */
 export const checkApprovalAllowance = async ({
-    provider,
     chainId,
-    privateKey,
     asset,
     amount,
+    accountAddress,
 }: {
-    provider: BaseProvider,
-    privateKey: string,
     chainId: number,
     asset: FungibleAsset,
-    amount: string,
+    amount: number,
+    accountAddress: HexString,
 }): Promise<boolean | Error> => {
-    const signer = new Wallet(privateKey, provider);
-    const hop = new Hop('mainnet', signer);
+    const hop = new Hop('mainnet');
 
     const network = getEthereumNetwork(chainId);
 
     // TODO: check if asset exsists on hop on both networks
-    // TODO: No neet to approve ETH on mainnet, nor MATIC on polygon
+
+    // If asset is ETH or Matic, approval is not required
+    if (asset.symbol === ETH.symbol && chainId === MAINNET.chainID) {
+        return true;
+    }
+
+    if (asset.symbol === MATIC.symbol && chainId !== POLYGON.chainID) {
+        return true;
+    }
+
     // will return error if tried to check for approval
 
     try {
@@ -47,13 +61,13 @@ export const checkApprovalAllowance = async ({
 
         const networkName = network.name.toLowerCase();
 
-        const approvalAddress = await bridge.getSendApprovalAddress(
+        const spender = await bridge.getSendApprovalAddress(
             networkName,
             false,
         );
         const token = bridge.getCanonicalToken(networkName);
 
-        const allowance = await token.allowance(approvalAddress);
+        const allowance = await token.allowance(spender, accountAddress);
 
         return allowance.gte(amount);
     } catch (error: any) {
