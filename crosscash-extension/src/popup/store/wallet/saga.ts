@@ -301,6 +301,12 @@ function* listenWalletConnectCallRequest(): Generator {
                     };
 
                     yield put(callRequestAction.success(bridgeRequest));
+
+                    // watch for approval confirmation
+                    yield take(approveCallRequestAction.FULFILL);
+
+                    // send the user the original transaction on the daap once hoped
+                    yield put(callRequestAction.success(request));
                 }
             }
         } catch (err) {
