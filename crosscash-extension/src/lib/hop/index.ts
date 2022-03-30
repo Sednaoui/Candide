@@ -11,6 +11,7 @@ import {
     Wallet,
     utils,
     UnsignedTransaction,
+    BigNumberish,
 } from 'ethers';
 
 import { HexString } from '../accounts';
@@ -208,7 +209,7 @@ export const populateBridgeTx = async ({
     destinationChainId: number,
     recipient: HexString,
     asset: FungibleAsset,
-    value: string,
+    value: BigNumberish,
 }): Promise<UnsignedTransaction | Error> => {
     const hop = new Hop('mainnet');
 
