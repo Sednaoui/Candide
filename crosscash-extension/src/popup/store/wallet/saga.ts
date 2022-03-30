@@ -294,10 +294,10 @@ function* listenWalletConnectCallRequest(): Generator {
                     });
 
                     const bridgeRequest = {
-                        id: 1,
+                        id: 1, // TODO: how to set the right ID? does it matter?
                         jsonrpc: '2.0',
                         method: 'eth_sendTransaction',
-                        params: tx,
+                        params: [tx],
                     };
 
                     yield put(callRequestAction.success(bridgeRequest));
