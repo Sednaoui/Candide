@@ -25,9 +25,10 @@ const Button = (props: {
     disabled?: boolean | undefined,
     className?: string | undefined,
     variant?: Variant | undefined,
+    size?: 'sm' | 'lg',
     children?: React.ReactNode,
 }): React.ReactElement => {
-    const { type, onClick, disabled, className, variant, children } = props;
+    const { type, onClick, disabled, className, variant, size, children } = props;
 
     return (
         <ReactBoostrapButton
@@ -35,6 +36,7 @@ const Button = (props: {
             variant={variant}
             className={className}
             onClick={onClick}
+            size={size}
             disabled={disabled}>
             {children}
         </ReactBoostrapButton>
