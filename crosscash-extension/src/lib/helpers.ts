@@ -14,6 +14,15 @@ export const trancatAddress = (address: string): string => (
 );
 
 /**
+ * removes https:// and www and trailing slash from a url string
+ * @param url url string
+ * @returns url string without https:// and www and trailing slash
+ */
+export const removeHttp = (url: string): string => (
+    url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/\/$/, '')
+);
+
+/**
  * Determine which Ethereum network should be used based user input
  */
 export function getEthereumNetwork(chainId: number): EVMNetwork {
