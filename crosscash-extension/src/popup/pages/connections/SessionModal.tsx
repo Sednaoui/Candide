@@ -2,8 +2,16 @@ import React from 'react';
 import { Stack } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
+import { evmNetworks } from '../../../lib/constants/networks';
 import {
-    Button, Modal, Image, Row,
+    trancatAddress,
+    removeHttp,
+} from '../../../lib/helpers';
+import {
+    Button,
+    Modal,
+    Image,
+    Form,
 } from '../../components';
 import {
     confirmRequestSession,
@@ -28,15 +36,15 @@ type ModalProps = {
 const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps) => {
     const dispatch = useDispatch();
 
+    const address = sessionInfo?.address;
+    const chainId = sessionInfo?.chainId;
+
+    const payload = {
+        address,
+        chainId,
+    };
+
     const confirm = () => {
-        const address = sessionInfo?.address;
-        const chainId = sessionInfo?.chainId;
-
-        const payload = {
-            address,
-            chainId,
-        };
-
         dispatch(confirmRequestSession(payload));
         setSessionInfo(null);
         setShow(false);
@@ -48,56 +56,87 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
         setShow(false);
     };
 
-    console.log('brazil');
+    const networkList = evmNetworks.map((n) => (
+        <option
+            key={n.chainID}
+            value={n.chainID}>
+            {n.name}
+        </option>
+    ));
+
     return (
-        <>
+        sessionInfo && (
             <Modal show={show} fullscreen onHide={() => setShow(false)}>
-                <Modal.Header>
+                <Modal.Header className="text-center">
                     <Modal.Title>
-                        approve incoming connection
+                        {sessionInfo.icons
+                            && (
+                                <Image
+                                    src={sessionInfo.icons[0]}
+                                    width={160}
+                                    height={160} />
+                            )}
+                        {removeHttp(sessionInfo.url)}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Stack gap={3}>
-                        <Row>
-                            {sessionInfo?.icons
-                            && <Image src={sessionInfo.icons[0]} height="150" />}
-                        </Row>
-                        <Row>
-                            name:
-                            {' '}
-                            {sessionInfo?.name}
-                        </Row>
-                        <Row>
-                            from:
-                            {' '}
-                            {sessionInfo?.url}
-                        </Row>
-                        <Row>
-                            address:
-                            {' '}
-                            {sessionInfo?.address}
-                        </Row>
-                        <Row>
-                            on chain:
-                            {' '}
-                            {sessionInfo?.chainId}
-                        </Row>
-
+                        <Form.Group>
+                            <Form.Label>
+                                <b>
+                                    {sessionInfo.name}
+                                </b>
+                                {' '}
+                                wants to connect to your wallet
+                            </Form.Label>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>
+                                Network
+                            </Form.Label>
+                            <Form.Select
+                                required
+                                onChange={(e) => setSessionInfo({
+                                    ...sessionInfo,
+                                    chainId: Number(e.target.value),
+                                })}
+                                defaultValue={Number(chainId)}>
+                                {networkList}
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>
+                                Wallet
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={trancatAddress(sessionInfo.address || '')}
+                                readOnly />
+                        </Form.Group>
                     </Stack>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Stack direction="horizontal">
-                        <Button type="button" onClick={reject} variant="warning">
-                            reject
+                <Modal.Footer className="text-center">
+                    <Stack
+                        direction="horizontal"
+                        className="text-center"
+                        gap={3}>
+                        <Button
+                            type="button"
+                            size="lg"
+                            onClick={reject}
+                            variant="warning">
+                            Cancel
                         </Button>
-                        <Button type="button" onClick={confirm}>
-                            accept
+                        <Button
+                            size="lg"
+                            type="button"
+                            onClick={confirm}>
+                            Connect
                         </Button>
                     </Stack>
                 </Modal.Footer>
             </Modal>
-        </>
+        )
     );
 };
 
