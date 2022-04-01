@@ -46,7 +46,6 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
 
     const confirm = () => {
         dispatch(confirmRequestSession(payload));
-        setSessionInfo(null);
         setShow(false);
     };
 
