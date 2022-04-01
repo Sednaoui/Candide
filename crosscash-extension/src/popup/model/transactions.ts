@@ -259,9 +259,6 @@ export const getTransactionHistory = async (
             };
         });
     } catch (error: any) {
-        if (error.code === 'SERVER_ERROR') {
-            return getTransactionHistory(provider, address);
-        }
         return [];
     }
 };
