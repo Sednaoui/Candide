@@ -3,8 +3,13 @@ import React, {
 } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { getEthereumNetwork } from '../../../lib/helpers';
 import {
-    Button, Row, Col,
+    Button,
+    Row,
+    Col,
+    Image,
+    Stack,
 } from '../../components';
 import { useAppSelector } from '../../store';
 import {
@@ -51,7 +56,6 @@ const ConnectWallet = (): React.ReactElement => {
 
     return (
         <>
-            { connected ? 'greendot' : 'reddot' }
             <Row>
                 <Col>
                     <input
@@ -76,6 +80,37 @@ const ConnectWallet = (): React.ReactElement => {
                         onClick={() => dispatch(disconnectSession())}>
                         Disconnect
                     </Button>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    {connected && sessionInfo && (
+                        <Stack
+                            gap={2}
+                            direction="horizontal">
+                            {sessionInfo.icons && (
+                                <Image
+                                    src={sessionInfo.icons[0]}
+                                    width={40}
+                                    height={40} />
+                            )}
+                            <p>
+                                Connected to
+                                {' '}
+                                <b>
+                                    {sessionInfo.name}
+                                </b>
+                                {' '}
+                                on
+                                {sessionInfo.chainId && (
+                                    <b>
+                                        {' '}
+                                        {getEthereumNetwork(sessionInfo.chainId).name}
+                                    </b>
+                                )}
+                            </p>
+                        </Stack>
+                    )}
                 </Col>
             </Row>
             <SessionModal
