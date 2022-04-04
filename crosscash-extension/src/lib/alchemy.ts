@@ -3,7 +3,10 @@ import {
     AlchemyProvider,
     AlchemyWebSocketProvider,
 } from '@ethersproject/providers';
-import { utils } from 'ethers';
+import {
+    providers,
+    utils,
+} from 'ethers';
 
 import { HexString } from './accounts';
 import {
@@ -12,6 +15,7 @@ import {
 } from './assets';
 import { ETH } from './constants/currencies';
 import { getEthereumNetwork } from './helpers';
+import { EVMNetwork } from './networks';
 
 /**
  * alchemy_getTokenMetadata return type
@@ -158,3 +162,11 @@ export async function getAssetTransfers(
         })
         .filter((t): t is AssetTransfer => t !== null);
 }
+
+export const initiateNewProvider = (
+    { chainID }: EVMNetwork,
+    token?: string,
+) => new providers.AlchemyProvider(
+    chainID,
+    token,
+);
