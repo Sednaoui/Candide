@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+    useEffect,
+    useState,
+} from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,9 +15,12 @@ import {
 import { useAppSelector } from '../../store';
 import { changeNetwork } from '../../store/wallet/actions';
 import ConnectWallet from '../connections/ConnectWallet';
+import Review from '../transactions/review/Review';
 import WalletNavBar from './WalletNavBar';
 
 const Wallet = (): React.ReactElement => {
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const callRequest = useAppSelector((state) => state.wallet.callRequest);
     const wallet = useAppSelector((state) => state.wallet.walletInstance);
 
     const address = wallet?.address || '';
@@ -40,6 +46,12 @@ const Wallet = (): React.ReactElement => {
             {n.name}
         </option>
     ));
+
+    useEffect(() => {
+        if (callRequest) {
+            setShowReviewModal(true);
+        }
+    }, [callRequest]);
 
     return (
         <div>
@@ -67,6 +79,11 @@ const Wallet = (): React.ReactElement => {
                         </Button>
                     </Stack>
                     <WalletNavBar />
+                    <Review
+                        show={showReviewModal}
+                        setShow={setShowReviewModal}
+                        callRequest={callRequest}
+                        chainId={currentNetworkChainId} />
                 </Stack>
                 <Stack gap={2}>
                     <ConnectWallet />
