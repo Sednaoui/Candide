@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { initiateNewProvider } from '../../../lib/alchemy';
 import { getEthereumNetwork } from '../../../lib/helpers';
 import {
     Button,
@@ -12,10 +13,10 @@ import {
     Stack,
 } from '../../components';
 import { useAppSelector } from '../../store';
-import { useWalletProvider } from '../../store/hooks';
 import {
     createPendingSession,
     disconnectSession,
+    initiateDappProvider,
 } from '../../store/wallet/actions';
 import SessionModal, { SessionInfo } from './SessionModal';
 
@@ -25,8 +26,9 @@ const ConnectWallet = (): React.ReactElement => {
     const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
 
     const pendingRequest = useAppSelector((state) => state.wallet.pendingRequest);
-    const provider = useWalletProvider();
+    const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
 
+    const address = walletInstance?.address;
     const chainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
     const connected = useAppSelector((state) => state.wallet.connector?.connected);
 
@@ -55,6 +57,19 @@ const ConnectWallet = (): React.ReactElement => {
             setShowSessionModal(true);
         }
     }, [pendingRequest]);
+
+    useEffect(() => {
+        if (sessionInfo) {
+            if (sessionInfo.chainId && sessionInfo.chainId !== chainId) {
+                const network = getEthereumNetwork(sessionInfo.chainId);
+
+                dispatch(initiateDappProvider(initiateNewProvider(
+                    network,
+                    process.env.REACT_APP_ALCHEMY_API_KEY,
+                )));
+            }
+        }
+    }, [sessionInfo, chainId]);
 
     return (
         <>
