@@ -1,3 +1,4 @@
+import { AlchemyProvider } from '@ethersproject/providers';
 import { PayloadAction } from '@reduxjs/toolkit';
 import WalletConnect from '@walletconnect/client';
 import { omit } from 'lodash';
@@ -21,6 +22,7 @@ import {
     callRequest,
     approveCallRequest,
     rejectCallRequest,
+    INITIATE_WALLET_PROVIDER,
 } from './actions';
 
 const initialState: WalletState = {
@@ -33,6 +35,7 @@ const initialState: WalletState = {
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
     loading: false,
+    walletProvider: null,
     error: null,
 };
 
@@ -230,6 +233,11 @@ export const walletReducer = (
                 callRequest: null,
                 loading: false,
             };
+        case INITIATE_WALLET_PROVIDER:
+            return {
+                ...state,
+                walletProvider: action.payload,
+            };
         default:
             return state;
     }
@@ -242,13 +250,14 @@ export type WalletConnectSessions = {
 export interface WalletState {
     sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
-    connector: WalletConnect | null;
+    connector: IConnector | null;
     currentSessionApproved: boolean;
     callRequest: IJsonRpcRequest | null;
     callRequestApproved: boolean;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
     loading: boolean;
+    walletProvider: AlchemyProvider | null;
     error: Error | null;
 }
 

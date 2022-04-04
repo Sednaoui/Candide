@@ -1,14 +1,16 @@
 import { providers } from 'ethers';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
     MemoryRouter as Router,
     Routes as ReactRoutes,
     Route,
 } from 'react-router-dom';
-import { Provider as Web3Provider } from 'wagmi';
 
 import { getEthereumNetwork } from '../../lib/helpers';
 import { EVMNetwork } from '../../lib/networks';
 import { useAppSelector } from '../store';
+import { initiateProvider } from '../store/wallet/actions';
 import { AuthProvider } from './auth/AuthProvider';
 import {
     Login,
@@ -30,26 +32,30 @@ export const Routes = () => {
 
     const ethNetwork = getEthereumNetwork(currentChainID);
 
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(initiateProvider(provider(ethNetwork)));
+    }, [provider, ethNetwork, dispatch, initiateProvider]);
+
     return (
-        <Web3Provider provider={provider(ethNetwork)}>
-            <Router>
-                <AuthProvider>
-                    <ReactRoutes>
-                        <Route path="/" element={<Welcome />} />
-                        <Route path="import_wallet" element={<ImportWallet />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/send/:assetSymbol" element={<Send />} />
-                        <Route
-                            path="/wallet"
-                            element={(
-                                <RequireAuth>
-                                    <Wallet />
-                                </RequireAuth>
-                            )} />
-                        <Route path="/wallet/:assetSymbol" element={<AssetView />} />
-                    </ReactRoutes>
-                </AuthProvider>
-            </Router>
-        </Web3Provider>
+        <Router>
+            <AuthProvider>
+                <ReactRoutes>
+                    <Route path="/" element={<Welcome />} />
+                    <Route path="import_wallet" element={<ImportWallet />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/send/:assetSymbol" element={<Send />} />
+                    <Route
+                        path="/wallet"
+                        element={(
+                            <RequireAuth>
+                                <Wallet />
+                            </RequireAuth>
+                        )} />
+                    <Route path="/wallet/:assetSymbol" element={<AssetView />} />
+                </ReactRoutes>
+            </AuthProvider>
+        </Router>
     );
 };

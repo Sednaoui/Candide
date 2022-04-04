@@ -1,15 +1,14 @@
-import { AlchemyProvider } from '@ethersproject/providers';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useProvider } from 'wagmi';
 
 import { ListGroup } from '../../../components';
 import { useAppSelector } from '../../../store';
+import { useWalletProvider } from '../../../store/hooks';
 import { getTransactions } from '../../../store/transactions/actions';
 import TransactionItem from './TransactionItem';
 
 const TransactionList = (): React.ReactElement => {
-    const provider = useProvider() as AlchemyProvider;
+    const provider = useWalletProvider();
     const dispatch = useDispatch();
 
     const address = useAppSelector((state) => state.wallet.walletInstance?.address);

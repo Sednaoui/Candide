@@ -12,6 +12,7 @@ import {
     Stack,
 } from '../../components';
 import { useAppSelector } from '../../store';
+import { useWalletProvider } from '../../store/hooks';
 import {
     createPendingSession,
     disconnectSession,
@@ -24,7 +25,8 @@ const ConnectWallet = (): React.ReactElement => {
     const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
 
     const pendingRequest = useAppSelector((state) => state.wallet.pendingRequest);
-    const address = useAppSelector((state) => state.wallet.walletInstance?.address);
+    const provider = useWalletProvider();
+
     const chainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
     const connected = useAppSelector((state) => state.wallet.connector?.connected);
 

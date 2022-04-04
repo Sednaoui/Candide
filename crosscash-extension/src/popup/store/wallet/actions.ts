@@ -1,3 +1,4 @@
+import { AlchemyProvider } from '@ethersproject/providers';
 import WalletConnect from '@walletconnect/client';
 import { createRoutine } from 'redux-saga-routines';
 
@@ -19,6 +20,11 @@ type RequestSessionWithDapp = {
     address: HexString,
     chainId: number,
 }
+
+type ProviderActionType = {
+    payload: AlchemyProvider;
+    type: typeof INITIATE_WALLET_PROVIDER;
+};
 
 export const createWallet = createRoutine('CREATE_WALLET');
 
@@ -58,11 +64,25 @@ export const callRequest = createRoutine('CALL_REQUEST');
 export const approveCallRequest = createRoutine('APPROVE_CALL_REQUEST');
 export const rejectCallRequest = createRoutine('REJECT_CALL_REQUEST');
 
+// wallet provider
+export const INITIATE_WALLET_PROVIDER = 'INITIATE_WALLET_PROVIDER';
+
+export const initiateWalletProvider = (provider: AlchemyProvider): ProviderActionType => ({
+    payload: provider,
+    type: INITIATE_WALLET_PROVIDER,
+});
+
+export const initiateProvider = (provider: AlchemyProvider): ProviderActionType => ({
+    payload: provider,
+    type: INITIATE_PROVIDER,
+});
+
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']
     & WalletConnect
     & RequestSessionPayload
     & RequestSessionWithDapp
     & IJsonRpcRequest
+    & AlchemyProvider
     & Error;
 
