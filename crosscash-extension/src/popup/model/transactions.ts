@@ -4,6 +4,10 @@ import {
     TransactionResponse,
 } from '@ethersproject/providers';
 import {
+    convertHexToNumber,
+    convertHexToUtf8,
+} from '@walletconnect/utils';
+import {
     Wallet,
     utils,
     Contract,
@@ -19,8 +23,12 @@ import {
     signPersonalMessage,
     signTransaction,
 } from '../../lib/ethers';
-import { fromFixedPoint } from '../../lib/helpers';
+import {
+    fromFixedPoint,
+    getMethodFromTransactionData,
+} from '../../lib/helpers';
 import { checkApprovalAllowance } from '../../lib/hop';
+import { getContractMetadata } from '../../lib/sourcify';
 import {
     approveCallRequest,
     rejectCallRequest,
@@ -28,6 +36,7 @@ import {
 import {
     RequestTransactionPayload,
     IConnector,
+    IJsonRpcRequest,
 } from '../../lib/walletconnect/types';
 
 /**
@@ -64,6 +73,115 @@ export const sendETH = async (
     } catch (error: any) {
         return new Error(error);
     }
+};
+
+export const reviewEthereumRequests = async ({
+    transactionRequest,
+    chainId,
+}: {
+    chainId: number,
+    transactionRequest: IJsonRpcRequest,
+}) => {
+    let params = [{ label: 'Method', value: transactionRequest.method }];
+
+    let address;
+    let dataToSign;
+    let dataToSignReable;
+    let contractData;
+
+    switch (transactionRequest.method) {
+        case 'eth_sendTransaction':
+        case 'eth_signTransaction': {
+            const { to, from, gas, gasPrice, value, data, gasLimit } = transactionRequest.params[0];
+
+            contractData = await getContractMetadata(chainId, to);
+
+            if (contractData instanceof Error || !contractData) {
+                contractData = '🚨 Contract NOT verified';
+            } else {
+                contractData = JSON.stringify(contractData);
+            }
+
+            const functionCalled = await getMethodFromTransactionData(data);
+
+            let gasLimitValue = '';
+
+            if (gas) {
+                gasLimitValue = gas;
+            } else if (gasLimit) {
+                gasLimitValue = gasLimit;
+            }
+
+            params = [
+                ...params,
+                {
+                    label: 'From',
+                    value: from,
+                },
+                {
+                    label: 'To',
+                    value: to,
+                },
+                {
+                    label: 'Gas Limit',
+                    value: convertHexToNumber(gasLimitValue),
+                },
+                {
+                    label: 'Gas Price',
+                    value: `${gasPrice ? convertHexToNumber(gasPrice) : ''} GWEI`,
+                },
+                {
+                    label: 'Value',
+                    value: value ? utils.formatUnits(value) : '',
+                },
+                {
+                    label: 'Function Called',
+                    value: functionCalled,
+                },
+                {
+                    label: 'Data',
+                    value: contractData,
+                },
+            ];
+            break;
+        }
+        case 'eth_sign':
+            [address, dataToSign] = transactionRequest.params;
+            params = [
+                ...params,
+                { label: 'Address', value: address },
+                { label: 'Message', value: dataToSign },
+            ];
+            break;
+        case 'personal_sign':
+            [dataToSign, address] = transactionRequest.params;
+
+            try {
+                dataToSignReable = convertHexToUtf8(dataToSign);
+            } catch (error) {
+                dataToSignReable = dataToSign;
+            }
+
+            params = [
+                ...params,
+                { label: 'Address', value: address },
+                {
+                    label: 'Message',
+                    value: dataToSignReable,
+                },
+            ];
+            break;
+        default:
+            params = [
+                ...params,
+                {
+                    label: 'Params',
+                    value: JSON.stringify(transactionRequest, null, '\t'),
+                },
+            ];
+            break;
+    }
+    return params;
 };
 
 export const signEthereumRequests = async ({
