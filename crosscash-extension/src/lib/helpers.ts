@@ -1,5 +1,6 @@
 import { utils } from 'ethers';
 
+import { HexString } from './accounts';
 import {
     MAINNET,
     evmNetworks,
@@ -87,4 +88,28 @@ export function fromFixedPoint(
  */
 export function gweiToWei(value: number | bigint): bigint {
     return BigInt(utils.parseUnits(value.toString(), 'gwei').toString());
+}
+
+/**
+ * Get transaction method from transaction data
+ * @param method
+ * @returns method text
+ */
+export async function getMethodFromTransactionData(method: HexString): Promise<string | Error> {
+    // uses https://github.com/ethereum-lists
+    // use https://raw.githubusercontent.com/ethereum-lists/4bytes/master/signatures/${}
+    try {
+        const signature = method.substring(2, 10);
+        const url = `https://raw.githubusercontent.com/ethereum-lists/4bytes/master/signatures/${signature}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            return 'Unknown Function';
+        }
+
+        return response.text();
+    } catch (error: any) {
+        return new Error(error);
+    }
 }
