@@ -1,4 +1,3 @@
-import { providers } from 'ethers';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -7,10 +6,10 @@ import {
     Route,
 } from 'react-router-dom';
 
+import { initiateNewProvider } from '../../lib/alchemy';
 import { getEthereumNetwork } from '../../lib/helpers';
-import { EVMNetwork } from '../../lib/networks';
 import { useAppSelector } from '../store';
-import { initiateProvider } from '../store/wallet/actions';
+import { initiateWalletProvider } from '../store/wallet/actions';
 import { AuthProvider } from './auth/AuthProvider';
 import {
     Login,
@@ -23,11 +22,6 @@ import AssetView from './wallet/assets/AssetView';
 import Wallet from './wallet/Wallet';
 
 export const Routes = () => {
-    const provider = ({ chainID }: EVMNetwork) => new providers.AlchemyProvider(
-        chainID,
-        process.env.REACT_APP_ALCHEMY_API_KEY,
-    );
-
     const currentChainID = useAppSelector((state) => state.wallet.currentNetworkChainId);
 
     const ethNetwork = getEthereumNetwork(currentChainID);
@@ -35,8 +29,11 @@ export const Routes = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(initiateProvider(provider(ethNetwork)));
-    }, [provider, ethNetwork, dispatch, initiateProvider]);
+        dispatch(initiateWalletProvider(initiateNewProvider(
+            ethNetwork,
+            process.env.REACT_APP_ALCHEMY_API_KEY,
+        )));
+    }, [initiateNewProvider, ethNetwork, dispatch, initiateWalletProvider]);
 
     return (
         <Router>
