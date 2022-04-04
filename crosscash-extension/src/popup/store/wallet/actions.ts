@@ -23,7 +23,7 @@ type RequestSessionWithDapp = {
 
 type ProviderActionType = {
     payload: AlchemyProvider;
-    type: typeof INITIATE_WALLET_PROVIDER;
+    type: typeof INITIATE_WALLET_PROVIDER | typeof INITIATE_DAPP_PROVIDER;
 };
 
 export const createWallet = createRoutine('CREATE_WALLET');
@@ -72,9 +72,11 @@ export const initiateWalletProvider = (provider: AlchemyProvider): ProviderActio
     type: INITIATE_WALLET_PROVIDER,
 });
 
-export const initiateProvider = (provider: AlchemyProvider): ProviderActionType => ({
+// dapp provider
+export const INITIATE_DAPP_PROVIDER = 'INITIATE_DAPP_PROVIDER';
+export const initiateDappProvider = (provider: AlchemyProvider): ProviderActionType => ({
     payload: provider,
-    type: INITIATE_PROVIDER,
+    type: INITIATE_DAPP_PROVIDER,
 });
 
 export type WalletPayloadAction = EthereumWallet

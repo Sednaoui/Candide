@@ -1,6 +1,5 @@
 import { AlchemyProvider } from '@ethersproject/providers';
 import { PayloadAction } from '@reduxjs/toolkit';
-import WalletConnect from '@walletconnect/client';
 import { omit } from 'lodash';
 
 import { MAINNET } from '../../../lib/constants/networks';
@@ -23,9 +22,11 @@ import {
     approveCallRequest,
     rejectCallRequest,
     INITIATE_WALLET_PROVIDER,
+    INITIATE_DAPP_PROVIDER,
 } from './actions';
 
 const initialState: WalletState = {
+    dappProvider: null,
     sessions: null,
     pendingRequest: null,
     connector: null,
@@ -238,6 +239,11 @@ export const walletReducer = (
                 ...state,
                 walletProvider: action.payload,
             };
+        case INITIATE_DAPP_PROVIDER:
+            return {
+                ...state,
+                dappProvider: action.payload,
+            };
         default:
             return state;
     }
@@ -248,6 +254,7 @@ export type WalletConnectSessions = {
 }
 
 export interface WalletState {
+    dappProvider: AlchemyProvider | null;
     sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
     connector: IConnector | null;
