@@ -1,6 +1,4 @@
-import { AlchemyProvider } from '@ethersproject/providers';
 import { useState } from 'react';
-import { useProvider } from 'wagmi';
 
 import { AnyAssetTransfer } from '../../../../lib/assets';
 import { trancatAddress } from '../../../../lib/helpers';
@@ -13,6 +11,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../store';
+import { useWalletProvider } from '../../../store/hooks';
 import { getTransactionDetails } from '../../../store/transactions/actions';
 import { TransactionDetails } from './TransactionDetails';
 
@@ -25,7 +24,7 @@ export const TransactionItem = ({ transactionItem }: TransactionItemProps): Reac
 
     const dispatch = useAppDispatch();
 
-    const provider = useProvider() as AlchemyProvider;
+    const provider = useWalletProvider();
 
     const [show, setShow] = useState(false);
 

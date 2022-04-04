@@ -1,8 +1,6 @@
-import { AlchemyProvider } from '@ethersproject/providers';
 import { utils } from 'ethers';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useProvider } from 'wagmi';
 
 import { ETH } from '../../../../lib/constants/currencies';
 import { getEthereumNetwork } from '../../../../lib/helpers';
@@ -23,11 +21,12 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../store';
+import { useWalletProvider } from '../../../store/hooks';
 import { getBlockPrices } from '../../../store/transactions/actions';
 import GasSettings from './GasSettings';
 
 const Send = (): React.ReactElement => {
-    const provider = useProvider() as AlchemyProvider;
+    const provider = useWalletProvider();
     const dispatch = useAppDispatch();
 
     const { assetSymbol } = useParams<'assetSymbol'>();
@@ -110,7 +109,7 @@ const Send = (): React.ReactElement => {
                                 return;
                             }
 
-                            if (walletAddress) {
+                            if (walletAddress && provider) {
                                 const tx = await transferTokens(
                                     provider,
                                     tokenAmount,

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useProvider } from 'wagmi';
 
 import { ListGroup } from '../../../components';
 import {
@@ -7,18 +6,19 @@ import {
     useAppSelector,
 } from '../../../store';
 import { getAssets } from '../../../store/assets/actions';
+import { useWalletProvider } from '../../../store/hooks';
 import AssetItem from './AssetItem';
 
 const AssetsList = (): React.ReactElement => {
     const dispatch = useAppDispatch();
-    const alchemyProvider = useProvider();
+    const provider = useWalletProvider();
     const address = useAppSelector((state) => state.wallet.walletInstance?.address);
 
     useEffect(() => {
-        if (alchemyProvider && address) {
-            dispatch(getAssets({ alchemyProvider, address }));
+        if (provider && address) {
+            dispatch(getAssets({ alchemyProvider: provider, address }));
         }
-    }, [alchemyProvider, address]);
+    }, [provider, address]);
 
     const assetsList = useAppSelector((state) => state.assets.assets);
 
