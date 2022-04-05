@@ -26,6 +26,11 @@ type ProviderActionType = {
     type: typeof INITIATE_WALLET_PROVIDER | typeof INITIATE_DAPP_PROVIDER;
 };
 
+type CallRequestActionType = {
+    callRequest: IJsonRpcRequest;
+    chainId: number;
+}
+
 export const createWallet = createRoutine('CREATE_WALLET');
 
 export const CHANGE_NETWORK = 'CHANGE_NETWORK';
@@ -84,7 +89,7 @@ export type WalletPayloadAction = EthereumWallet
     & WalletConnect
     & RequestSessionPayload
     & RequestSessionWithDapp
-    & IJsonRpcRequest
+    & CallRequestActionType
     & AlchemyProvider
     & Error;
 
