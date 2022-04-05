@@ -20,10 +20,7 @@ import {
     ETH,
     MATIC,
 } from '../constants/currencies';
-import {
-    MAINNET,
-    POLYGON,
-} from '../constants/networks';
+import { POLYGON } from '../constants/networks';
 import { getEthereumNetwork } from '../helpers';
 
 /**
@@ -47,11 +44,11 @@ export const checkApprovalAllowance = async ({
     // TODO: check if asset exsists on hop on both networks
 
     // If asset is ETH or Matic, approval is not required
-    if (asset.symbol === ETH.symbol && chainId === MAINNET.chainID) {
+    if (asset.symbol === ETH.symbol) {
         return true;
     }
 
-    if (asset.symbol === MATIC.symbol && chainId !== POLYGON.chainID) {
+    if (asset.symbol === MATIC.symbol && chainId === POLYGON.chainID) {
         return true;
     }
 
