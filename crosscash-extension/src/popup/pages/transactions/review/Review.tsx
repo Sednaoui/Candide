@@ -1,11 +1,9 @@
-import { AlchemyProvider } from '@ethersproject/providers';
 import { IJsonRpcRequest } from '@walletconnect/types';
 import React, {
     useEffect,
     useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { useProvider } from 'wagmi';
 
 import {
     Button,
@@ -20,6 +18,10 @@ import { reviewEthereumRequests } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
 import { useAppSelector } from '../../../store';
 import {
+    useDappProvider,
+    useWalletProvider,
+} from '../../../store/hooks';
+import {
     approveCallRequest, rejectCallRequest,
 } from '../../../store/wallet/actions';
 
@@ -32,9 +34,12 @@ type ModalProps = {
 
 const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
     const [transactionData, setTransactionData] = useState([{ label: '', value: '' }]);
+    const walletProvider = useWalletProvider();
+    const dappProvider = useDappProvider();
+    const [provider, setProvider] = useState(walletProvider);
+
     const [password, setPassword] = useState('');
 
-    const provider = useProvider() as AlchemyProvider;
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
     const walletAddress = walletInstance?.address;
     const walletEncryptedPrivateKey = walletInstance?.privateKey;
@@ -57,6 +62,19 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
             transactionReview();
         }
     }, [callRequest, chainId, reviewEthereumRequests, setTransactionData]);
+
+    const walletChainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
+    const callRequestChainId = useAppSelector((state) => state.wallet.callRequestChainId);
+
+    useEffect(() => {
+        if (callRequestChainId) {
+            if (callRequestChainId !== walletChainId) {
+                setProvider(dappProvider);
+            } else {
+                setProvider(walletProvider);
+            }
+        }
+    }, [callRequestChainId, walletChainId]);
 
     return (
         <>
