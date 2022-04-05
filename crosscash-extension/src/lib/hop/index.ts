@@ -226,23 +226,17 @@ export const populateBridgeTx = async ({
             { recipient },
         );
 
-        const gasPrice = await bridge.getSendEstimatedGasCost(
+        const gas = await bridge.estimateSendGasLimit(
             value,
             sourceNetwork,
             destinationNetwork,
             { recipient },
         );
 
-        const gas = await bridge.estimateSendGasLimit(
-            value,
-            sourceNetwork, destinationNetwork,
-            { recipient },
-        );
-
         const tx = {
             ...populateSendTx,
-            gasPrice,
-            gas,
+            value: populateSendTx.value._hex,
+            gasLimit: gas._hex,
         };
 
         return tx;
