@@ -88,6 +88,7 @@ export const reviewEthereumRequests = async ({
     let dataToSign;
     let dataToSignReable;
     let contractData;
+    let gasLimitValue;
 
     switch (transactionRequest.method) {
         case 'eth_sendTransaction':
@@ -104,12 +105,10 @@ export const reviewEthereumRequests = async ({
 
             const functionCalled = await getMethodFromTransactionData(data);
 
-            let gasLimitValue = '';
-
             if (gas) {
-                gasLimitValue = gas;
+                gasLimitValue = convertHexToNumber(gas);
             } else if (gasLimit) {
-                gasLimitValue = gasLimit;
+                gasLimitValue = convertHexToNumber(gasLimit);
             }
 
             params = [
@@ -124,7 +123,7 @@ export const reviewEthereumRequests = async ({
                 },
                 {
                     label: 'Gas Limit',
-                    value: convertHexToNumber(gasLimitValue),
+                    value: gasLimitValue || '',
                 },
                 {
                     label: 'Gas Price',
