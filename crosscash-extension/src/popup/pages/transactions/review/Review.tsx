@@ -110,6 +110,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                 Reject
                             </Button>
                             <Button
+                                disabled={!password}
                                 size="lg"
                                 type="button"
                                 onClick={async () => {
