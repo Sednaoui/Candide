@@ -74,7 +74,7 @@ export const sendTransaction = async ({
     privateKey: string,
 }) => {
     try {
-        const transactionValidated = validateTransaction({
+        const transactionValidated = await validateTransaction({
             provider,
             fromAddress,
             transaction,
