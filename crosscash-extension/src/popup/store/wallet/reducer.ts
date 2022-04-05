@@ -32,6 +32,7 @@ const initialState: WalletState = {
     connector: null,
     currentSessionApproved: false,
     callRequest: null,
+    callRequestChainId: null,
     callRequestApproved: false,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
@@ -178,7 +179,8 @@ export const walletReducer = (
         case callRequest.SUCCESS:
             return {
                 ...state,
-                callRequest: action.payload,
+                callRequest: action.payload.callRequest,
+                callRequestChainId: action.payload.chainId,
             };
         case callRequest.FAILURE:
             return {
@@ -260,6 +262,7 @@ export interface WalletState {
     connector: IConnector | null;
     currentSessionApproved: boolean;
     callRequest: IJsonRpcRequest | null;
+    callRequestChainId: number | null;
     callRequestApproved: boolean;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;

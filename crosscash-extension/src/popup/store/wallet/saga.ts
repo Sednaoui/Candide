@@ -256,20 +256,26 @@ function* listenWalletConnectCallRequest(): Generator {
             // checks if the request is the same as the current network of the wallet
             if (connector.chainId === walletChainId) {
                 // display the request to the user if same network
-                yield put(callRequestAction.success(request));
+                yield put(callRequestAction.success({
+                    callRequest: request,
+                    chainId: connector.chainId,
+                }));
             } else {
                 // display that the request is from a different chainId
 
-                const needsApproved = yield call(checkApprovalAllowenceFromTransactionRequest, {
+                const allowenceOk = yield call(checkApprovalAllowenceFromTransactionRequest, {
                     chainId: walletChainId,
                     transactionRequest: request,
                 });
 
                 // null returned if not transaction that requires gas is needed
-                if (needsApproved === null) {
+                if (allowenceOk === null) {
                     // display payload directly to sign transaction
-                    yield put(callRequestAction.success(request));
-                } else if (needsApproved === true) {
+                    yield put(callRequestAction.success({
+                        callRequest: request,
+                        chainId: connector.chainId,
+                    }));
+                } else if (allowenceOk === false) {
                     // TODO: display to user that they need more allowence for hop contract bridge
 
                     // const amount = request.params[0].value;
@@ -282,7 +288,7 @@ function* listenWalletConnectCallRequest(): Generator {
                     // });
 
                     // yield put(callRequestAction.success(approvalRequest));
-                } else if (needsApproved === false) {
+                } else if (allowenceOk === true) {
                     // send the user the briding transaction to approve on hop contracts
 
                     const tx = yield call(populateBridgeTx, {
@@ -293,24 +299,42 @@ function* listenWalletConnectCallRequest(): Generator {
                         value: request.params[0].value,
                     });
 
-                    const bridgeRequest = {
-                        id: 1, // TODO: how to set the right ID? does it matter?
-                        jsonrpc: '2.0',
-                        method: 'eth_sendTransaction',
-                        params: [tx],
-                    };
+                    if (tx instanceof Error) {
+                        yield put(callRequestAction.failure(tx));
+                        yield put(rejectCallRequestAction.trigger({
+                            connector,
+                            id: request.id,
+                            message: tx.message,
+                        }));
+                    } else {
+                        const bridgeRequest = {
+                            id: 1, // TODO: how to set the right ID? does it matter?
+                            jsonrpc: '2.0',
+                            method: 'eth_sendTransaction',
+                            params: [tx],
+                        };
 
-                    yield put(callRequestAction.success(bridgeRequest));
+                        yield put(callRequestAction.success({
+                            callRequest: bridgeRequest,
+                            chainId: walletChainId,
+                        }));
 
-                    // watch for approval confirmation
-                    yield take(approveCallRequestAction.FULFILL);
+                        // watch for approval confirmation
+                        yield take(approveCallRequestAction.FULFILL);
 
-                    // send the user the original transaction on the daap once hoped
-                    yield put(callRequestAction.success(request));
+                        yield put(callRequestAction.success({
+                            callRequest: request,
+                            chainId: connector.chainId,
+                        }));
+                    }
                 }
             }
         } catch (err) {
             yield put(callRequestAction.failure(err));
+            yield put(rejectCallRequestAction.trigger({
+                connector,
+                message: err,
+            }));
         } finally {
             yield put(callRequestAction.fulfill());
         }
@@ -359,12 +383,13 @@ function* watchWalletConnectApproveCallRequest(): Generator {
 
 function* walletConnectRejectCallRequest({ payload }: PayloadAction<{
     message?: string,
+    id?: number,
 }>): Generator {
     const error = payload.message || '';
 
     const wallet: any = yield select((state) => state.wallet);
 
-    const { id } = wallet.callRequest;
+    const id = payload.id || wallet.callRequest.id;
     const { connector } = wallet;
 
     try {
