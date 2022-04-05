@@ -44,7 +44,9 @@ const validateTransaction = async ({
 
         const nonce = await provider.getTransactionCount(fromAddress, 'latest');
 
-        if (nonce !== _transaction.nonce) {
+        if (!_transaction.nonce) {
+            _transaction.nonce = nonce;
+        } else if (nonce !== _transaction.nonce) {
             return new Error('Transaction request nonce doesn\'t match active account');
         }
 
