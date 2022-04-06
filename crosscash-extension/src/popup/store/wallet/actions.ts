@@ -31,6 +31,11 @@ type CallRequestActionType = {
     chainId: number;
 }
 
+type UpdateSessionType = {
+    chainId: number;
+    accounts: string[];
+}
+
 export const createWallet = createRoutine('CREATE_WALLET');
 
 export const CHANGE_NETWORK = 'CHANGE_NETWORK';
@@ -62,6 +67,9 @@ export const rejectRequestSession = createRoutine('REJECT_REQUEST_SESSION_WITH_D
 // disconnect from walletconnect
 export const disconnectSession = createRoutine('DISCONNECT_SESSION');
 
+// update session
+export const updateSession = createRoutine('UPDATE_SESSION');
+
 // listen for callRequest
 export const callRequest = createRoutine('CALL_REQUEST');
 
@@ -91,5 +99,6 @@ export type WalletPayloadAction = EthereumWallet
     & RequestSessionWithDapp
     & CallRequestActionType
     & AlchemyProvider
+    & UpdateSessionType
     & Error;
 

@@ -122,3 +122,13 @@ export const rejectCallRequest = async ({ connector, id, message }: {
         },
     });
 };
+
+export const updateSession = async ({ connector, chainId, accounts }: {
+    connector: IConnector,
+    chainId: number,
+    accounts: string[],
+    networkId?: number,
+    rpcUrl?: string,
+}) => {
+    connector.updateSession({ chainId, accounts });
+};

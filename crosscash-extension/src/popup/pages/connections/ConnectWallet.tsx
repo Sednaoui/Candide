@@ -4,6 +4,7 @@ import React, {
 import { useDispatch } from 'react-redux';
 
 import { initiateNewProvider } from '../../../lib/alchemy';
+import { evmNetworks } from '../../../lib/constants/networks';
 import { getEthereumNetwork } from '../../../lib/helpers';
 import {
     Button,
@@ -11,12 +12,14 @@ import {
     Col,
     Image,
     Stack,
+    Form,
 } from '../../components';
 import { useAppSelector } from '../../store';
 import {
     createPendingSession,
     disconnectSession,
     initiateDappProvider,
+    updateSession,
 } from '../../store/wallet/actions';
 import SessionModal, { SessionInfo } from './SessionModal';
 
@@ -71,6 +74,16 @@ const ConnectWallet = (): React.ReactElement => {
         }
     }, [sessionInfo, chainId]);
 
+    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
+
+    const networkList = evmNetworks.map((n) => (
+        <option
+            key={n.chainID}
+            value={n.chainID}>
+            {n.name}
+        </option>
+    ));
+
     return (
         <>
             <Row>
@@ -117,13 +130,27 @@ const ConnectWallet = (): React.ReactElement => {
                                 <b>
                                     {sessionInfo.name}
                                 </b>
-                                {' '}
-                                on
                                 {sessionInfo.chainId && (
-                                    <b>
-                                        {' '}
-                                        {getEthereumNetwork(sessionInfo.chainId).name}
-                                    </b>
+                                    <Form.Select
+                                        required
+                                        onChange={(e) => {
+                                            const id = Number(e.target.value);
+                                            const network = getEthereumNetwork(id);
+                                            const newProvider = initiateNewProvider(network);
+
+                                            dispatch(initiateDappProvider(newProvider));
+                                            const accounts = sessionInfo.address || address;
+
+                                            if (accounts) {
+                                                dispatch(updateSession({
+                                                    chainId: id,
+                                                    accounts: [accounts],
+                                                }));
+                                            }
+                                        }}
+                                        defaultValue={dappChainId}>
+                                        {networkList}
+                                    </Form.Select>
                                 )}
                             </p>
                         </Stack>
