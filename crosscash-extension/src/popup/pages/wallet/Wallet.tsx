@@ -1,7 +1,12 @@
 import React, {
     useEffect,
+    useRef,
     useState,
 } from 'react';
+import {
+    Overlay,
+    Tooltip,
+} from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,13 +32,18 @@ const Wallet = (): React.ReactElement => {
 
     const navigate = useNavigate();
 
+    const [show, setShow] = useState(false);
+    const target = useRef(null);
+
     const copy = async () => {
         if (wallet) {
             await navigator.clipboard.writeText(wallet.address);
+            // show tooltip for 1 seconds
+            setShow(true);
+            setTimeout(() => {
+                setShow(false);
+            }, 1000);
         }
-        // TODO: replace alert with overlay and tooltip
-        // eslint-disable-next-line no-alert
-        alert('Address copied to clipboard');
     };
 
     const dispatch = useDispatch();
@@ -66,9 +76,19 @@ const Wallet = (): React.ReactElement => {
                         {networkList}
                     </Form.Select>
                     <Stack direction="horizontal" gap={2}>
-                        <Button type="button" onClick={copy}>
+                        <Button
+                            type="button"
+                            ref={target}
+                            onClick={copy}>
                             {trancatAddress(address)}
                         </Button>
+                        <Overlay target={target.current} show={show} placement="right">
+                            {(props) => (
+                                <Tooltip id="overlay" {...props}>
+                                    Copied
+                                </Tooltip>
+                            )}
+                        </Overlay>
                         <Button
                             type="button"
                             className="btn-primary"
