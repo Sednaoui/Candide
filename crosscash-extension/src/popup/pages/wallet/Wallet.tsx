@@ -78,7 +78,7 @@ const Wallet = (): React.ReactElement => {
                     <Stack direction="horizontal" gap={2}>
                         <Button
                             type="button"
-                            ref={target}
+                            buttonRef={target}
                             onClick={copy}>
                             {trancatAddress(address)}
                         </Button>
