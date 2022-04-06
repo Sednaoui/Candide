@@ -8,8 +8,6 @@ import { evmNetworks } from '../../../lib/constants/networks';
 import { getEthereumNetwork } from '../../../lib/helpers';
 import {
     Button,
-    Row,
-    Col,
     Image,
     Stack,
     Form,
@@ -24,7 +22,7 @@ import {
 import SessionModal, { SessionInfo } from './SessionModal';
 
 const ConnectWallet = (): React.ReactElement => {
-    const [connectUrl, setConnectUrl] = useState<string>();
+    const [connectUrl, setConnectUrl] = useState('');
     const [showSessionModal, setShowSessionModal] = useState<boolean>(false);
     const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
 
@@ -36,11 +34,6 @@ const ConnectWallet = (): React.ReactElement => {
     const connected = useAppSelector((state) => state.wallet.connector?.connected);
 
     const dispatch = useDispatch();
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        setConnectUrl(e.target.value);
-    };
 
     useEffect(() => {
         if (pendingRequest?.params) {
@@ -86,77 +79,79 @@ const ConnectWallet = (): React.ReactElement => {
 
     return (
         <>
-            <Row>
-                <Col>
-                    <input
+            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                dispatch(createPendingSession({ uri: connectUrl }));
+                setConnectUrl('');
+            }}>
+                <Stack gap={3}>
+                    <Form.Control
                         name="connectUrl"
                         type="text"
-                        placeholder="enter walletconnect url (copy QR-code)"
-                        onChange={handleChange} />
-                </Col>
-                <Col>
-                    <Button
-                        type="button"
-                        className="btn-primary"
-                        disabled={!connectUrl}
-                        onClick={() => dispatch(createPendingSession({ uri: connectUrl }))}>
-                        Connect
-                    </Button>
-                </Col>
-                <Col>
-                    <Button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={() => dispatch(disconnectSession())}>
-                        Disconnect
-                    </Button>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {connected && sessionInfo && (
-                        <Stack
-                            gap={2}
-                            direction="horizontal">
-                            {sessionInfo.icons && (
-                                <Image
-                                    src={sessionInfo.icons[0]}
-                                    width={40}
-                                    height={40} />
-                            )}
-                            <p>
-                                Connected to
-                                {' '}
-                                <b>
-                                    {sessionInfo.name}
-                                </b>
-                                {sessionInfo.chainId && (
-                                    <Form.Select
-                                        required
-                                        onChange={(e) => {
-                                            const id = Number(e.target.value);
-                                            const network = getEthereumNetwork(id);
-                                            const newProvider = initiateNewProvider(network);
-
-                                            dispatch(initiateDappProvider(newProvider));
-                                            const accounts = sessionInfo.address || address;
-
-                                            if (accounts) {
-                                                dispatch(updateSession({
-                                                    chainId: id,
-                                                    accounts: [accounts],
-                                                }));
-                                            }
-                                        }}
-                                        defaultValue={dappChainId}>
-                                        {networkList}
-                                    </Form.Select>
-                                )}
-                            </p>
-                        </Stack>
+                        placeholder="Enter WalletConnect URL (copy QR-code)"
+                        value={connectUrl}
+                        onChange={(e) => setConnectUrl(e.target.value)} />
+                    <Stack direction="horizontal" gap={2}>
+                        <Button
+                            type="button"
+                            className="btn-secondary"
+                            disabled={!sessionInfo}
+                            onClick={() => {
+                                dispatch(disconnectSession());
+                                setSessionInfo(null);
+                            }}>
+                            Disconnect
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="btn-primary"
+                            disabled={!connectUrl}>
+                            Connect
+                        </Button>
+                    </Stack>
+                </Stack>
+            </Form>
+            {connected && sessionInfo && (
+                <Stack
+                    gap={2}
+                    direction="horizontal">
+                    {sessionInfo.icons && (
+                        <Image
+                            src={sessionInfo.icons[0]}
+                            width={40}
+                            height={40} />
                     )}
-                </Col>
-            </Row>
+                    <p>
+                        Connected to
+                        {' '}
+                        <b>
+                            {sessionInfo.name}
+                        </b>
+                        {sessionInfo.chainId && (
+                            <Form.Select
+                                required
+                                onChange={(e) => {
+                                    const id = Number(e.target.value);
+                                    const network = getEthereumNetwork(id);
+                                    const newProvider = initiateNewProvider(network);
+
+                                    dispatch(initiateDappProvider(newProvider));
+                                    const accounts = sessionInfo.address || address;
+
+                                    if (accounts) {
+                                        dispatch(updateSession({
+                                            chainId: id,
+                                            accounts: [accounts],
+                                        }));
+                                    }
+                                }}
+                                defaultValue={dappChainId}>
+                                {networkList}
+                            </Form.Select>
+                        )}
+                    </p>
+                </Stack>
+            )}
             <SessionModal
                 sessionInfo={sessionInfo}
                 setSessionInfo={setSessionInfo}
