@@ -79,15 +79,13 @@ const Wallet = (): React.ReactElement => {
                         </Button>
                     </Stack>
                     <WalletNavBar />
-                    <Review
-                        show={showReviewModal}
-                        setShow={setShowReviewModal}
-                        callRequest={callRequest}
-                        chainId={currentNetworkChainId} />
-                </Stack>
-                <Stack gap={2}>
                     <ConnectWallet />
                 </Stack>
+                <Review
+                    show={showReviewModal}
+                    setShow={setShowReviewModal}
+                    callRequest={callRequest}
+                    chainId={currentNetworkChainId} />
             </header>
         </div>
     );
