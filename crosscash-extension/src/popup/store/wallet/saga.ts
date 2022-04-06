@@ -26,6 +26,7 @@ import {
     initiateWalletConnect,
     disconnectSession,
     rejectCallRequest,
+    updateSession,
 } from '../../../lib/walletconnect';
 import {
     RequestSessionPayload,
@@ -46,6 +47,7 @@ import {
     callRequest as callRequestAction,
     approveCallRequest as approveCallRequestAction,
     rejectCallRequest as rejectCallRequestAction,
+    updateSession as updateSessionAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -225,6 +227,32 @@ function* walletConnectRejectSessionRequest(): Generator {
 
 function* watchWalletConnectDenySessionRequest(): Generator {
     yield takeEvery(rejectRequestSessionAction.TRIGGER, walletConnectRejectSessionRequest);
+}
+
+function* walletConnectUpdateSession({ payload }: PayloadAction<{
+    accounts: string[],
+    chainId: number,
+}>): Generator {
+    try {
+        const connector: any = yield select((state) => state.wallet.connector);
+
+        const { chainId } = payload;
+
+        yield call(updateSession, {
+            connector,
+            accounts: payload.accounts,
+            chainId,
+        });
+        yield put(updateSessionAction.success({ chainId }));
+    } catch (err) {
+        yield put(updateSessionAction.failure(err));
+    } finally {
+        yield put(updateSessionAction.fulfill());
+    }
+}
+
+function* watchWalletConnectUpdateSession(): Generator {
+    yield takeEvery(updateSessionAction.TRIGGER, walletConnectUpdateSession);
 }
 
 const callRequest = async (connector: IConnector) => eventChannel((emitter) => {
@@ -417,6 +445,7 @@ export default function* logSaga(): Generator {
         watchWalletConnectCallRequest,
         watchWalletConnectApproveCallRequest,
         watchWalletConnectRejectCallRequest,
+        watchWalletConnectUpdateSession,
     ];
 
     yield all(sagas.map((saga) => (

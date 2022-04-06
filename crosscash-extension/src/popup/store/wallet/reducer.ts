@@ -23,6 +23,7 @@ import {
     rejectCallRequest,
     INITIATE_WALLET_PROVIDER,
     INITIATE_DAPP_PROVIDER,
+    updateSession,
 } from './actions';
 
 const initialState: WalletState = {
@@ -36,6 +37,7 @@ const initialState: WalletState = {
     callRequestApproved: false,
     walletInstance: null,
     currentNetworkChainId: MAINNET.chainID,
+    dappChainId: MAINNET.chainID,
     loading: false,
     walletProvider: null,
     error: null,
@@ -67,6 +69,25 @@ export const walletReducer = (
             return {
                 ...state,
                 currentNetworkChainId: action.payload,
+            };
+        case updateSession.TRIGGER:
+            return {
+                ...state,
+                loading: true,
+            };
+        case updateSession.SUCCESS:
+            return {
+                ...state,
+            };
+        case updateSession.FAILURE:
+            return {
+                ...state,
+                error: action.payload,
+            };
+        case updateSession.FULFILL:
+            return {
+                ...state,
+                loading: false,
             };
         case createPendingSession.TRIGGER:
             return { ...state, loading: true };
@@ -266,6 +287,7 @@ export interface WalletState {
     callRequestApproved: boolean;
     walletInstance: EthereumWallet | null;
     currentNetworkChainId: number;
+    dappChainId: number;
     loading: boolean;
     walletProvider: AlchemyProvider | null;
     error: Error | null;
