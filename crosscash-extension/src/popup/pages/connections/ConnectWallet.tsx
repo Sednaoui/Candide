@@ -14,6 +14,7 @@ import {
 } from '../../components';
 import { useAppSelector } from '../../store';
 import {
+    changeDappChainId,
     createPendingSession,
     disconnectSession,
     initiateDappProvider,
@@ -54,20 +55,25 @@ const ConnectWallet = (): React.ReactElement => {
         }
     }, [pendingRequest]);
 
+    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
+
     useEffect(() => {
         if (sessionInfo) {
-            if (sessionInfo.chainId && sessionInfo.chainId !== walletChainId) {
-                const network = getEthereumNetwork(sessionInfo.chainId);
-
-                dispatch(initiateDappProvider(initiateNewProvider(
-                    network,
-                    process.env.REACT_APP_ALCHEMY_API_KEY,
-                )));
+            if (sessionInfo.chainId) {
+                dispatch(changeDappChainId(sessionInfo.chainId));
             }
         }
-    }, [sessionInfo, walletChainId]);
+    }, [sessionInfo]);
 
-    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
+    useEffect(() => {
+        const network = getEthereumNetwork(dappChainId);
+        const provider = initiateNewProvider(
+            network,
+            process.env.REACT_APP_ALCHEMY_API_KEY,
+        );
+
+        dispatch(initiateDappProvider(provider));
+    }, [dappChainId, changeDappChainId, dispatch]);
 
     const networkList = evmNetworks.map((n) => (
         <option
@@ -132,10 +138,6 @@ const ConnectWallet = (): React.ReactElement => {
                                 required
                                 onChange={(e) => {
                                     const id = Number(e.target.value);
-                                    const network = getEthereumNetwork(id);
-                                    const newProvider = initiateNewProvider(network);
-
-                                    dispatch(initiateDappProvider(newProvider));
                                     const accounts = sessionInfo.address || address;
 
                                     if (accounts) {

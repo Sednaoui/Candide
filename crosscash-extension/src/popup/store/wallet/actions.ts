@@ -12,7 +12,7 @@ import { EthereumWallet } from '../../model/wallet';
 
 type NetworkActionType = {
     payload: number;
-    type: typeof CHANGE_WALLET_CHAIN_ID;
+    type: typeof CHANGE_WALLET_CHAIN_ID | typeof CHANGE_DAPP_CHAIN_ID;
 };
 
 type RequestSessionWithDapp = {
@@ -44,6 +44,14 @@ export const changeWalletChainId = (chainId: number): NetworkActionType => ({
     payload: chainId,
     type: CHANGE_WALLET_CHAIN_ID,
 });
+
+// change dapp chain id
+export const CHANGE_DAPP_CHAIN_ID = 'CHANGE_DAPP_CHAIN_ID';
+export const changeDappChainId = (chainId: number): NetworkActionType => ({
+    payload: chainId,
+    type: CHANGE_DAPP_CHAIN_ID,
+});
+
 // create a pending walletconnect session to send a request for user confirmation
 export const createPendingSession = createRoutine(
     'CREATE_PENDING_WALLETCONNECT_SESSION',

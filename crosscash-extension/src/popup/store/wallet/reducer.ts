@@ -13,6 +13,7 @@ import {
     createWallet,
     createPendingSession,
     CHANGE_WALLET_CHAIN_ID,
+    CHANGE_DAPP_CHAIN_ID,
     WalletPayloadAction,
     SEND_REQUEST_SESSION_WITH_DAPP,
     confirmRequestSession,
@@ -70,6 +71,11 @@ export const walletReducer = (
                 ...state,
                 walletChainId: action.payload,
             };
+        case CHANGE_DAPP_CHAIN_ID:
+            return {
+                ...state,
+                dappChainId: action.payload,
+            };
         case updateSession.TRIGGER:
             return {
                 ...state,
@@ -78,6 +84,7 @@ export const walletReducer = (
         case updateSession.SUCCESS:
             return {
                 ...state,
+                dappChainId: action.payload.chainId,
             };
         case updateSession.FAILURE:
             return {
