@@ -18,7 +18,7 @@ import {
     Stack,
 } from '../../components';
 import { useAppSelector } from '../../store';
-import { changeNetwork } from '../../store/wallet/actions';
+import { changeWalletChainId } from '../../store/wallet/actions';
 import ConnectWallet from '../connections/ConnectWallet';
 import Review from '../transactions/review/Review';
 import WalletNavBar from './WalletNavBar';
@@ -70,7 +70,7 @@ const Wallet = (): React.ReactElement => {
                     <Form.Select
                         required
                         onChange={(e) => {
-                            dispatch(changeNetwork(Number(e.target.value)));
+                            dispatch(changeWalletChainId(Number(e.target.value)));
                         }}
                         defaultValue={walletChainId}>
                         {networkList}

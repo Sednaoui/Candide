@@ -12,7 +12,7 @@ import { EthereumWallet } from '../../model/wallet';
 import {
     createWallet,
     createPendingSession,
-    CHANGE_NETWORK,
+    CHANGE_WALLET_CHAIN_ID,
     WalletPayloadAction,
     SEND_REQUEST_SESSION_WITH_DAPP,
     confirmRequestSession,
@@ -65,7 +65,7 @@ export const walletReducer = (
                 ...state,
                 loading: false,
             };
-        case CHANGE_NETWORK:
+        case CHANGE_WALLET_CHAIN_ID:
             return {
                 ...state,
                 walletChainId: action.payload,
