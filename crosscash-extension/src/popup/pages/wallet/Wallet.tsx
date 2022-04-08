@@ -47,7 +47,7 @@ const Wallet = (): React.ReactElement => {
     };
 
     const dispatch = useDispatch();
-    const currentNetworkChainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
+    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
 
     const networkList = evmNetworks.map((n) => (
         <option
@@ -72,7 +72,7 @@ const Wallet = (): React.ReactElement => {
                         onChange={(e) => {
                             dispatch(changeNetwork(Number(e.target.value)));
                         }}
-                        defaultValue={currentNetworkChainId}>
+                        defaultValue={walletChainId}>
                         {networkList}
                     </Form.Select>
                     <Stack direction="horizontal" gap={2}>
@@ -105,7 +105,7 @@ const Wallet = (): React.ReactElement => {
                     show={showReviewModal}
                     setShow={setShowReviewModal}
                     callRequest={callRequest}
-                    chainId={currentNetworkChainId} />
+                    chainId={walletChainId} />
             </header>
         </div>
     );
