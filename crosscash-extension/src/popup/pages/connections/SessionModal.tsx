@@ -2,12 +2,10 @@ import React from 'react';
 import { Stack } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
-import { initiateNewProvider } from '../../../lib/alchemy';
 import { evmNetworks } from '../../../lib/constants/networks';
 import {
     trancatAddress,
     removeHttp,
-    getEthereumNetwork,
 } from '../../../lib/helpers';
 import {
     Button,
@@ -15,10 +13,8 @@ import {
     Image,
     Form,
 } from '../../components';
-import { useAppSelector } from '../../store';
 import {
     confirmRequestSession,
-    initiateDappProvider,
     rejectRequestSession,
 } from '../../store/wallet/actions';
 
@@ -31,7 +27,7 @@ type SessionInfo = {
 };
 
 type ModalProps = {
-    sessionInfo: SessionInfo | null; // typing is not always positive.
+    sessionInfo: SessionInfo | null;
     setSessionInfo: React.Dispatch<React.SetStateAction<SessionInfo | null>>
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,18 +44,7 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
         chainId,
     };
 
-    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
-
     const confirm = () => {
-        if (chainId && chainId !== walletChainId) {
-            const network = getEthereumNetwork(chainId);
-
-            dispatch(initiateDappProvider(initiateNewProvider(
-                network,
-                process.env.REACT_APP_ALCHEMY_API_KEY,
-            )));
-        }
-
         dispatch(confirmRequestSession(payload));
         setShow(false);
     };
