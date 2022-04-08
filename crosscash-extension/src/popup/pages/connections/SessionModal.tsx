@@ -48,7 +48,7 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
         chainId,
     };
 
-    const walletChainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
+    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
 
     const confirm = () => {
         if (chainId && chainId !== walletChainId) {

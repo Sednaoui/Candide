@@ -63,7 +63,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
         }
     }, [callRequest, chainId, reviewEthereumRequests, setTransactionData]);
 
-    const walletChainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
+    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
     const callRequestChainId = useAppSelector((state) => state.wallet.callRequestChainId);
 
     useEffect(() => {

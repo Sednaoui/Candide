@@ -22,9 +22,9 @@ import AssetView from './wallet/assets/AssetView';
 import Wallet from './wallet/Wallet';
 
 export const Routes = () => {
-    const currentChainID = useAppSelector((state) => state.wallet.currentNetworkChainId);
+    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
 
-    const ethNetwork = getEthereumNetwork(currentChainID);
+    const ethNetwork = getEthereumNetwork(walletChainId);
 
     const dispatch = useDispatch();
 

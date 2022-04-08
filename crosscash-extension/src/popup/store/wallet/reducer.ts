@@ -36,7 +36,7 @@ const initialState: WalletState = {
     callRequestChainId: null,
     callRequestApproved: false,
     walletInstance: null,
-    currentNetworkChainId: MAINNET.chainID,
+    walletChainId: MAINNET.chainID,
     dappChainId: MAINNET.chainID,
     loading: false,
     walletProvider: null,
@@ -68,7 +68,7 @@ export const walletReducer = (
         case CHANGE_NETWORK:
             return {
                 ...state,
-                currentNetworkChainId: action.payload,
+                walletChainId: action.payload,
             };
         case updateSession.TRIGGER:
             return {
@@ -286,7 +286,7 @@ export interface WalletState {
     callRequestChainId: number | null;
     callRequestApproved: boolean;
     walletInstance: EthereumWallet | null;
-    currentNetworkChainId: number;
+    walletChainId: number;
     dappChainId: number;
     loading: boolean;
     walletProvider: AlchemyProvider | null;

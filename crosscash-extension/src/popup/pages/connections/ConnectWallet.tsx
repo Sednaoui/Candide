@@ -30,7 +30,7 @@ const ConnectWallet = (): React.ReactElement => {
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
 
     const address = walletInstance?.address;
-    const chainId = useAppSelector((state) => state.wallet.currentNetworkChainId);
+    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
     const connected = useAppSelector((state) => state.wallet.connector?.connected);
 
     const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const ConnectWallet = (): React.ReactElement => {
         if (pendingRequest?.params) {
             const { peerMeta } = pendingRequest.params[0];
 
-            const chain = peerMeta.chainId || chainId;
+            const chain = peerMeta.chainId || walletChainId;
 
             const seshInfo = {
                 name: peerMeta.name,
@@ -56,7 +56,7 @@ const ConnectWallet = (): React.ReactElement => {
 
     useEffect(() => {
         if (sessionInfo) {
-            if (sessionInfo.chainId && sessionInfo.chainId !== chainId) {
+            if (sessionInfo.chainId && sessionInfo.chainId !== walletChainId) {
                 const network = getEthereumNetwork(sessionInfo.chainId);
 
                 dispatch(initiateDappProvider(initiateNewProvider(
@@ -65,7 +65,7 @@ const ConnectWallet = (): React.ReactElement => {
                 )));
             }
         }
-    }, [sessionInfo, chainId]);
+    }, [sessionInfo, walletChainId]);
 
     const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
 

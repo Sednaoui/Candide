@@ -273,7 +273,7 @@ function* listenWalletConnectCallRequest(): Generator {
     const connector: any = yield select((state) => state.wallet.connector);
     const channel = yield call(callRequest, connector);
 
-    const walletChainId: any = yield select((state) => state.wallet.currentNetworkChainId);
+    const walletChainId: any = yield select((state) => state.wallet.walletChainId);
     const address: any = yield select((state) => state.wallet.walletInstance.address);
 
     while (true) {
