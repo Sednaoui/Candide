@@ -25,6 +25,7 @@ import {
     INITIATE_WALLET_PROVIDER,
     INITIATE_DAPP_PROVIDER,
     updateSession,
+    RESET_WALLET,
 } from './actions';
 
 const initialState: WalletState = {
@@ -274,6 +275,8 @@ export const walletReducer = (
                 ...state,
                 dappProvider: action.payload,
             };
+        case RESET_WALLET:
+            return initialState;
         default:
             return state;
     }
