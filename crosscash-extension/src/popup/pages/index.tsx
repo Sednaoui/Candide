@@ -17,6 +17,7 @@ import {
 } from './auth/Login';
 import ImportWallet from './onboarding/ImportWallet';
 import Welcome from './onboarding/Welcome';
+import Settings from './settings/Settings';
 import Send from './transactions/send/Send';
 import AssetView from './wallet/assets/AssetView';
 import Wallet from './wallet/Wallet';
@@ -51,6 +52,7 @@ export const Routes = () => {
                             </RequireAuth>
                         )} />
                     <Route path="/wallet/:assetSymbol" element={<AssetView />} />
+                    <Route path="/settings" element={<Settings />} />
                 </ReactRoutes>
             </AuthProvider>
         </Router>
