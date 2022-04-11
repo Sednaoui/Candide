@@ -2,6 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 
 import { AnyAssetAmount } from '../../../lib/assets';
 import { ETH } from '../../../lib/constants/currencies';
+import { RESET_WALLET } from '../wallet/actions';
 import { getAssets } from './actions';
 
 const initialState: AssetState = {
@@ -38,6 +39,8 @@ export const assetReducer = (
                 ...state,
                 loading: false,
             };
+        case RESET_WALLET:
+            return initialState;
         default:
             return state;
     }

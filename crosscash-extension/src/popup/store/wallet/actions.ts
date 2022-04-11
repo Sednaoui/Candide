@@ -100,6 +100,12 @@ export const initiateDappProvider = (provider: AlchemyProvider): ProviderActionT
     type: INITIATE_DAPP_PROVIDER,
 });
 
+// reset state
+export const RESET_WALLET = 'RESET_WALLET';
+export const resetWallet = () => ({
+    type: RESET_WALLET,
+});
+
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']
     & WalletConnect

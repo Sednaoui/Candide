@@ -3,6 +3,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { AnyAssetTransfer } from '../../../lib/assets';
 import { BlockPrices } from '../../../lib/networks';
 import { TransactionDetail } from '../../model/transactions';
+import { RESET_WALLET } from '../wallet/actions';
 import {
     getTransactionDetails,
     getTransactions,
@@ -82,6 +83,8 @@ const transactionsReducer = (
                 ...state,
                 loading: false,
             };
+        case RESET_WALLET:
+            return initialState;
         default:
             return state;
     }
