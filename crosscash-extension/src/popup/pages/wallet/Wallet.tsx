@@ -97,6 +97,14 @@ const Wallet = (): React.ReactElement => {
                             }}>
                             Send
                         </Button>
+                        <Button
+                            type="button"
+                            className="btn-primary"
+                            onClick={() => {
+                                navigate('/settings');
+                            }}>
+                            Settings
+                        </Button>
                     </Stack>
                     <WalletNavBar />
                     <ConnectWallet />
