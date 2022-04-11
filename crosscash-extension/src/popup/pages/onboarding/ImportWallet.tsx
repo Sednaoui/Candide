@@ -26,14 +26,17 @@ const ImportWallet = (): ReactElement => {
     // TODO: validate weak password, inform user about best practices
     // inforce strong password
 
+    const disableButton = mnemonic ? !isValidMnemonic(mnemonic) || !password : !password;
+
     return (
         <div className="App">
             <header className="App-header">
                 <h1>
-                    Import Account
+                    Welcome Aboard
                 </h1>
                 <p>
-                    Enter or copy and paste the recovery phrase of your wallet.
+                    Leave empty to create a new wallet or enter your recovery phrase to import
+                    your wallet
                 </p>
                 <Form
                     className="mb-3"
@@ -48,13 +51,13 @@ const ImportWallet = (): ReactElement => {
                             as="textarea"
                             rows={3}
                             type="text"
-                            placeholder="secret recovery phrase"
+                            placeholder="12 words mnemonic phrase (EIP-155)"
                             name="mnemonic"
                             onChange={(e) => {
                                 setMnemonic(e.target.value);
                             }} />
                         <Form.Label>
-                            Choose a password to encrypt your wallet
+                            Choose a password to encrypt your wallet on this device
                         </Form.Label>
                         <Form.Control
                             className="mt-3"
@@ -66,9 +69,9 @@ const ImportWallet = (): ReactElement => {
                             }} />
                         <Button
                             className="mt-3"
-                            disabled={!isValidMnemonic(mnemonic) || !password}
+                            disabled={disableButton}
                             type="submit">
-                            Import
+                            {mnemonic ? 'Import' : 'Create'}
                         </Button>
                     </Form.Group>
                 </Form>
