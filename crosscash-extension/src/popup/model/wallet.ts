@@ -81,6 +81,13 @@ export const decryptWallet = async (
                 password,
             ).toString(CryptoJS.enc.Utf8);
 
+            if (!decryptedPrivateKey && !decryptedMnemonicPhrase) {
+                return new Error(
+                    // eslint-disable-next-line max-len
+                    'Incorrect password. Remember that this is the password you have set on this device to create your wallet for piggycross',
+                );
+            }
+
             return {
                 ...encryptedWallet,
                 privateKey: decryptedPrivateKey,
@@ -90,7 +97,7 @@ export const decryptWallet = async (
                 },
             };
         } catch (error: any) {
-            return new Error('Incorrect password');
+            return new Error(error);
         }
     } else {
         return new Error('no wallet to decrypt');
