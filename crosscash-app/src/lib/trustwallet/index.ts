@@ -46,45 +46,50 @@ export async function getTokenMetadata(
     }
 
     // check contractAddress case sensitivity using whilelist from TrustWallet
-    const tokenList: Response = await fetch(
-        `${assetsTWURL}/${networkName}/tokenlist.json`,
-    );
+    try {
+        const tokenList: Response = await fetch(
+            `${assetsTWURL}/${networkName}/tokenlist.json`,
+        );
 
-    const trustWalletTokenListJSON: TrustWalletTokenListJSONSchema = await tokenList.clone().json();
+        const trustWalletTokenListJSON: TrustWalletTokenListJSONSchema = await
+        tokenList.clone().json();
 
-    const trustWalletToken = trustWalletTokenListJSON.tokens.find(
-        (token) => token.address.toLowerCase() === contractAddress.toLowerCase(),
-    );
+        const trustWalletToken = trustWalletTokenListJSON.tokens.find(
+            (token) => token.address.toLowerCase() === contractAddress.toLowerCase(),
+        );
 
-    if (!trustWalletToken) {
+        if (!trustWalletToken) {
+            return null;
+        }
+
+        const tokenListJSON = await tokenList.json();
+
+        const tokenInfo = await fetch(
+            // eslint-disable-next-line max-len
+            `${assetsTWURL}/${networkName}/assets/${trustWalletToken.address}/info.json`,
+        );
+
+        const tokkenInfoJson: TrustWalletTokenJSONSchema = await tokenInfo.json();
+
+        const logoURL = `${assetsTWURL}/${networkName}/assets/${trustWalletToken.address}/logo.png`;
+
+        return {
+            name: tokkenInfoJson.name,
+            decimals: tokkenInfoJson.decimals,
+            symbol: tokkenInfoJson.symbol,
+            contractAddress: trustWalletToken.address,
+            metadata: {
+                logoURL,
+                websiteURL: tokkenInfoJson.website,
+                tokenLists: [{
+                    name: tokenListJSON.name,
+                    url: tokenListJSON.url,
+                    logoURL: tokenListJSON.logoURI,
+                }],
+            },
+            homeNetwork: network,
+        };
+    } catch (error: any) {
         return null;
     }
-
-    const tokenListJSON = await tokenList.json();
-
-    const tokenInfo = await fetch(
-        // eslint-disable-next-line max-len
-        `${assetsTWURL}/${networkName}/assets/${trustWalletToken.address}/info.json`,
-    );
-
-    const tokkenInfoJson: TrustWalletTokenJSONSchema = await tokenInfo.json();
-
-    const logoURL = `${assetsTWURL}/${networkName}/assets/${trustWalletToken.address}/logo.png`;
-
-    return {
-        name: tokkenInfoJson.name,
-        decimals: tokkenInfoJson.decimals,
-        symbol: tokkenInfoJson.symbol,
-        contractAddress: trustWalletToken.address,
-        metadata: {
-            logoURL,
-            websiteURL: tokkenInfoJson.website,
-            tokenLists: [{
-                name: tokenListJSON.name,
-                url: tokenListJSON.url,
-                logoURL: tokenListJSON.logoURI,
-            }],
-        },
-        homeNetwork: network,
-    };
 }
