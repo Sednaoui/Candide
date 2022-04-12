@@ -36,6 +36,10 @@ type UpdateSessionType = {
     accounts: string[];
 }
 
+type ApproveCallRequestActionType = {
+    transactionHash: string;
+}
+
 export const createWallet = createRoutine('CREATE_WALLET');
 
 export const CHANGE_WALLET_CHAIN_ID = 'CHANGE_WALLET_CHAIN_ID';
@@ -105,6 +109,7 @@ export const RESET_WALLET = 'RESET_WALLET';
 export const resetWallet = () => ({
     type: RESET_WALLET,
 });
+export const watchBridgeTransaction = createRoutine('WATCH_BRIDGE_TRANSACTION');
 
 export type WalletPayloadAction = EthereumWallet
     & Network['chainID']
@@ -114,5 +119,6 @@ export type WalletPayloadAction = EthereumWallet
     & CallRequestActionType
     & AlchemyProvider
     & UpdateSessionType
+    & ApproveCallRequestActionType
     & Error;
 

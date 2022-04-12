@@ -41,6 +41,8 @@ const initialState: WalletState = {
     walletChainId: MAINNET.chainID,
     dappChainId: MAINNET.chainID,
     loading: false,
+    loadingWatchBridgeTransaction: false,
+    transactionHash: null,
     walletProvider: null,
     error: null,
 };
@@ -231,6 +233,7 @@ export const walletReducer = (
             return {
                 ...state,
                 callRequestApproved: true,
+                transactionHash: action.payload.transactionHash,
             };
         case approveCallRequest.FAILURE:
             return {
@@ -273,7 +276,19 @@ export const walletReducer = (
         case INITIATE_DAPP_PROVIDER:
             return {
                 ...state,
-                dappProvider: action.payload,
+        case watchBridgeTransaction.TRIGGER:
+            return {
+                ...state,
+                loadingWatchBridgeTransaction: true,
+            };
+        case watchBridgeTransaction.SUCCESS:
+            return {
+                ...state,
+            };
+        case watchBridgeTransaction.FULFILL:
+            return {
+                ...state,
+                loadingWatchBridgeTransaction: false,
             };
         case RESET_WALLET:
             return initialState;
@@ -299,7 +314,9 @@ export interface WalletState {
     walletChainId: number;
     dappChainId: number;
     loading: boolean;
+    loadingWatchBridgeTransaction: boolean;
     walletProvider: AlchemyProvider | null;
+    transactionHash: string | null;
     error: Error | null;
 }
 

@@ -1,4 +1,5 @@
 import { BaseProvider } from '@ethersproject/providers';
+import { Hop } from '@hop-protocol/sdk';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
     eventChannel,
@@ -16,7 +17,9 @@ import {
 } from 'redux-saga/effects';
 
 import { HexString } from '../../../lib/accounts';
+import { FungibleAsset } from '../../../lib/assets';
 import { ETH } from '../../../lib/constants/currencies';
+import { getEthereumNetwork } from '../../../lib/helpers';
 import { populateBridgeTx } from '../../../lib/hop';
 import {
     approvesSessionRequest,
@@ -48,6 +51,7 @@ import {
     approveCallRequest as approveCallRequestAction,
     rejectCallRequest as rejectCallRequestAction,
     updateSession as updateSessionAction,
+    watchBridgeTransaction as watchBridgeTransactionAction,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -268,6 +272,47 @@ const callRequest = async (connector: IConnector) => eventChannel((emitter) => {
     };
 });
 
+const watchHopBridgeTransaction = async ({
+    provider,
+    transactionHash,
+    token,
+    sourceChainId,
+    destinationChainId,
+}: {
+    provider: BaseProvider,
+    transactionHash: string,
+    token: FungibleAsset,
+    sourceChainId: number,
+    destinationChainId: number,
+}) => {
+    // TODO: return a tx
+    const hop = new Hop('mainnet', provider);
+
+    const sourceNetworkSlug = getEthereumNetwork(sourceChainId).name.toLowerCase();
+
+    const destinationNetworkSlug = getEthereumNetwork(destinationChainId).name.toLowerCase();
+
+    await new Promise((resolve) => {
+        let sourceReceipt: any = null;
+        let destinationReceipt: any = null;
+
+        hop.watch(transactionHash, token.symbol, sourceNetworkSlug, destinationNetworkSlug)
+            .on('receipt', (data: any) => {
+                const { receipt, chain } = data;
+
+                if (chain.slug === sourceNetworkSlug) {
+                    sourceReceipt = receipt;
+                }
+                if (chain.slug === destinationNetworkSlug) {
+                    destinationReceipt = receipt;
+                }
+                if (sourceReceipt && destinationReceipt) {
+                    resolve(destinationReceipt.transactionHash);
+                }
+            }).on('error', (err: any) => new Error(err));
+    });
+};
+
 function* listenWalletConnectCallRequest(): Generator {
     yield put(callRequestAction.trigger());
     const connector: any = yield select((state) => state.wallet.connector);
@@ -275,6 +320,7 @@ function* listenWalletConnectCallRequest(): Generator {
 
     const walletChainId: any = yield select((state) => state.wallet.walletChainId);
     const address: any = yield select((state) => state.wallet.walletInstance.address);
+    const provider: any = yield select((state) => state.wallet.walletProvider);
 
     while (true) {
         try {
@@ -350,6 +396,23 @@ function* listenWalletConnectCallRequest(): Generator {
                         // watch for approval confirmation
                         yield take(approveCallRequestAction.FULFILL);
 
+                        const transactionHash: any = yield select(
+                            (state) => state.wallet.transactionHash,
+                        );
+
+                        // watch for bridge confirmation on source and destination chain
+                        yield put(watchBridgeTransactionAction.trigger());
+
+                        yield call(watchHopBridgeTransaction, {
+                            provider,
+                            transactionHash,
+                            token: ETH,
+                            sourceChainId: walletChainId,
+                            destinationChainId: connector.chainId,
+                        });
+                        yield put(watchBridgeTransactionAction.success());
+                        yield put(watchBridgeTransactionAction.fulfill());
+
                         yield put(callRequestAction.success({
                             callRequest: request,
                             chainId: connector.chainId,
@@ -385,14 +448,17 @@ function* walletConnectApproveCallRequest({ payload }: PayloadAction<{
     const transactionRequest = wallet.callRequest;
 
     try {
-        yield call(signEthereumRequests, {
+        const transactionHash = yield call(signEthereumRequests, {
             connector,
             transactionRequest,
             provider,
             fromAddress,
             privateKey,
         });
-        yield put(approveCallRequestAction.success());
+
+        if (typeof transactionHash === 'string') {
+            yield put(approveCallRequestAction.success({ transactionHash }));
+        }
     } catch (err) {
         yield put(approveCallRequestAction.failure(err));
         yield put(rejectCallRequestAction.trigger({

@@ -195,7 +195,7 @@ export const signEthereumRequests = async ({
     transactionRequest: RequestTransactionPayload,
     fromAddress: HexString,
     privateKey: string,
-}): Promise<void> => {
+}): Promise<string | undefined> => {
     let transaction;
     let dataToSign;
     let address;
@@ -264,6 +264,8 @@ export const signEthereumRequests = async ({
     if (result) {
         approveCallRequest({ connector, id, result });
     }
+
+    return result;
 };
 export const sendTx = async (
     provider: BaseProvider,

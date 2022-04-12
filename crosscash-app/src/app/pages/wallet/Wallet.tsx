@@ -11,7 +11,10 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { evmNetworks } from '../../../lib/constants/networks';
-import { trancatAddress } from '../../../lib/helpers';
+import {
+    getEthereumNetwork,
+    trancatAddress,
+} from '../../../lib/helpers';
 import {
     Form,
     Button,
@@ -48,6 +51,7 @@ const Wallet = (): React.ReactElement => {
 
     const dispatch = useDispatch();
     const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
+    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
 
     const networkList = evmNetworks.map((n) => (
         <option
@@ -62,6 +66,12 @@ const Wallet = (): React.ReactElement => {
             setShowReviewModal(true);
         }
     }, [callRequest]);
+
+    const loadingWatchBridgeTransaction = useAppSelector((state) =>
+        state.wallet.loadingWatchBridgeTransaction);
+
+    const sourceChain = getEthereumNetwork(walletChainId).name;
+    const destinationChain = getEthereumNetwork(dappChainId).name;
 
     return (
         <div>
@@ -108,6 +118,22 @@ const Wallet = (): React.ReactElement => {
                     </Stack>
                     <WalletNavBar />
                     <ConnectWallet />
+                    {loadingWatchBridgeTransaction && (
+                        <div className="text-center">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="sr-only" />
+                            </div>
+                            {' '}
+                            Moving funds from
+                            {' '}
+                            {sourceChain}
+                            {' '}
+                            to
+                            {' '}
+                            {destinationChain}
+                            ...
+                        </div>
+                    )}
                 </Stack>
                 <Review
                     show={showReviewModal}

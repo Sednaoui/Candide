@@ -26,10 +26,10 @@ export const removeHttp = (url: string): string => (
 /**
  * Determine which Ethereum network should be used based user input
  */
-export function getEthereumNetwork(chainId: number): EVMNetwork {
+export function getEthereumNetwork(chainId: number | string): EVMNetwork {
     // find the network based on the chainId in evmNetworks object, default to mainnet
     const network = evmNetworks.find(
-        (n: EVMNetwork) => n.chainID === chainId,
+        (n: EVMNetwork) => n.chainID === Number(chainId),
     );
 
     return network || MAINNET;
