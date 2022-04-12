@@ -39,7 +39,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 # Code Structure
 ### All code currently lives under src. Inside src:
-- popup
+- app
     - Most of the UI code lives here
 - lib
     - Includes API services, helper functions and global constants
