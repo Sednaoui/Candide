@@ -1,5 +1,5 @@
 {
-  "name": "crosscash-extension",
+  "name": "crosscash",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

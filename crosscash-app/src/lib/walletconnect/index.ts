@@ -1,7 +1,7 @@
 import WalletConnect from '@walletconnect/client';
 import { parseWalletConnectUri } from '@walletconnect/utils';
 
-import { WalletConnectSessions } from '../../popup/store/wallet/reducer';
+import { WalletConnectSessions } from '../../app/store/wallet/reducer';
 import { HexString } from '../accounts';
 import {
     getLocal,

@@ -1,7 +1,7 @@
 {
   "short_name": "React App",
   "name": "Create React App Sample",
-  "description": "Sample application showing how to create an extension with Create React App",
+  "description": "Sample application showing how to create an app with Create React App",
   "start_url": ".",
   "icons": {
     "16": "img/icon-16.png",
