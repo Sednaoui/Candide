@@ -1,5 +1,5 @@
 .App-logo {
-  width: 70vmin;
+  max-width: 18rem;
   pointer-events: none;
 }
 
@@ -12,7 +12,10 @@
   color: white;
 }
 
+.Card-style {
+  width: 600px;
+}
+
 .App-link {
   color: #61dafb;
 }
-
