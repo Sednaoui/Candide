@@ -6,6 +6,7 @@ export const ARBITRUM: EVMNetwork = {
     baseAsset: ETH,
     chainID: 42161,
     family: 'EVM',
+    blockExplorerUrl: 'https://arbiscan.io',
 };
 
 export const MAINNET: EVMNetwork = {
@@ -13,6 +14,7 @@ export const MAINNET: EVMNetwork = {
     baseAsset: ETH,
     chainID: 1,
     family: 'EVM',
+    blockExplorerUrl: 'https://etherscan.io',
 };
 
 export const ROPSTEN: EVMNetwork = {
@@ -20,6 +22,7 @@ export const ROPSTEN: EVMNetwork = {
     baseAsset: ETH,
     chainID: 3,
     family: 'EVM',
+    blockExplorerUrl: 'https://ropsten.etherscan.io',
 };
 
 export const OPTIMISM: EVMNetwork = {
@@ -27,6 +30,7 @@ export const OPTIMISM: EVMNetwork = {
     baseAsset: ETH,
     chainID: 10,
     family: 'EVM',
+    blockExplorerUrl: 'https://optimistic.etherscan.io',
 };
 
 export const POLYGON: EVMNetwork = {
@@ -34,6 +38,7 @@ export const POLYGON: EVMNetwork = {
     baseAsset: ETH,
     chainID: 137,
     family: 'EVM',
+    blockExplorerUrl: 'https://polygonscan.com',
 };
 
 export const KOVAN: EVMNetwork = {
@@ -41,6 +46,7 @@ export const KOVAN: EVMNetwork = {
     baseAsset: ETH,
     chainID: 42,
     family: 'EVM',
+    blockExplorerUrl: 'https://kovan.etherscan.io',
 };
 
 export const evmNetworks = [

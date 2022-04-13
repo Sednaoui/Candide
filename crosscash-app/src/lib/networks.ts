@@ -70,6 +70,7 @@ export type Network = {
     baseAsset: NetworkBaseAsset
     family: NetworkFamily
     chainID?: number
+    blockExplorerUrl?: string,
 }
 
 /**
