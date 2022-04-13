@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { evmNetworks } from '../../../lib/constants/networks';
 import {
     getEthereumNetwork,
+    removeHttp,
     trancatAddress,
 } from '../../../lib/helpers';
 import {
@@ -21,6 +22,10 @@ import {
     Stack,
 } from '../../components';
 import { useAppSelector } from '../../store';
+import {
+    useTransactionHash,
+    useWalletError,
+} from '../../store/hooks';
 import { changeWalletChainId } from '../../store/wallet/actions';
 import ConnectWallet from '../connections/ConnectWallet';
 import Review from '../transactions/review/Review';
@@ -70,8 +75,25 @@ const Wallet = (): React.ReactElement => {
     const loadingWatchBridgeTransaction = useAppSelector((state) =>
         state.wallet.loadingWatchBridgeTransaction);
 
-    const sourceChain = getEthereumNetwork(walletChainId).name;
-    const destinationChain = getEthereumNetwork(dappChainId).name;
+    const sourceChain = getEthereumNetwork(walletChainId);
+    const destinationChain = getEthereumNetwork(dappChainId);
+
+    const transactionHash = useTransactionHash();
+
+    const [blockExplorer, setBlockExplorer] = useState(sourceChain.blockExplorerUrl);
+    const callRequestChainId = useAppSelector((state) => state.wallet.callRequestChainId);
+
+    useEffect(() => {
+        if (callRequestChainId) {
+            if (callRequestChainId !== walletChainId) {
+                setBlockExplorer(destinationChain.blockExplorerUrl);
+            } else {
+                setBlockExplorer(sourceChain.blockExplorerUrl);
+            }
+        }
+    }, [callRequestChainId]);
+
+    const error = useWalletError();
 
     return (
         <div>
@@ -118,6 +140,19 @@ const Wallet = (): React.ReactElement => {
                     </Stack>
                     <WalletNavBar />
                     <ConnectWallet />
+                    {/* // TODO: only display transaction submitted with eth_sendTransaction */}
+                    {transactionHash && blockExplorer ? (
+                        <a
+                            href={`${blockExplorer}/tx/${transactionHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            See Transaction on
+                            {' '}
+                            {removeHttp(blockExplorer)}
+                            {' '}
+                        </a>
+                    ) : null}
+                    {/* display loading of bridge transaction */}
                     {loadingWatchBridgeTransaction && (
                         <div className="text-center">
                             <div className="spinner-border text-primary" role="status">
@@ -126,14 +161,24 @@ const Wallet = (): React.ReactElement => {
                             {' '}
                             Moving funds from
                             {' '}
-                            {sourceChain}
+                            {sourceChain.name}
                             {' '}
                             to
                             {' '}
-                            {destinationChain}
+                            {destinationChain.name}
                             ...
                         </div>
                     )}
+                    {/* display error */}
+                    {error ? (
+                        <p>
+                            <span role="img" aria-label="error">
+                                ❌
+                            </span>
+                            {' '}
+                            {error.message}
+                        </p>
+                    ) : null}
                 </Stack>
                 <Review
                     show={showReviewModal}

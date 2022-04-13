@@ -26,6 +26,7 @@ import {
     INITIATE_DAPP_PROVIDER,
     updateSession,
     RESET_WALLET,
+    RESET_TEMP_WALLET_STATE,
     watchBridgeTransaction,
 } from './actions';
 
@@ -53,6 +54,14 @@ export const walletReducer = (
     action: PayloadAction<WalletPayloadAction>,
 ): WalletState => {
     switch (action.type) {
+        case RESET_TEMP_WALLET_STATE:
+            return {
+                ...state,
+                loading: false,
+                loadingWatchBridgeTransaction: false,
+                transactionHash: null,
+                error: null,
+            };
         case createWallet.TRIGGER:
             return { ...state, loading: true };
         case createWallet.SUCCESS:

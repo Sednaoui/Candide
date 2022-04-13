@@ -9,7 +9,10 @@ import {
 import { initiateNewProvider } from '../../lib/alchemy';
 import { getEthereumNetwork } from '../../lib/helpers';
 import { useAppSelector } from '../store';
-import { initiateWalletProvider } from '../store/wallet/actions';
+import {
+    initiateWalletProvider,
+    resetTempWalletState,
+} from '../store/wallet/actions';
 import { AuthProvider } from './auth/AuthProvider';
 import {
     Login,
@@ -35,6 +38,10 @@ export const Routes = () => {
             process.env.REACT_APP_ALCHEMY_API_KEY,
         )));
     }, [initiateNewProvider, ethNetwork, dispatch, initiateWalletProvider]);
+
+    useEffect(() => {
+        dispatch(resetTempWalletState());
+    }, []);
 
     return (
         <Router>

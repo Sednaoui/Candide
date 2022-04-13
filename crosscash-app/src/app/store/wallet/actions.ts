@@ -109,6 +109,12 @@ export const RESET_WALLET = 'RESET_WALLET';
 export const resetWallet = () => ({
     type: RESET_WALLET,
 });
+
+// reset temp wallet state
+export const RESET_TEMP_WALLET_STATE = 'RESET_TEMP_WALLET_STATE';
+export const resetTempWalletState = () => ({
+    type: RESET_TEMP_WALLET_STATE,
+});
 export const watchBridgeTransaction = createRoutine('WATCH_BRIDGE_TRANSACTION');
 
 export type WalletPayloadAction = EthereumWallet
