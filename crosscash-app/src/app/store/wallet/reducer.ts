@@ -26,6 +26,7 @@ import {
     INITIATE_DAPP_PROVIDER,
     updateSession,
     RESET_WALLET,
+    watchBridgeTransaction,
 } from './actions';
 
 const initialState: WalletState = {
@@ -276,6 +277,7 @@ export const walletReducer = (
         case INITIATE_DAPP_PROVIDER:
             return {
                 ...state,
+            };
         case watchBridgeTransaction.TRIGGER:
             return {
                 ...state,
