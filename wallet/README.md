@@ -1,10 +1,10 @@
-# CrossCash (🐧,🐓)
+# Candide
 
 To jump to developpement, scroll to the buttom of this page.
 
 A web3 crypto wallet with build-in bridge support
 
-At crosscash, we are building an ethereum wallet that can enable bridging of assets seamlessly, as opposed to manually moving funds from one network to the other. That allows users to interact with any contract on any network, no matter where their funds are. 
+At Candide, we are building an ethereum wallet that can enable bridging of assets seamlessly, as opposed to manually moving funds from one network to the other. That allows users to interact with any contract on any network, no matter where their funds are. 
 
 ## We want to end: 
 

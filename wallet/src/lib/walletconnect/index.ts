@@ -17,10 +17,10 @@ const WALLETCONNECT = 'walletconnect';
 export const getSessionDetails = (uri: string): IWalletConnectOptions => ({
     uri,
     clientMeta: {
-        description: 'A cross-chain wallet for piggies',
+        description: 'A cross-chain wallet',
         icons: ['https://freepngimg.com/thumb/pig/15-pig-png-image.png'],
-        name: 'piggycross',
-        url: 'https://github.com/Sednaoui/crosscash/',
+        name: 'Candide',
+        url: 'https://github.com/Sednaoui/Candide/',
     },
 });
 

@@ -53,7 +53,7 @@ export const sendETH = async (
     toAddress: string,
     privateKey: string,
 ): Promise<TransactionResponse | Error> => {
-    // TODO: create internal provider on windows.crosscash
+    // TODO: create internal provider on windows.candide
     const walletSigner = new Wallet(privateKey, provider);
 
     let response: Promise<TransactionResponse>;
@@ -275,7 +275,7 @@ export const sendTx = async (
     gas: string,
     privateKey: string,
 ): Promise<TransactionResponse | string> => {
-    // TODO: create internal provider on windows.crosscash
+    // TODO: create internal provider on windows.candide
     const walletSigner = new Wallet(privateKey, provider);
 
     let response: Promise<TransactionResponse>;

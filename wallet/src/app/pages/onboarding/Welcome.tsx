@@ -28,7 +28,7 @@ function Welcome(): JSX.Element {
         <Container className="App-header">
             <Stack gap={2}>
                 <Image src={logo} className="App-logo" alt="logo" />
-                Welcome to Crosscash
+                Welcome to Candide
                 <Link to={initialPath}>
                     {initialPath === '/login' ? 'Login' : 'Get Started'}
                 </Link>

@@ -84,7 +84,7 @@ export const decryptWallet = async (
             if (!decryptedPrivateKey && !decryptedMnemonicPhrase) {
                 return new Error(
                     // eslint-disable-next-line max-len
-                    'Incorrect password. Remember that this is the password you have set on this device to create your wallet for piggycross',
+                    'Incorrect password. Remember that this is the password you have set on this device to create your wallet for Candide',
                 );
             }
 
