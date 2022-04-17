@@ -13,5 +13,6 @@ export { default as Modal } from 'react-bootstrap/Modal';
 export { default as Offcanvas } from 'react-bootstrap/Offcanvas';
 export { default as Row } from 'react-bootstrap/Row';
 export { default as Stack } from 'react-bootstrap/Stack';
+export { default as Spinner } from 'react-bootstrap/Spinner';
 export { default as Tab } from 'react-bootstrap/Tab';
 export { default as Tabs } from 'react-bootstrap/Tabs';

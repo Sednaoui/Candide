@@ -1,6 +1,7 @@
 import React from 'react';
 import { Stack } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { evmNetworks } from '../../../lib/constants/networks';
 import {
@@ -35,6 +36,7 @@ type ModalProps = {
 
 const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const address = sessionInfo?.address;
     const chainId = sessionInfo?.chainId;
@@ -47,6 +49,7 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
     const confirm = () => {
         dispatch(confirmRequestSession(payload));
         setShow(false);
+        navigate('/wallet');
     };
 
     const reject = () => {

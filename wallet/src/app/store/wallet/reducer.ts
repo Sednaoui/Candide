@@ -32,6 +32,7 @@ import {
 
 const initialState: WalletState = {
     dappProvider: null,
+    connectedSession: null,
     sessions: null,
     pendingRequest: null,
     connector: null,
@@ -146,6 +147,7 @@ export const walletReducer = (
             return {
                 ...state,
                 currentSessionApproved: true,
+                connectedSession: action.payload.session,
                 sessions: {
                     ...state.sessions,
                     [action.payload.key]: action.payload.session,
@@ -198,6 +200,7 @@ export const walletReducer = (
             return {
                 ...state,
                 connector: null,
+                connectedSession: null,
                 currentSessionApproved: false,
                 sessions: omit(state.sessions, action.payload.key),
             };
@@ -314,6 +317,7 @@ export type WalletConnectSessions = {
 
 export interface WalletState {
     dappProvider: AlchemyProvider | null;
+    connectedSession: IConnector['session'] | null;
     sessions: WalletConnectSessions | null;
     pendingRequest: RequestSessionPayload | null;
     connector: IConnector | null;

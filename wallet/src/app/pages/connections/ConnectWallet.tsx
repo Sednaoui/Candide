@@ -4,21 +4,19 @@ import React, {
 import { useDispatch } from 'react-redux';
 
 import { initiateNewProvider } from '../../../lib/alchemy';
-import { evmNetworks } from '../../../lib/constants/networks';
 import { getEthereumNetwork } from '../../../lib/helpers';
 import {
     Button,
-    Image,
     Stack,
     Form,
+    CloseButton,
 } from '../../components';
+import QrReader from '../../components/QrReader/QRReader';
 import { useAppSelector } from '../../store';
 import {
     changeDappChainId,
     createPendingSession,
-    disconnectSession,
     initiateDappProvider,
-    updateSession,
 } from '../../store/wallet/actions';
 import SessionModal, { SessionInfo } from './SessionModal';
 
@@ -32,7 +30,6 @@ const ConnectWallet = (): React.ReactElement => {
 
     const address = walletInstance?.address;
     const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
-    const connected = useAppSelector((state) => state.wallet.connector?.connected);
 
     const dispatch = useDispatch();
 
@@ -75,91 +72,56 @@ const ConnectWallet = (): React.ReactElement => {
         dispatch(initiateDappProvider(provider));
     }, [dappChainId, changeDappChainId, dispatch]);
 
-    const networkList = evmNetworks.map((n) => (
-        <option
-            key={n.chainID}
-            value={n.chainID}>
-            {n.name}
-        </option>
-    ));
+    const onConnect = async (uri: string) => {
+        try {
+            dispatch(createPendingSession({ uri }));
+            setConnectUrl('');
+        } catch (err: unknown) {
+            setConnectUrl('');
+        } finally {
+            setConnectUrl('');
+        }
+    };
 
     return (
-        <>
-            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                e.preventDefault();
-                dispatch(createPendingSession({ uri: connectUrl }));
-                setConnectUrl('');
-            }}>
-                <Stack gap={3}>
-                    <Form.Control
-                        name="connectUrl"
-                        type="text"
-                        placeholder="Enter WalletConnect URL (copy QR-code)"
-                        value={connectUrl}
-                        onChange={(e) => setConnectUrl(e.target.value)} />
-                    <Stack direction="horizontal" gap={2}>
-                        <Button
-                            type="button"
-                            className="btn-secondary"
-                            disabled={!sessionInfo}
-                            onClick={() => {
-                                dispatch(disconnectSession());
-                                setSessionInfo(null);
-                            }}>
-                            Disconnect
-                        </Button>
-                        <Button
-                            type="submit"
-                            className="btn-primary"
-                            disabled={!connectUrl}>
-                            Connect
-                        </Button>
+        <div className="App">
+            <header className="App-header">
+                <div className="d-flex flex-row-reverse">
+                    <CloseButton />
+                </div>
+                <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                    e.preventDefault();
+                    dispatch(createPendingSession({ uri: connectUrl }));
+                    setConnectUrl('');
+                }}>
+                    <Stack gap={3}>
+                        <QrReader onConnect={onConnect} />
+                        <p style={{ textAlign: 'center', fontSize: '25px' }}>
+                            or use walletconnect uri
+                        </p>
+                        <Form.Control
+                            name="connectUrl"
+                            type="text"
+                            placeholder="e.g. wc:a281567bb3e4..."
+                            value={connectUrl}
+                            onChange={(e) => setConnectUrl(e.target.value)} />
+                        <Stack direction="horizontal" gap={2}>
+                            <Button
+                                type="submit"
+                                className="btn-primary"
+                                disabled={!connectUrl}>
+                                Connect
+                            </Button>
+                        </Stack>
                     </Stack>
-                </Stack>
-            </Form>
-            {connected && sessionInfo && (
-                <Stack
-                    gap={2}
-                    direction="horizontal">
-                    {sessionInfo.icons && (
-                        <Image
-                            src={sessionInfo.icons[0]}
-                            width={40}
-                            height={40} />
-                    )}
-                    <p>
-                        Connected to
-                        {' '}
-                        <b>
-                            {sessionInfo.name}
-                        </b>
-                        {sessionInfo.chainId && (
-                            <Form.Select
-                                required
-                                onChange={(e) => {
-                                    const id = Number(e.target.value);
-                                    const accounts = sessionInfo.address || address;
-
-                                    if (accounts) {
-                                        dispatch(updateSession({
-                                            chainId: id,
-                                            accounts: [accounts],
-                                        }));
-                                    }
-                                }}
-                                defaultValue={dappChainId}>
-                                {networkList}
-                            </Form.Select>
-                        )}
-                    </p>
-                </Stack>
-            )}
-            <SessionModal
-                sessionInfo={sessionInfo}
-                setSessionInfo={setSessionInfo}
-                show={showSessionModal}
-                setShow={setShowSessionModal} />
-        </>
+                </Form>
+                <SessionModal
+                    sessionInfo={sessionInfo}
+                    setSessionInfo={setSessionInfo}
+                    show={showSessionModal}
+                    setShow={setShowSessionModal} />
+            </header>
+        </div>
     );
 };
 

@@ -17,6 +17,7 @@ import {
     trancatAddress,
 } from '../../../lib/helpers';
 import {
+    Image,
     Form,
     Button,
     Stack,
@@ -26,8 +27,11 @@ import {
     useTransactionHash,
     useWalletError,
 } from '../../store/hooks';
-import { changeWalletChainId } from '../../store/wallet/actions';
-import ConnectWallet from '../connections/ConnectWallet';
+import {
+    changeWalletChainId,
+    disconnectSession,
+    updateSession,
+} from '../../store/wallet/actions';
 import Review from '../transactions/review/Review';
 import WalletNavBar from './WalletNavBar';
 
@@ -95,6 +99,9 @@ const Wallet = (): React.ReactElement => {
 
     const error = useWalletError();
 
+    const connected = useAppSelector((state) => state.wallet.connector?.connected);
+    const connectedSession = useAppSelector((state) => state.wallet.connectedSession);
+
     return (
         <div>
             <header className="App-header">
@@ -137,9 +144,65 @@ const Wallet = (): React.ReactElement => {
                             }}>
                             Settings
                         </Button>
+                        <Button
+                            type="button"
+                            className="btn-primary"
+                            onClick={() => {
+                                navigate('/walletconnect');
+                            }}>
+                            Connect
+                        </Button>
                     </Stack>
                     <WalletNavBar />
-                    <ConnectWallet />
+                    {connected && connectedSession && connectedSession.peerMeta && (
+                        <Stack
+                            gap={2}
+                            direction="horizontal">
+                            {connectedSession.peerMeta && (
+                                <Image
+                                    src={connectedSession.peerMeta.icons[0]}
+                                    width={40}
+                                    height={40} />
+                            )}
+                            <p>
+                                Connected to
+                                {' '}
+                                <b>
+                                    {connectedSession.peerMeta.name}
+                                </b>
+                                {connectedSession.chainId && (
+                                    <Stack gap={3} direction="horizontal">
+                                        <Form.Select
+                                            required
+                                            onChange={(e) => {
+                                                const id = Number(e.target.value);
+                                                const accounts = connectedSession.accounts[0]
+                                                    || address;
+
+                                                if (accounts) {
+                                                    dispatch(updateSession({
+                                                        chainId: id,
+                                                        accounts: [accounts],
+                                                    }));
+                                                }
+                                            }}
+                                            defaultValue={dappChainId}>
+                                            {networkList}
+                                        </Form.Select>
+                                        <Button
+                                            type="button"
+                                            className="btn-secondary"
+                                            disabled={!connectedSession && !connected}
+                                            onClick={() => {
+                                                dispatch(disconnectSession());
+                                            }}>
+                                            Disconnect
+                                        </Button>
+                                    </Stack>
+                                )}
+                            </p>
+                        </Stack>
+                    )}
                     {/* // TODO: only display transaction submitted with eth_sendTransaction */}
                     {transactionHash && blockExplorer ? (
                         <a
