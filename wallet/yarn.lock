@@ -2207,10 +2207,10 @@
   dependencies:
     ethers "^5.5.1"
 
-"@hop-protocol/sdk@^0.0.1-beta.311":
-  version "0.0.1-beta.311"
-  resolved "https://registry.yarnpkg.com/@hop-protocol/sdk/-/sdk-0.0.1-beta.311.tgz#40ff6e68a070175af0d3ab17b26cbcf282e1c0c7"
-  integrity sha512-hva9qKAbG0cl+9sla9LNtu8mgTtL40XRretkvCoYjJIvknDsECCKtf6xBtXuO2/fMlHzf9ZN3kuGxupNse2cFQ==
+"@hop-protocol/sdk@0.0.1-beta.313":
+  version "0.0.1-beta.313"
+  resolved "https://registry.yarnpkg.com/@hop-protocol/sdk/-/sdk-0.0.1-beta.313.tgz#8379c03ca14aaf2d523263f214e25ee35f4691a7"
+  integrity sha512-5xrodUiSek1PKt47bVLUBopqEWQcwX5VZ1hz03dt/faTwC4gGdgfCyUlRRh7hytoKLJEBe+YXxBrxWPNYAt2tg==
   dependencies:
     "@eth-optimism/contracts" "^0.5.2"
     "@ethersproject/abi" "^5.4.0"
