@@ -16,3 +16,29 @@
   color: #61dafb;
 }
 
+.qrPlaceholder {
+  border: 2px rgba(139, 139, 139, 0.4) dashed;
+  width: 100%;
+  border-radius: 15px;
+  padding: 50px;
+}
+
+.qrIcon {
+  opacity: 0.3;
+}
+
+.qrVideoMask {
+  width: 100%;
+  border-radius: 15px;
+  overflow: hidden !important;
+  position: relative;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
