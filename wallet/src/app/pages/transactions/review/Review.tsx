@@ -85,7 +85,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Card border="primary" style={{ width: '18rem' }}>
+                    <Card border="primary">
                         <Card.Body>
                             {transactionData && transactionData.map((param) => (
                                 <Row key={param.label}>
