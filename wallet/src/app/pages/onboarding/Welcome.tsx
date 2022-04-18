@@ -1,10 +1,10 @@
-import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import logo from '../../../assets/logo.jpeg';
 import {
     Image,
     Stack,
+    Container,
 } from '../../components';
 import '../../App.css';
 import { useAppSelector } from '../../store';
@@ -25,10 +25,15 @@ function Welcome(): JSX.Element {
     }
 
     return (
-        <Container className="App-header">
+        <Container className="container">
             <Stack gap={2}>
-                <Image src={logo} className="App-logo" alt="logo" />
-                Welcome to Candide
+                <Image
+                    src={logo}
+                    style={{ width: 350, maxHeight: 550 }}
+                    alt="logo" />
+                <h3>
+                    Welcome to Candide
+                </h3>
                 <Link to={initialPath}>
                     {initialPath === '/login' ? 'Login' : 'Get Started'}
                 </Link>

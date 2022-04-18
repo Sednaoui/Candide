@@ -84,44 +84,42 @@ const ConnectWallet = (): React.ReactElement => {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="d-flex flex-row-reverse">
-                    <CloseButton />
-                </div>
-                <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-                    e.preventDefault();
-                    dispatch(createPendingSession({ uri: connectUrl }));
-                    setConnectUrl('');
-                }}>
-                    <Stack gap={3}>
-                        <QrReader onConnect={onConnect} />
-                        <p style={{ textAlign: 'center', fontSize: '25px' }}>
-                            or use walletconnect uri
-                        </p>
-                        <Form.Control
-                            name="connectUrl"
-                            type="text"
-                            placeholder="e.g. wc:a281567bb3e4..."
-                            value={connectUrl}
-                            onChange={(e) => setConnectUrl(e.target.value)} />
-                        <Stack direction="horizontal" gap={2}>
-                            <Button
-                                type="submit"
-                                className="btn-primary"
-                                disabled={!connectUrl}>
-                                Connect
-                            </Button>
-                        </Stack>
+        <>
+            <div className="d-flex flex-row-reverse">
+                <CloseButton />
+            </div>
+            <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                e.preventDefault();
+                dispatch(createPendingSession({ uri: connectUrl }));
+                setConnectUrl('');
+            }}>
+                <Stack gap={3}>
+                    <QrReader onConnect={onConnect} />
+                    <p style={{ textAlign: 'center', fontSize: '25px' }}>
+                        or use walletconnect uri
+                    </p>
+                    <Form.Control
+                        name="connectUrl"
+                        type="text"
+                        placeholder="e.g. wc:a281567bb3e4..."
+                        value={connectUrl}
+                        onChange={(e) => setConnectUrl(e.target.value)} />
+                    <Stack direction="horizontal" gap={2}>
+                        <Button
+                            type="submit"
+                            className="btn-primary"
+                            disabled={!connectUrl}>
+                            Connect
+                        </Button>
                     </Stack>
-                </Form>
-                <SessionModal
-                    sessionInfo={sessionInfo}
-                    setSessionInfo={setSessionInfo}
-                    show={showSessionModal}
-                    setShow={setShowSessionModal} />
-            </header>
-        </div>
+                </Stack>
+            </Form>
+            <SessionModal
+                sessionInfo={sessionInfo}
+                setSessionInfo={setSessionInfo}
+                show={showSessionModal}
+                setShow={setShowSessionModal} />
+        </>
     );
 };
 

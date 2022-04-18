@@ -20,34 +20,32 @@ function Login(): React.ReactElement {
     const from = location.state?.from?.pathname || '/wallet';
 
     return (
-        <div>
-            <header className="App-header">
-                <p>
-                    Type your password to login into your wallet
-                </p>
-                <Form
-                    className="mb-3"
-                    onSubmit={
-                        (event: React.FormEvent<HTMLFormElement>) => {
-                            event.preventDefault();
-                            const formData = new FormData(event.currentTarget);
-                            const username = formData.get('password') as string;
+        <>
+            <p>
+                Type your password to login into your wallet
+            </p>
+            <Form
+                className="mb-3"
+                onSubmit={
+                    (event: React.FormEvent<HTMLFormElement>) => {
+                        event.preventDefault();
+                        const formData = new FormData(event.currentTarget);
+                        const username = formData.get('password') as string;
 
-                            auth.signin(username, () => {
-                                navigate(from, { replace: true });
-                            });
-                        }
-                    }>
-                    <input name="password" type="password" />
-                    {' '}
-                    <Button
-                        type="submit"
-                        className="mt-3">
-                        Login
-                    </Button>
-                </Form>
-            </header>
-        </div>
+                        auth.signin(username, () => {
+                            navigate(from, { replace: true });
+                        });
+                    }
+                }>
+                <input name="password" type="password" />
+                {' '}
+                <Button
+                    type="submit"
+                    className="mt-3">
+                    Login
+                </Button>
+            </Form>
+        </>
     );
 }
 

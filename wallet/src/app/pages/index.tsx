@@ -8,6 +8,7 @@ import {
 
 import { initiateNewProvider } from '../../lib/alchemy';
 import { getEthereumNetwork } from '../../lib/helpers';
+import Layout from '../components/Layout/Layout';
 import { useAppSelector } from '../store';
 import {
     initiateWalletProvider,
@@ -47,22 +48,24 @@ export const Routes = () => {
     return (
         <Router>
             <AuthProvider>
-                <ReactRoutes>
-                    <Route path="/" element={<Welcome />} />
-                    <Route path="import_wallet" element={<ImportWallet />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/send/:assetSymbol" element={<Send />} />
-                    <Route
-                        path="/wallet"
-                        element={(
-                            <RequireAuth>
-                                <Wallet />
-                            </RequireAuth>
-                        )} />
-                    <Route path="/wallet/:assetSymbol" element={<AssetView />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/walletconnect" element={<ConnectWallet />} />
-                </ReactRoutes>
+                <Layout>
+                    <ReactRoutes>
+                        <Route path="/" element={<Welcome />} />
+                        <Route path="import_wallet" element={<ImportWallet />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/send/:assetSymbol" element={<Send />} />
+                        <Route
+                            path="/wallet"
+                            element={(
+                                <RequireAuth>
+                                    <Wallet />
+                                </RequireAuth>
+                            )} />
+                        <Route path="/wallet/:assetSymbol" element={<AssetView />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/walletconnect" element={<ConnectWallet />} />
+                    </ReactRoutes>
+                </Layout>
             </AuthProvider>
         </Router>
     );

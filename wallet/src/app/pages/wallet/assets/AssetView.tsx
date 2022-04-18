@@ -21,29 +21,25 @@ export const AssetView = (): React.ReactElement => {
     const navigate = useNavigate();
 
     return (
-        <div>
-            <header className="App-header">
-                <Stack gap={2}>
-                    <CloseButton />
-                    <Image
-                        width="60"
-                        height="60"
-                        roundedCircle
-                        src={assetItem?.asset.metadata?.logoURL || unkownAssetLogo} />
-                    {assetItem?.amount}
-                    {' '}
-                    {assetItem?.asset.symbol}
-                    <Button
-                        type="button"
-                        className="btn-primary"
-                        onClick={() => {
-                            navigate(`/send/${assetItem?.asset.symbol}`);
-                        }}>
-                        Send
-                    </Button>
-                </Stack>
-            </header>
-        </div>
+        <Stack gap={2}>
+            <CloseButton />
+            <Image
+                width="60"
+                height="60"
+                roundedCircle
+                src={assetItem?.asset.metadata?.logoURL || unkownAssetLogo} />
+            {assetItem?.amount}
+            {' '}
+            {assetItem?.asset.symbol}
+            <Button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                    navigate(`/send/${assetItem?.asset.symbol}`);
+                }}>
+                Send
+            </Button>
+        </Stack>
     );
 };
 

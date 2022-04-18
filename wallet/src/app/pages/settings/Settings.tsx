@@ -51,72 +51,70 @@ const Settings = () => {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="d-flex flex-row-reverse">
-                    <CloseButton />
-                </div>
-                <Form
-                    className="mb-3"
-                    onSubmit={async (e) => {
-                        e.preventDefault();
-                        if (walletEncryptedPrivateKey) {
-                            const wallet = await decryptWallet(
-                                password,
-                                walletInstance,
-                            );
+        <>
+            <div className="d-flex flex-row-reverse">
+                <CloseButton />
+            </div>
+            <Form
+                className="mb-3"
+                onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (walletEncryptedPrivateKey) {
+                        const wallet = await decryptWallet(
+                            password,
+                            walletInstance,
+                        );
 
-                            if (wallet instanceof Error) {
-                                setMenmonic('');
-                                setErrorMessage(wallet.message);
-                            } else {
-                                setErrorMessage('');
-                                setMenmonic(wallet.mnemonic.phrase);
-                            }
+                        if (wallet instanceof Error) {
+                            setMenmonic('');
+                            setErrorMessage(wallet.message);
+                        } else {
+                            setErrorMessage('');
+                            setMenmonic(wallet.mnemonic.phrase);
                         }
-                    }}>
-                    <Form.Group>
-                        <Form.Label>
-                            EIP-155 Mnemonic
-                        </Form.Label>
-                        <Card border="primary">
-                            <Card.Body style={{ color: 'black' }}>
-                                <p>
-                                    {mnemonicCardBody}
-                                </p>
-                            </Card.Body>
-                        </Card>
-                        <Form.Control
+                    }
+                }}>
+                <Form.Group>
+                    <Form.Label>
+                        EIP-155 Mnemonic
+                    </Form.Label>
+                    <Card border="primary">
+                        <Card.Body style={{ color: 'black' }}>
+                            <p>
+                                {mnemonicCardBody}
+                            </p>
+                        </Card.Body>
+                    </Card>
+                    <Form.Control
+                        className="mt-3"
+                        type="password"
+                        placeholder="password"
+                        name="password"
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }} />
+                    <Stack
+                        direction="horizontal"
+                        className="text-center"
+                        gap={3}>
+                        <Button
                             className="mt-3"
-                            type="password"
-                            placeholder="password"
-                            name="password"
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                            }} />
-                        <Stack
-                            direction="horizontal"
-                            className="text-center"
-                            gap={3}>
-                            <Button
-                                className="mt-3"
-                                disabled={!password}
-                                type="submit">
-                                Reveal
-                            </Button>
-                            <Button
-                                className="mt-3"
-                                disabled={!password}
-                                variant="danger"
-                                type="button"
-                                onClick={onDelete}>
-                                Delete Wallet
-                            </Button>
-                        </Stack>
-                    </Form.Group>
-                </Form>
-            </header>
-        </div>
+                            disabled={!password}
+                            type="submit">
+                            Reveal
+                        </Button>
+                        <Button
+                            className="mt-3"
+                            disabled={!password}
+                            variant="danger"
+                            type="button"
+                            onClick={onDelete}>
+                            Delete Wallet
+                        </Button>
+                    </Stack>
+                </Form.Group>
+            </Form>
+        </>
     );
 };
 

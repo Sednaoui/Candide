@@ -29,54 +29,52 @@ const ImportWallet = (): ReactElement => {
     const disableButton = mnemonic ? !isValidMnemonic(mnemonic) || !password : !password;
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>
-                    Welcome Aboard
-                </h1>
-                <p>
-                    Leave empty to create a new wallet or enter your recovery phrase to import
-                    your wallet
-                </p>
-                <Form
-                    className="mb-3"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        dispatch(createWallet({ password, mnemonic }));
-                        navigate('/wallet');
-                    }}>
-                    <Form.Group>
-                        <Form.Control
-                            className="mb-3"
-                            as="textarea"
-                            rows={3}
-                            type="text"
-                            placeholder="12 words mnemonic phrase (EIP-155)"
-                            name="mnemonic"
-                            onChange={(e) => {
-                                setMnemonic(e.target.value);
-                            }} />
-                        <Form.Label>
-                            Choose a password to encrypt your wallet on this device
-                        </Form.Label>
-                        <Form.Control
-                            className="mt-3"
-                            type="password"
-                            placeholder="password"
-                            name="password"
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                            }} />
-                        <Button
-                            className="mt-3"
-                            disabled={disableButton}
-                            type="submit">
-                            {mnemonic ? 'Import' : 'Create'}
-                        </Button>
-                    </Form.Group>
-                </Form>
-            </header>
-        </div>
+        <>
+            <h1>
+                Welcome Aboard
+            </h1>
+            <p>
+                Leave empty to create a new wallet or enter your recovery phrase to import
+                your wallet
+            </p>
+            <Form
+                className="mb-3"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    dispatch(createWallet({ password, mnemonic }));
+                    navigate('/wallet');
+                }}>
+                <Form.Group>
+                    <Form.Control
+                        className="mb-3"
+                        as="textarea"
+                        rows={3}
+                        type="text"
+                        placeholder="12 words mnemonic phrase (EIP-155)"
+                        name="mnemonic"
+                        onChange={(e) => {
+                            setMnemonic(e.target.value);
+                        }} />
+                    <Form.Label>
+                        Choose a password to encrypt your wallet on this device
+                    </Form.Label>
+                    <Form.Control
+                        className="mt-3"
+                        type="password"
+                        placeholder="password"
+                        name="password"
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }} />
+                    <Button
+                        className="mt-3"
+                        disabled={disableButton}
+                        type="submit">
+                        {mnemonic ? 'Import' : 'Create'}
+                    </Button>
+                </Form.Group>
+            </Form>
+        </>
     );
 };
 

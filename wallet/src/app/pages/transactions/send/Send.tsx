@@ -94,133 +94,131 @@ const Send = (): React.ReactElement => {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <Form
-                    className="mb-3"
-                    onSubmit={async (e) => {
-                        e.preventDefault();
-                        if (walletEncryptedPrivateKey) {
-                            const wallet = await decryptWallet(password, walletInstance);
+        <>
+            <Form
+                className="mb-3"
+                onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (walletEncryptedPrivateKey) {
+                        const wallet = await decryptWallet(password, walletInstance);
 
-                            // if wrong password, wallet will return error
-                            if (wallet instanceof Error) {
-                                setTxTransaction(wallet.message);
+                        // if wrong password, wallet will return error
+                        if (wallet instanceof Error) {
+                            setTxTransaction(wallet.message);
+                            return;
+                        }
+
+                        if (walletAddress && provider) {
+                            const tx = await transferTokens(
+                                provider,
+                                tokenAmount,
+                                recipient,
+                                wallet.privateKey,
+                                contractAddressOfTokenSelected,
+                            );
+
+                            // if transaction failed, tx will return an error
+                            if (tx instanceof Error) {
+                                setTxTransaction(tx.message);
                                 return;
                             }
 
-                            if (walletAddress && provider) {
-                                const tx = await transferTokens(
-                                    provider,
-                                    tokenAmount,
-                                    recipient,
-                                    wallet.privateKey,
-                                    contractAddressOfTokenSelected,
-                                );
-
-                                // if transaction failed, tx will return an error
-                                if (tx instanceof Error) {
-                                    setTxTransaction(tx.message);
-                                    return;
-                                }
-
-                                setTxTransaction(tx.hash);
-                            }
-                        } else {
-                            setTxTransaction('no wallet Instance');
+                            setTxTransaction(tx.hash);
                         }
-                    }}>
-                    <Row>
-                        <Col className="d-flex flex-row-reverse">
-                            <CloseButton />
-                        </Col>
-                    </Row>
-                    <Form.Group>
-                        <Form.Label>
-                            Select Token
-                        </Form.Label>
-                        <Form.Select
-                            required
-                            onChange={(e) => {
-                                setAssetSymbolSelect(e.target.value);
-                                setGasLimit(e.target.value === ETH.symbol
-                                    ? ETHTransferGasLimit : ERC20TransferGasLimit);
-                            }}
-                            defaultValue={assetSymbol}>
-                            {list}
-                        </Form.Select>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>
-                            Amount
-                        </Form.Label>
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="0.00"
-                            name="amount"
-                            onChange={(e) => setTokenAmount(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>
-                            Address
-                        </Form.Label>
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="0x0d8775f648430679a709e98d2b0cb6250d2887ef"
-                            name="address"
-                            onChange={(e) => setRecipient(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>
-                            Password
-                        </Form.Label>
-                        <Form.Control
-                            required
-                            type="password"
-                            placeholder="Password"
-                            name="password"
-                            onChange={(e) => setPassword(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>
-                            Estimated Fee:
-                            {' '}
-                            {gasPriceOfTXInETH}
-                            {' '}
-                            ETH
-                        </Form.Label>
-                        <Button
-                            variant="link"
-                            type="button"
-                            onClick={() => setShow(true)}>
-                            Fee Settings
-                        </Button>
-                        <GasSettings
-                            gasLimit={gasLimit}
-                            show={show}
-                            close={handleClose} />
-                    </Form.Group>
+                    } else {
+                        setTxTransaction('no wallet Instance');
+                    }
+                }}>
+                <Row>
+                    <Col className="d-flex flex-row-reverse">
+                        <CloseButton />
+                    </Col>
+                </Row>
+                <Form.Group>
+                    <Form.Label>
+                        Select Token
+                    </Form.Label>
+                    <Form.Select
+                        required
+                        onChange={(e) => {
+                            setAssetSymbolSelect(e.target.value);
+                            setGasLimit(e.target.value === ETH.symbol
+                                ? ETHTransferGasLimit : ERC20TransferGasLimit);
+                        }}
+                        defaultValue={assetSymbol}>
+                        {list}
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>
+                        Amount
+                    </Form.Label>
+                    <Form.Control
+                        required
+                        type="text"
+                        placeholder="0.00"
+                        name="amount"
+                        onChange={(e) => setTokenAmount(e.target.value)} />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>
+                        Address
+                    </Form.Label>
+                    <Form.Control
+                        required
+                        type="text"
+                        placeholder="0x0d8775f648430679a709e98d2b0cb6250d2887ef"
+                        name="address"
+                        onChange={(e) => setRecipient(e.target.value)} />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>
+                        Password
+                    </Form.Label>
+                    <Form.Control
+                        required
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        onChange={(e) => setPassword(e.target.value)} />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>
+                        Estimated Fee:
+                        {' '}
+                        {gasPriceOfTXInETH}
+                        {' '}
+                        ETH
+                    </Form.Label>
                     <Button
-                        disabled={!utils.isAddress(recipient)}
-                        type="submit"
-                        className="mt-3">
-                        Send
+                        variant="link"
+                        type="button"
+                        onClick={() => setShow(true)}>
+                        Fee Settings
                     </Button>
-                </Form>
-                {txTransaction && (
-                    <div className="mt-3">
-                        <a
-                            href={`https://ropsten.etherscan.io/tx/${txTransaction}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            {txTransaction}
-                        </a>
-                    </div>
-                )}
-            </header>
-        </div>
+                    <GasSettings
+                        gasLimit={gasLimit}
+                        show={show}
+                        close={handleClose} />
+                </Form.Group>
+                <Button
+                    disabled={!utils.isAddress(recipient)}
+                    type="submit"
+                    className="mt-3">
+                    Send
+                </Button>
+            </Form>
+            {txTransaction && (
+                <div className="mt-3">
+                    <a
+                        href={`https://ropsten.etherscan.io/tx/${txTransaction}`}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        {txTransaction}
+                    </a>
+                </div>
+            )}
+        </>
     );
 };
 

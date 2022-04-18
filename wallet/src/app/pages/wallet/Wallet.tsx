@@ -103,153 +103,151 @@ const Wallet = (): React.ReactElement => {
     const connectedSession = useAppSelector((state) => state.wallet.connectedSession);
 
     return (
-        <div>
-            <header className="App-header">
-                <Stack gap={2}>
-                    <Form.Select
-                        required
-                        onChange={(e) => {
-                            dispatch(changeWalletChainId(Number(e.target.value)));
-                        }}
-                        defaultValue={walletChainId}>
-                        {networkList}
-                    </Form.Select>
-                    <Stack direction="horizontal" gap={2}>
-                        <Button
-                            type="button"
-                            buttonRef={target}
-                            onClick={copy}>
-                            {trancatAddress(address)}
-                        </Button>
-                        <Overlay target={target.current} show={show} placement="right">
-                            {(props) => (
-                                <Tooltip id="overlay" {...props}>
-                                    Copied
-                                </Tooltip>
-                            )}
-                        </Overlay>
-                        <Button
-                            type="button"
-                            className="btn-primary"
-                            onClick={() => {
-                                navigate('/send/ETH');
-                            }}>
-                            Send
-                        </Button>
-                        <Button
-                            type="button"
-                            className="btn-primary"
-                            onClick={() => {
-                                navigate('/settings');
-                            }}>
-                            Settings
-                        </Button>
-                        <Button
-                            type="button"
-                            className="btn-primary"
-                            onClick={() => {
-                                navigate('/walletconnect');
-                            }}>
-                            Connect
-                        </Button>
-                    </Stack>
-                    <WalletNavBar />
-                    {connected && connectedSession && connectedSession.peerMeta && (
-                        <Stack
-                            gap={2}
-                            direction="horizontal">
-                            {connectedSession.peerMeta && (
-                                <Image
-                                    src={connectedSession.peerMeta.icons[0]}
-                                    width={40}
-                                    height={40} />
-                            )}
-                            <p>
-                                Connected to
-                                {' '}
-                                <b>
-                                    {connectedSession.peerMeta.name}
-                                </b>
-                                {connectedSession.chainId && (
-                                    <Stack gap={3} direction="horizontal">
-                                        <Form.Select
-                                            required
-                                            onChange={(e) => {
-                                                const id = Number(e.target.value);
-                                                const accounts = connectedSession.accounts[0]
-                                                    || address;
-
-                                                if (accounts) {
-                                                    dispatch(updateSession({
-                                                        chainId: id,
-                                                        accounts: [accounts],
-                                                    }));
-                                                }
-                                            }}
-                                            defaultValue={dappChainId}>
-                                            {networkList}
-                                        </Form.Select>
-                                        <Button
-                                            type="button"
-                                            className="btn-secondary"
-                                            disabled={!connectedSession && !connected}
-                                            onClick={() => {
-                                                dispatch(disconnectSession());
-                                            }}>
-                                            Disconnect
-                                        </Button>
-                                    </Stack>
-                                )}
-                            </p>
-                        </Stack>
-                    )}
-                    {/* // TODO: only display transaction submitted with eth_sendTransaction */}
-                    {transactionHash && blockExplorer ? (
-                        <a
-                            href={`${blockExplorer}/tx/${transactionHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            See Transaction on
-                            {' '}
-                            {removeHttp(blockExplorer)}
-                            {' '}
-                        </a>
-                    ) : null}
-                    {/* display loading of bridge transaction */}
-                    {loadingWatchBridgeTransaction && (
-                        <div className="text-center">
-                            <div className="spinner-border text-primary" role="status">
-                                <span className="sr-only" />
-                            </div>
-                            {' '}
-                            Moving funds from
-                            {' '}
-                            {sourceChain.name}
-                            {' '}
-                            to
-                            {' '}
-                            {destinationChain.name}
-                            ...
-                        </div>
-                    )}
-                    {/* display error */}
-                    {error ? (
-                        <p>
-                            <span role="img" aria-label="error">
-                                ❌
-                            </span>
-                            {' '}
-                            {error.message}
-                        </p>
-                    ) : null}
+        <>
+            <Stack gap={2}>
+                <Form.Select
+                    required
+                    onChange={(e) => {
+                        dispatch(changeWalletChainId(Number(e.target.value)));
+                    }}
+                    defaultValue={walletChainId}>
+                    {networkList}
+                </Form.Select>
+                <Stack direction="horizontal" gap={2}>
+                    <Button
+                        type="button"
+                        buttonRef={target}
+                        onClick={copy}>
+                        {trancatAddress(address)}
+                    </Button>
+                    <Overlay target={target.current} show={show} placement="right">
+                        {(props) => (
+                            <Tooltip id="overlay" {...props}>
+                                Copied
+                            </Tooltip>
+                        )}
+                    </Overlay>
+                    <Button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => {
+                            navigate('/send/ETH');
+                        }}>
+                        Send
+                    </Button>
+                    <Button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => {
+                            navigate('/settings');
+                        }}>
+                        Settings
+                    </Button>
+                    <Button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => {
+                            navigate('/walletconnect');
+                        }}>
+                        Connect
+                    </Button>
                 </Stack>
-                <Review
-                    show={showReviewModal}
-                    setShow={setShowReviewModal}
-                    callRequest={callRequest}
-                    chainId={walletChainId} />
-            </header>
-        </div>
+                <WalletNavBar />
+                {connected && connectedSession && connectedSession.peerMeta && (
+                    <Stack
+                        gap={2}
+                        direction="horizontal">
+                        {connectedSession.peerMeta && (
+                            <Image
+                                src={connectedSession.peerMeta.icons[0]}
+                                width={40}
+                                height={40} />
+                        )}
+                        <p>
+                            Connected to
+                            {' '}
+                            <b>
+                                {connectedSession.peerMeta.name}
+                            </b>
+                            {connectedSession.chainId && (
+                                <Stack gap={3} direction="horizontal">
+                                    <Form.Select
+                                        required
+                                        onChange={(e) => {
+                                            const id = Number(e.target.value);
+                                            const accounts = connectedSession.accounts[0]
+                                                || address;
+
+                                            if (accounts) {
+                                                dispatch(updateSession({
+                                                    chainId: id,
+                                                    accounts: [accounts],
+                                                }));
+                                            }
+                                        }}
+                                        defaultValue={dappChainId}>
+                                        {networkList}
+                                    </Form.Select>
+                                    <Button
+                                        type="button"
+                                        className="btn-secondary"
+                                        disabled={!connectedSession && !connected}
+                                        onClick={() => {
+                                            dispatch(disconnectSession());
+                                        }}>
+                                        Disconnect
+                                    </Button>
+                                </Stack>
+                            )}
+                        </p>
+                    </Stack>
+                )}
+                {/* // TODO: only display transaction submitted with eth_sendTransaction */}
+                {transactionHash && blockExplorer ? (
+                    <a
+                        href={`${blockExplorer}/tx/${transactionHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        See Transaction on
+                        {' '}
+                        {removeHttp(blockExplorer)}
+                        {' '}
+                    </a>
+                ) : null}
+                {/* display loading of bridge transaction */}
+                {loadingWatchBridgeTransaction && (
+                    <div className="text-center">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only" />
+                        </div>
+                        {' '}
+                        Moving funds from
+                        {' '}
+                        {sourceChain.name}
+                        {' '}
+                        to
+                        {' '}
+                        {destinationChain.name}
+                        ...
+                    </div>
+                )}
+                {/* display error */}
+                {error ? (
+                    <p>
+                        <span role="img" aria-label="error">
+                            ❌
+                        </span>
+                        {' '}
+                        {error.message}
+                    </p>
+                ) : null}
+            </Stack>
+            <Review
+                show={showReviewModal}
+                setShow={setShowReviewModal}
+                callRequest={callRequest}
+                chainId={walletChainId} />
+        </>
     );
 };
 
