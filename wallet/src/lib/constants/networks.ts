@@ -53,7 +53,5 @@ export const evmNetworks = [
     ARBITRUM,
     MAINNET,
     OPTIMISM,
-    POLYGON,
-    KOVAN,
 ];
 
