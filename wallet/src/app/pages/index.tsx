@@ -15,10 +15,6 @@ import {
     resetTempWalletState,
 } from '../store/wallet/actions';
 import { AuthProvider } from './auth/AuthProvider';
-import {
-    Login,
-    RequireAuth,
-} from './auth/Login';
 import ConnectWallet from './connections/ConnectWallet';
 import ImportWallet from './onboarding/ImportWallet';
 import Welcome from './onboarding/Welcome';
@@ -52,15 +48,8 @@ export const Routes = () => {
                     <ReactRoutes>
                         <Route path="/" element={<Welcome />} />
                         <Route path="import_wallet" element={<ImportWallet />} />
-                        <Route path="/login" element={<Login />} />
                         <Route path="/send/:assetSymbol" element={<Send />} />
-                        <Route
-                            path="/wallet"
-                            element={(
-                                <RequireAuth>
-                                    <Wallet />
-                                </RequireAuth>
-                            )} />
+                        <Route path="/wallet" element={<Wallet />} />
                         <Route path="/wallet/:assetSymbol" element={<AssetView />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/walletconnect" element={<ConnectWallet />} />

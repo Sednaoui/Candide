@@ -8,18 +8,14 @@ import {
 } from '../../components';
 import '../../App.css';
 import { useAppSelector } from '../../store';
-import { useAuth } from '../auth/AuthProvider';
 
 function Welcome(): JSX.Element {
-    const auth = useAuth();
     const { walletInstance } = useAppSelector((state) => state.wallet);
 
     let initialPath = '/';
 
-    if (walletInstance?.address && auth.user) {
+    if (walletInstance?.address) {
         initialPath = '/wallet';
-    } else if (walletInstance?.address && !auth.user) {
-        initialPath = '/login';
     } else {
         initialPath = '/import_wallet';
     }
@@ -35,7 +31,7 @@ function Welcome(): JSX.Element {
                     Welcome to Candide
                 </h3>
                 <Link to={initialPath}>
-                    {initialPath === '/login' ? 'Login' : 'Get Started'}
+                    {initialPath === '/wallet' ? 'Enter Wallet' : 'Get Started'}
                 </Link>
             </Stack>
         </Container>
