@@ -1,12 +1,7 @@
 import React, {
     useEffect,
-    useRef,
     useState,
 } from 'react';
-import {
-    Overlay,
-    Tooltip,
-} from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +9,6 @@ import { evmNetworks } from '../../../lib/constants/networks';
 import {
     getEthereumNetwork,
     removeHttp,
-    trancatAddress,
 } from '../../../lib/helpers';
 import {
     Image,
@@ -33,6 +27,7 @@ import {
     updateSession,
 } from '../../store/wallet/actions';
 import Review from '../transactions/review/Review';
+import ReceiveModal from './receive/ReceiveModal';
 import WalletNavBar from './WalletNavBar';
 
 const Wallet = (): React.ReactElement => {
@@ -44,19 +39,7 @@ const Wallet = (): React.ReactElement => {
 
     const navigate = useNavigate();
 
-    const [show, setShow] = useState(false);
-    const target = useRef(null);
-
-    const copy = async () => {
-        if (wallet) {
-            await navigator.clipboard.writeText(wallet.address);
-            // show tooltip for 1 seconds
-            setShow(true);
-            setTimeout(() => {
-                setShow(false);
-            }, 1000);
-        }
-    };
+    const [showReceiveModal, setShowReceiveModal] = useState(false);
 
     const dispatch = useDispatch();
     const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
@@ -116,17 +99,9 @@ const Wallet = (): React.ReactElement => {
                 <Stack direction="horizontal" gap={2}>
                     <Button
                         type="button"
-                        buttonRef={target}
-                        onClick={copy}>
-                        {trancatAddress(address)}
+                        onClick={() => setShowReceiveModal(true)}>
+                        Receive
                     </Button>
-                    <Overlay target={target.current} show={show} placement="right">
-                        {(props) => (
-                            <Tooltip id="overlay" {...props}>
-                                Copied
-                            </Tooltip>
-                        )}
-                    </Overlay>
                     <Button
                         type="button"
                         className="btn-primary"
@@ -247,6 +222,9 @@ const Wallet = (): React.ReactElement => {
                 setShow={setShowReviewModal}
                 callRequest={callRequest}
                 chainId={walletChainId} />
+            <ReceiveModal
+                show={showReceiveModal}
+                setShow={setShowReceiveModal} />
         </>
     );
 };
