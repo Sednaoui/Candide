@@ -33,21 +33,9 @@ const Settings = () => {
     const navigate = useNavigate();
 
     const onDelete = async () => {
-        if (walletEncryptedPrivateKey) {
-            const wallet = await decryptWallet(
-                password,
-                walletInstance,
-            );
-
-            if (wallet instanceof Error) {
-                setMenmonic('');
-                setErrorMessage(wallet.message);
-            } else {
-                setErrorMessage('');
-                dispatch(resetWallet());
-                navigate('/import_wallet');
-            }
-        }
+        setErrorMessage('');
+        dispatch(resetWallet());
+        navigate('/');
     };
 
     return (
