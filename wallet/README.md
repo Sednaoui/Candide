@@ -1,5 +1,7 @@
 # Candide
 
+![Candide-logo](/wallet/src/assets/logo.jpeg)
+
 To jump to developpement, scroll to the buttom of this page.
 
 A web3 crypto wallet with build-in bridge support
