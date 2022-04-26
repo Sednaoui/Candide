@@ -1,6 +1,6 @@
 # Candide
 
-![Candide-logo](/wallet/src/assets/logo.jpeg)
+<img src="/wallet/src/assets/logo.jpeg" alt="Candide-logo" width="400">
 
 To jump to developpement, scroll to the buttom of this page.
 
