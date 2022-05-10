@@ -14,9 +14,9 @@ const getProvider = async (provider: Provider) => {
 };
 
 const getEstimates = async (provider: L2Provider<Provider>, tx: TransactionRequest) => ({
-    // totalCost: await provider.estimateTotalGasCost(tx),
+    totalCost: await provider.estimateTotalGasCost(tx),
     l1Cost: await provider.estimateL1GasCost(tx),
-    // l2Cost: await provider.estimateL2GasCost(tx),
+    l2Cost: await provider.estimateL2GasCost(tx),
     l1Gas: await provider.estimateL1Gas(tx),
 });
 
