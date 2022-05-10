@@ -289,6 +289,7 @@ export const walletReducer = (
         case INITIATE_DAPP_PROVIDER:
             return {
                 ...state,
+                dappProvider: action.payload,
             };
         case watchBridgeTransaction.TRIGGER:
             return {
