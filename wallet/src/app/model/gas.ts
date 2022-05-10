@@ -1,11 +1,20 @@
-import { Provider } from '@ethersproject/providers';
+import {
+    Provider,
+    TransactionRequest,
+} from '@ethersproject/providers';
 import { utils } from 'ethers';
 
 import Blocknative, { BLOCKNATIVE_API_KEY } from '../../lib/blocknative/blocknative';
 import {
+    ARBITRUM,
+    MAINNET,
+    OPTIMISM,
+} from '../../lib/constants/networks';
+import {
     BlockPrices,
     EVMNetwork,
 } from '../../lib/networks';
+import { estimateGasOnOptimism } from '../../lib/optimism';
 
 /**
  * Get block prices for a particular network and block number.
@@ -96,3 +105,28 @@ export async function getBlockPricesBN(
     }
     return null;
 }
+
+export const estimateGasCost = async ({ provider, tx }: {
+    provider: Provider,
+    tx: TransactionRequest,
+}) => {
+    // based on provider, estimate gas
+
+    const network = await provider.getNetwork();
+
+    let gasLimit;
+    let gasPrice;
+    let gasCost;
+
+    switch (network.chainId) {
+        case OPTIMISM.chainID:
+            return (await estimateGasOnOptimism({ provider, tx })).totalCost;
+        case ARBITRUM.chainID:
+        case MAINNET.chainID:
+        default:
+            gasLimit = await provider.estimateGas(tx);
+            gasPrice = await provider.getGasPrice();
+            gasCost = gasLimit.mul(gasPrice);
+            return gasCost;
+    }
+};

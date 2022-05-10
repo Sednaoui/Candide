@@ -1,6 +1,7 @@
 import { BaseProvider } from '@ethersproject/providers';
 import { Hop } from '@hop-protocol/sdk';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { BigNumber } from 'ethers';
 import {
     eventChannel,
     END,
@@ -35,6 +36,7 @@ import {
     RequestSessionPayload,
     IConnector,
 } from '../../../lib/walletconnect/types';
+import { estimateGasCost } from '../../model/gas';
 import {
     checkApprovalAllowenceFromTransactionRequest,
     signEthereumRequests,
@@ -321,6 +323,7 @@ function* listenWalletConnectCallRequest(): Generator {
     const walletChainId: any = yield select((state) => state.wallet.walletChainId);
     const address: any = yield select((state) => state.wallet.walletInstance.address);
     const provider: any = yield select((state) => state.wallet.walletProvider);
+    const dappProvider: any = yield select((state) => state.wallet.dappProvider);
 
     while (true) {
         try {
@@ -365,12 +368,22 @@ function* listenWalletConnectCallRequest(): Generator {
                 } else if (allowenceOk === true) {
                     // send the user the briding transaction to approve on hop contracts
 
+                    const transactionOnDestinationChain = request.params[0];
+
+                    const transactionValue = BigNumber.from(transactionOnDestinationChain.value);
+                    const gasOnDestination: any = yield call(estimateGasCost, {
+                        provider: dappProvider,
+                        tx: transactionOnDestinationChain,
+                    });
+
+                    const valueToTransfer = transactionValue.add(gasOnDestination);
+
                     const tx = yield call(populateBridgeTx, {
                         sourceChainId: walletChainId,
                         destinationChainId: connector.chainId,
                         recipient: address,
                         asset: ETH, // WARNING: only briding ETH at the moment
-                        value: request.params[0].value,
+                        value: valueToTransfer,
                     });
 
                     if (tx instanceof Error) {
