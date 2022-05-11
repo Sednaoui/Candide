@@ -5,6 +5,7 @@ import React, {
 } from 'react';
 import { useDispatch } from 'react-redux';
 
+import hoplogo from '../../../../assets/hop_logo.svg';
 import {
     Button,
     Row,
@@ -13,6 +14,7 @@ import {
     Stack,
     Form,
     Card,
+    Image,
 } from '../../../components/index';
 import { reviewEthereumRequests } from '../../../model/transactions';
 import { decryptWallet } from '../../../model/wallet';
@@ -76,12 +78,30 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
         }
     }, [callRequestChainId, walletChainId]);
 
+    const sourceChainName = walletProvider?.network?.name?.toUpperCase() || '';
+    const destinationChainName = dappProvider?.network?.name?.toUpperCase() || '';
+
+    const [functionCalled, setFunctionCalled] = useState({ label: '', value: '' });
+
+    useEffect(() => {
+        if (transactionData) {
+            const functionName = transactionData
+                .find((element) => element.label === 'Function Called');
+
+            if (functionName) {
+                setFunctionCalled(functionName);
+            }
+        }
+    }, [transactionData]);
+
     return (
         <>
             <Modal show={show} fullscreen onHide={() => setShow(false)}>
                 <Modal.Header>
                     <Modal.Title>
-                        Review Incoming Request
+                        Review Incoming Request on
+                        {' '}
+                        {sourceChainName}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -98,6 +118,22 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                 </Row>
                             ))}
                         </Card.Body>
+                        {functionCalled.value.includes('swapAndSend')
+                            && (
+                                <Card.Footer>
+                                    <Stack>
+                                        <Image
+                                            src={hoplogo}
+                                            width={100}
+                                            height={100}
+                                            alt="qr code icon" />
+                                        {`Moving tokens from ${sourceChainName} to
+                                            ${destinationChainName} along with gas fees to 
+                                            cover the next transaction on
+                                            ${destinationChainName}`}
+                                    </Stack>
+                                </Card.Footer>
+                            )}
                     </Card>
                 </Modal.Body>
                 <Modal.Footer className="text-center">
