@@ -126,7 +126,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                             src={hoplogo}
                                             width={100}
                                             height={100}
-                                            alt="qr code icon" />
+                                            alt="hop.exchange logo" />
                                         {`Moving tokens from ${sourceChainName} to
                                             ${destinationChainName} along with gas fees to 
                                             cover the next transaction on
