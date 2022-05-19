@@ -41,7 +41,7 @@ const Settings = () => {
     return (
         <>
             <div className="d-flex flex-row-reverse">
-                <CloseButton />
+                <CloseButton variant="white" />
             </div>
             <Form
                 className="mb-3"

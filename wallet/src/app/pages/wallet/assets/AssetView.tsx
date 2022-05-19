@@ -22,7 +22,7 @@ export const AssetView = (): React.ReactElement => {
 
     return (
         <Stack gap={2}>
-            <CloseButton />
+            <CloseButton variant="white" />
             <Image
                 width="60"
                 height="60"

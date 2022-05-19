@@ -131,7 +131,7 @@ const Send = (): React.ReactElement => {
                 }}>
                 <Row>
                     <Col className="d-flex flex-row-reverse">
-                        <CloseButton />
+                        <CloseButton variant="white" />
                     </Col>
                 </Row>
                 <Form.Group>

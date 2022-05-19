@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const CloseButton = (props: {
     onClick?: () => void;
     className?: string,
+    variant?: 'white',
 }): React.ReactElement => {
-    const { className, onClick } = props;
+    const { className, onClick, variant } = props;
     const navigate = useNavigate();
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
@@ -19,6 +20,7 @@ const CloseButton = (props: {
     return (
         <CloseB
             type="button"
+            variant={variant}
             onClick={handleClick}
             className={className} />
     );
