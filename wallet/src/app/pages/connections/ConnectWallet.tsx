@@ -3,8 +3,6 @@ import React, {
 } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { initiateNewProvider } from '../../../lib/alchemy';
-import { getEthereumNetwork } from '../../../lib/helpers';
 import {
     Button,
     Stack,
@@ -16,7 +14,6 @@ import { useAppSelector } from '../../store';
 import {
     changeDappChainId,
     createPendingSession,
-    initiateDappProvider,
 } from '../../store/wallet/actions';
 import SessionModal, { SessionInfo } from './SessionModal';
 
@@ -52,8 +49,6 @@ const ConnectWallet = (): React.ReactElement => {
         }
     }, [pendingRequest]);
 
-    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
-
     useEffect(() => {
         if (sessionInfo) {
             if (sessionInfo.chainId) {
@@ -61,16 +56,6 @@ const ConnectWallet = (): React.ReactElement => {
             }
         }
     }, [sessionInfo]);
-
-    useEffect(() => {
-        const network = getEthereumNetwork(dappChainId);
-        const provider = initiateNewProvider(
-            network,
-            process.env.REACT_APP_ALCHEMY_API_KEY,
-        );
-
-        dispatch(initiateDappProvider(provider));
-    }, [dappChainId, changeDappChainId, dispatch]);
 
     const onConnect = async (uri: string) => {
         try {

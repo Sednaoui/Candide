@@ -13,6 +13,7 @@ import { useAppSelector } from '../store';
 import {
     initiateWalletProvider,
     resetTempWalletState,
+    initiateDappProvider,
 } from '../store/wallet/actions';
 import { AuthProvider } from './auth/AuthProvider';
 import ConnectWallet from './connections/ConnectWallet';
@@ -25,6 +26,7 @@ import Wallet from './wallet/Wallet';
 
 export const Routes = () => {
     const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
+    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
 
     const ethNetwork = getEthereumNetwork(walletChainId);
 
@@ -36,6 +38,17 @@ export const Routes = () => {
             process.env.REACT_APP_ALCHEMY_API_KEY,
         )));
     }, [initiateNewProvider, ethNetwork, dispatch, initiateWalletProvider]);
+
+    useEffect(() => {
+        if (dappChainId) {
+            const network = getEthereumNetwork(dappChainId);
+
+            dispatch(initiateDappProvider(initiateNewProvider(
+                network,
+                process.env.REACT_APP_ALCHEMY_API_KEY,
+            )));
+        }
+    }, [dappChainId]);
 
     useEffect(() => {
         dispatch(resetTempWalletState());
