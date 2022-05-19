@@ -320,15 +320,15 @@ function* listenWalletConnectCallRequest(): Generator {
     const connector: any = yield select((state) => state.wallet.connector);
     const channel = yield call(callRequest, connector);
 
-    const walletChainId: any = yield select((state) => state.wallet.walletChainId);
-    const address: any = yield select((state) => state.wallet.walletInstance.address);
-    const provider: any = yield select((state) => state.wallet.walletProvider);
-    const dappProvider: any = yield select((state) => state.wallet.dappProvider);
-
     while (true) {
         try {
             // @ts-expect-error:TODO: type redux-saga yield take
             const request: any = yield take(channel);
+
+            const walletChainId: any = yield select((state) => state.wallet.walletChainId);
+            const address: any = yield select((state) => state.wallet.walletInstance.address);
+            const provider: any = yield select((state) => state.wallet.walletProvider);
+            const dappProvider: any = yield select((state) => state.wallet.dappProvider);
 
             // checks if the request is the same as the current network of the wallet
             if (connector.chainId === walletChainId) {
