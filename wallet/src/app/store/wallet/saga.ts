@@ -133,7 +133,7 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string } | n
                 // close this channel when we approve a session request
                 yield channel.close();
             }
-        } else {
+        } else if (connector && connector.connected) {
             yield put(confirmRequestSession.fulfill());
         }
     } catch (err) {
@@ -166,13 +166,15 @@ function* listenWalletConnectDisconnect(): Generator {
     try {
         const connector: any = yield select((state) => state.wallet.connector);
 
-        const channel: any = yield call(sessionDisconnect, connector);
+        if (connector && connector.connected) {
+            const channel: any = yield call(sessionDisconnect, connector);
 
-        while (true) {
-            yield take(channel);
+            while (true) {
+                yield take(channel);
 
-            yield put(disconnectSessionAction.success(connector));
-            yield channel.close();
+                yield put(disconnectSessionAction.success(connector));
+                yield channel.close();
+            }
         }
     } catch (err) {
         yield put(disconnectSessionAction.failure(err));
@@ -272,13 +274,15 @@ function* watchWalletConnectUpdateSession(): Generator {
 }
 
 const callRequest = async (connector: IConnector) => eventChannel((emitter) => {
-    connector.on('call_request', (_error, p) => {
-        if (p) {
-            emitter(p);
-        } else {
-            emitter(END);
-        }
-    });
+    if (connector) {
+        connector.on('call_request', (_error, p) => {
+            if (p) {
+                emitter(p);
+            } else {
+                emitter(END);
+            }
+        });
+    }
     return () => {
         // TODO: unsubscribe from connector if we are disconnected
     };
