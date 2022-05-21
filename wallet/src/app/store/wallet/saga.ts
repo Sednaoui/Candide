@@ -158,7 +158,6 @@ const sessionDisconnect = async (connector: IConnector) => eventChannel((emitter
     });
     return () => {
         // unsubscribe from connector once saga is cancelled
-        connector.killSession();
     };
 });
 
