@@ -82,7 +82,6 @@ const Wallet = (): React.ReactElement => {
 
     const error = useWalletError();
 
-    const connected = useAppSelector((state) => state.wallet.connector?.connected);
     const connectedSession = useAppSelector((state) => state.wallet.connectedSession);
 
     return (
@@ -128,7 +127,7 @@ const Wallet = (): React.ReactElement => {
                     </Button>
                 </Stack>
                 <WalletNavBar />
-                {connected && connectedSession && connectedSession.peerMeta && (
+                {connectedSession && connectedSession.peerMeta && (
                     <Stack
                         gap={2}
                         direction="horizontal">
@@ -166,7 +165,7 @@ const Wallet = (): React.ReactElement => {
                                     <Button
                                         type="button"
                                         className="btn-secondary"
-                                        disabled={!connectedSession && !connected}
+                                        disabled={!connectedSession}
                                         onClick={() => {
                                             dispatch(disconnectSession());
                                         }}>

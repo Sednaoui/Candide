@@ -54,6 +54,7 @@ import {
     rejectCallRequest as rejectCallRequestAction,
     updateSession as updateSessionAction,
     watchBridgeTransaction as watchBridgeTransactionAction,
+    RESET_TEMP_WALLET_STATE,
 } from './actions';
 import { EncryptedWallet } from './type';
 
@@ -89,43 +90,51 @@ const sessionRequest = async (
     };
 });
 
-function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): Generator {
+function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string } | null>): Generator {
     try {
         // Don't initiate a new session if we have already established one using this wc URI
         // TODO: type the yield calls!
-        const localSession: any = yield call(getLocalWalletConnectSession, payload.uri);
 
-        if (localSession) {
-            yield put(createPendingSession.success(localSession));
+        const localConnectorSession: any = yield call(getLocalWalletConnectSession, payload?.uri);
+
+        if (localConnectorSession) {
+            yield put(createPendingSession.success(localConnectorSession));
         }
 
         // TODO: type the yield select
         const internalSessions: any = yield select((state) => state.wallet.sessions);
 
-        const internalSession = yield call(
+        const internalConnectorSession = yield call(
             getInternalWalletConnectSessionFromUri,
-            internalSessions, payload.uri,
+            internalSessions, payload?.uri,
         );
 
-        if (internalSession) {
-            yield put(createPendingSession.success(internalSession));
+        if (internalConnectorSession) {
+            yield put(createPendingSession.success(internalConnectorSession));
         }
 
-        const connector = yield call(initiateWalletConnect, payload.uri);
+        const newConnector = yield call(initiateWalletConnect, payload?.uri);
 
-        yield put(createPendingSession.success(connector));
+        if (newConnector) {
+            yield put(createPendingSession.success(newConnector));
+        }
 
-        // @ts-expect-error: TODO: type redux-saga yield call
-        const channel: any = yield call(sessionRequest, connector);
+        const connector = localConnectorSession || internalConnectorSession || newConnector;
 
-        while (true) {
-            const session = yield take(channel);
+        if (connector && !connector.connected) {
+            const channel: any = yield call(sessionRequest, connector);
 
-            // @ts-expect-error: TODO: type redux-saga yield put
-            yield put(sendRequestSessionWithDapp(session));
+            while (true) {
+                const session = yield take(channel);
 
-            // close this channel when we approve a session request
-            yield channel.close();
+                // @ts-expect-error: TODO: type redux-saga yield put
+                yield put(sendRequestSessionWithDapp(session));
+
+                // close this channel when we approve a session request
+                yield channel.close();
+            }
+        } else {
+            yield put(confirmRequestSession.fulfill());
         }
     } catch (err) {
         yield put(createPendingSession.failure(err));
@@ -136,6 +145,7 @@ function* listenWalletConnectInit({ payload }: PayloadAction<{ uri: string }>): 
 
 function* watchWalletConnectInit(): Generator {
     yield takeEvery(createPendingSession.TRIGGER, listenWalletConnectInit);
+    yield takeEvery(RESET_TEMP_WALLET_STATE, listenWalletConnectInit);
 }
 
 const sessionDisconnect = async (connector: IConnector) => eventChannel((emitter) => {
