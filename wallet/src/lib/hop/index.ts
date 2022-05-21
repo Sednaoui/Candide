@@ -216,15 +216,18 @@ export const populateBridgeTx = async ({
     try {
         const bridge = hop.bridge(asset.symbol.toUpperCase());
 
+        const totalFee = await bridge.getTotalFee(value, sourceNetwork, destinationNetwork);
+        const totalValue = totalFee.add(value);
+
         const populateSendTx = await bridge.populateSendTx(
-            value,
+            totalValue,
             sourceNetwork,
             destinationNetwork,
             { recipient },
         );
 
         const gas = await bridge.estimateSendGasLimit(
-            value,
+            totalValue,
             sourceNetwork,
             destinationNetwork,
             { recipient },

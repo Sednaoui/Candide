@@ -383,7 +383,9 @@ function* listenWalletConnectCallRequest(): Generator {
 
                     const transactionOnDestinationChain = request.params[0];
 
-                    const transactionValue = BigNumber.from(transactionOnDestinationChain.value);
+                    const transactionValue = BigNumber.from(
+                        transactionOnDestinationChain.value || 0,
+                    );
                     const gasOnDestination: any = yield call(estimateGasCost, {
                         provider: dappProvider,
                         tx: transactionOnDestinationChain,

@@ -131,7 +131,7 @@ export const reviewEthereumRequests = async ({
                 },
                 {
                     label: 'Value',
-                    value: value ? utils.formatUnits(value) : '',
+                    value: value ? utils.formatUnits(value) : '0',
                 },
                 {
                     label: 'Function Called',
