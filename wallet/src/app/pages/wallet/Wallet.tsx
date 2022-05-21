@@ -138,7 +138,7 @@ const Wallet = (): React.ReactElement => {
                                 width={40}
                                 height={40} />
                         )}
-                        <p>
+                        <Form>
                             Connected to
                             {' '}
                             <b>
@@ -174,7 +174,7 @@ const Wallet = (): React.ReactElement => {
                                     </Button>
                                 </Stack>
                             )}
-                        </p>
+                        </Form>
                     </Stack>
                 )}
                 {/* // TODO: only display transaction submitted with eth_sendTransaction */}
