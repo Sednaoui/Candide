@@ -195,7 +195,7 @@ export const signEthereumRequests = async ({
     transactionRequest: RequestTransactionPayload,
     fromAddress: HexString,
     privateKey: string,
-}): Promise<string | undefined> => {
+}): Promise<string | number | undefined> => {
     let transaction;
     let dataToSign;
     let address;
@@ -246,6 +246,9 @@ export const signEthereumRequests = async ({
                 errorMsg = 'Address requested does not match active account';
             }
             break;
+        case 'wallet_switchEthereumChain':
+            result = convertHexToNumber(transactionRequest.params[0].chainId);
+            break;
         default:
             break;
     }
@@ -262,7 +265,7 @@ export const signEthereumRequests = async ({
     }
 
     if (result) {
-        approveCallRequest({ connector, id, result });
+        approveCallRequest({ connector, id, result: result.toString() });
     }
 
     return result;

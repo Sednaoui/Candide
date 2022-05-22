@@ -159,7 +159,7 @@ const Wallet = (): React.ReactElement => {
                                                 }));
                                             }
                                         }}
-                                        defaultValue={dappChainId}>
+                                        value={dappChainId}>
                                         {networkList}
                                     </Form.Select>
                                     <Button
@@ -177,7 +177,7 @@ const Wallet = (): React.ReactElement => {
                     </Stack>
                 )}
                 {/* // TODO: only display transaction submitted with eth_sendTransaction */}
-                {transactionHash && blockExplorer ? (
+                {typeof transactionHash === 'string' && blockExplorer ? (
                     <a
                         href={`${blockExplorer}/tx/${transactionHash}`}
                         target="_blank"

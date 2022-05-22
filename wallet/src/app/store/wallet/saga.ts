@@ -486,6 +486,13 @@ function* walletConnectApproveCallRequest({ payload }: PayloadAction<{
 
         if (typeof transactionHash === 'string') {
             yield put(approveCallRequestAction.success({ transactionHash }));
+        } else if (typeof transactionHash === 'number') {
+            yield put(approveCallRequestAction.success({ transactionHash }));
+            yield put(updateSessionAction.trigger({
+                chainId: transactionHash,
+                connector,
+                accounts: [wallet.address],
+            }));
         }
     } catch (err) {
         yield put(approveCallRequestAction.failure(err));
