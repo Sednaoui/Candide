@@ -25,6 +25,7 @@ import {
 } from '../../lib/ethers';
 import {
     fromFixedPoint,
+    getEthereumNetwork,
     getMethodFromTransactionData,
 } from '../../lib/helpers';
 import { checkApprovalAllowance } from '../../lib/hop';
@@ -167,6 +168,16 @@ export const reviewEthereumRequests = async ({
                 {
                     label: 'Message',
                     value: dataToSignReable,
+                },
+            ];
+            break;
+        case 'wallet_switchEthereumChain':
+            params = [
+                ...params,
+                {
+                    label: 'Message',
+                    value: `A dapp is requesting to change your network to 
+                    ${getEthereumNetwork(transactionRequest.params[0].chainId).name.toUpperCase()}`,
                 },
             ];
             break;
