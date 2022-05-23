@@ -8,6 +8,7 @@ import {
     CloseButton,
     Card,
     Stack,
+    ConfirmModal,
 } from '../../components/index';
 import { decryptWallet } from '../../model/wallet';
 import { useAppSelector } from '../../store';
@@ -32,7 +33,13 @@ const Settings = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
     const onDelete = async () => {
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
         setErrorMessage('');
         dispatch(resetWallet());
         navigate('/');
@@ -101,6 +108,13 @@ const Settings = () => {
                     </Stack>
                 </Form.Group>
             </Form>
+            <ConfirmModal
+                title="THIS ACTION IS IRREVERSIBLE"
+                message="This will erase your wallet permanently from this browser.
+                Make sure to save your private keys before confirming"
+                onConfirm={confirmDelete}
+                show={showDeleteModal}
+                setShow={setShowDeleteModal} />
         </>
     );
 };
