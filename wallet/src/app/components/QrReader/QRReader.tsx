@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ReactQrReader from 'react-qr-reader-es6';
 
 import qrcodeicon from '../../../assets/qr-icon.svg';
+import walletconnectbanner from '../../../assets/walletconnect-banner.svg';
 import {
     Button,
     Spinner,
@@ -54,19 +55,25 @@ export default function QrReader({ onConnect }: Props) {
                     </div>
                 </>
             ) : (
-                <div className="container qrPlaceholder">
+                <>
                     <Image
-                        src={qrcodeicon}
-                        width={100}
-                        height={100}
-                        alt="qr code icon"
-                        className="qrIcon" />
-                    <Button
-                        type="button"
-                        onClick={onShowScanner}>
-                        Scan QR code
-                    </Button>
-                </div>
+                        src={walletconnectbanner}
+                        width={200}
+                        height={200} />
+                    <div className="container qrPlaceholder">
+                        <Image
+                            src={qrcodeicon}
+                            width={150}
+                            height={150}
+                            alt="qr code icon"
+                            className="qrIcon" />
+                        <Button
+                            type="button"
+                            onClick={onShowScanner}>
+                            Scan QR code
+                        </Button>
+                    </div>
+                </>
             )}
         </div>
     );
