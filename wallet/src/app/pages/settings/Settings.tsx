@@ -93,7 +93,6 @@ const Settings = () => {
                         </Button>
                         <Button
                             className="mt-3"
-                            disabled={!password}
                             variant="danger"
                             type="button"
                             onClick={onDelete}>
