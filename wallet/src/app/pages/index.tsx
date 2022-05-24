@@ -54,12 +54,14 @@ export const Routes = () => {
         dispatch(resetTempWalletState());
     }, []);
 
+    const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
+
     return (
         <Router>
             <AuthProvider>
                 <Layout>
                     <ReactRoutes>
-                        <Route path="/" element={<Welcome />} />
+                        <Route path="/" element={!walletInstance ? <Welcome /> : <Wallet />} />
                         <Route path="import_wallet" element={<ImportWallet />} />
                         <Route path="/send/:assetSymbol" element={<Send />} />
                         <Route path="/wallet" element={<Wallet />} />

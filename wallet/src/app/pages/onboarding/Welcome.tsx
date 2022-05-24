@@ -7,19 +7,8 @@ import {
     Container,
 } from '../../components';
 import '../../App.css';
-import { useAppSelector } from '../../store';
 
 function Welcome(): JSX.Element {
-    const { walletInstance } = useAppSelector((state) => state.wallet);
-
-    let initialPath = '/';
-
-    if (walletInstance?.address) {
-        initialPath = '/wallet';
-    } else {
-        initialPath = '/import_wallet';
-    }
-
     return (
         <Container className="container">
             <Stack gap={2}>
@@ -30,8 +19,8 @@ function Welcome(): JSX.Element {
                 <h3>
                     Welcome to Candide
                 </h3>
-                <Link to={initialPath}>
-                    {initialPath === '/wallet' ? 'Enter Wallet' : 'Get Started'}
+                <Link to="/import_wallet">
+                    Get Started
                 </Link>
             </Stack>
         </Container>
