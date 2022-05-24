@@ -62,6 +62,8 @@ const Wallet = (): React.ReactElement => {
     const loadingWatchBridgeTransaction = useAppSelector((state) =>
         state.wallet.loadingWatchBridgeTransaction);
 
+    const loading = useAppSelector((state) => state.wallet.loading);
+
     const sourceChain = getEthereumNetwork(walletChainId);
     const destinationChain = getEthereumNetwork(dappChainId);
 
@@ -202,6 +204,17 @@ const Wallet = (): React.ReactElement => {
                         to
                         {' '}
                         {destinationChain.name}
+                        ...
+                    </div>
+                )}
+                {/* display loading bar when callRequest is trigged */}
+                {loading && !loadingWatchBridgeTransaction && (
+                    <div className="text-center">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only" />
+                        </div>
+                        {' '}
+                        Preparing to move funds cross-network
                         ...
                     </div>
                 )}

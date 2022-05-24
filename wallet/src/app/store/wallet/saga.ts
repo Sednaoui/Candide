@@ -346,13 +346,14 @@ function* listenWalletConnectCallRequest(): Generator {
             // checks if the request is the same as the current network of the wallet
             if (connector.chainId === walletChainId) {
                 // display the request to the user if same network
+                yield put(callRequestAction.request());
                 yield put(callRequestAction.success({
                     callRequest: request,
                     chainId: connector.chainId,
                 }));
             } else {
                 // display that the request is from a different chainId
-
+                yield put(callRequestAction.request());
                 const allowenceOk = yield call(checkApprovalAllowenceFromTransactionRequest, {
                     chainId: walletChainId,
                     transactionRequest: request,

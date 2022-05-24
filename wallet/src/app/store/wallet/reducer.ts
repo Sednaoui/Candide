@@ -218,6 +218,10 @@ export const walletReducer = (
         case callRequest.TRIGGER:
             return {
                 ...state,
+            };
+        case callRequest.REQUEST:
+            return {
+                ...state,
                 loading: true,
             };
         case callRequest.SUCCESS:
