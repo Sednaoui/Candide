@@ -298,6 +298,7 @@ export const walletReducer = (
         case watchBridgeTransaction.TRIGGER:
             return {
                 ...state,
+                loading: true,
                 loadingWatchBridgeTransaction: true,
             };
         case watchBridgeTransaction.SUCCESS:
@@ -307,6 +308,7 @@ export const walletReducer = (
         case watchBridgeTransaction.FULFILL:
             return {
                 ...state,
+                loading: false,
                 loadingWatchBridgeTransaction: false,
             };
         case RESET_WALLET:

@@ -15,6 +15,7 @@ import {
     Form,
     Button,
     Stack,
+    Spinner,
 } from '../../components';
 import { useAppSelector } from '../../store';
 import {
@@ -176,6 +177,14 @@ const Wallet = (): React.ReactElement => {
                                 </Stack>
                             )}
                         </Form>
+                        {/* display loading spinner */}
+                        {loading && (
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">
+                                    Loading...
+                                </span>
+                            </Spinner>
+                        )}
                     </Stack>
                 )}
                 {/* // TODO: only display transaction submitted with eth_sendTransaction */}
@@ -193,9 +202,6 @@ const Wallet = (): React.ReactElement => {
                 {/* display loading of bridge transaction */}
                 {loadingWatchBridgeTransaction && (
                     <div className="text-center">
-                        <div className="spinner-border text-primary" role="status">
-                            <span className="sr-only" />
-                        </div>
                         {' '}
                         Moving funds from
                         {' '}
@@ -204,17 +210,6 @@ const Wallet = (): React.ReactElement => {
                         to
                         {' '}
                         {destinationChain.name}
-                        ...
-                    </div>
-                )}
-                {/* display loading bar when callRequest is trigged */}
-                {loading && !loadingWatchBridgeTransaction && (
-                    <div className="text-center">
-                        <div className="spinner-border text-primary" role="status">
-                            <span className="sr-only" />
-                        </div>
-                        {' '}
-                        Preparing to move funds cross-network
                         ...
                     </div>
                 )}
