@@ -253,11 +253,11 @@ function* walletConnectUpdateSession({ payload }: PayloadAction<{
     try {
         const connector: any = yield select((state) => state.wallet.connector);
 
-        const { chainId } = payload;
+        const { chainId, accounts } = payload;
 
         yield call(updateSession, {
             connector,
-            accounts: payload.accounts,
+            accounts,
             chainId,
         });
         yield put(updateSessionAction.success({ chainId }));
@@ -471,10 +471,9 @@ function* walletConnectApproveCallRequest({ payload }: PayloadAction<{
     privateKey: string,
 }>): Generator {
     const { provider, fromAddress, privateKey } = payload;
-    const wallet: any = yield select((state) => state.wallet);
-
-    const { connector } = wallet;
-    const transactionRequest = wallet.callRequest;
+    const walletInstance: any = yield select((state) => state.wallet.walletInstance);
+    const transactionRequest: any = yield select((state) => state.wallet.callRequest);
+    const connector: any = yield select((state) => state.wallet.connector);
 
     try {
         const transactionHash = yield call(signEthereumRequests, {
@@ -488,11 +487,14 @@ function* walletConnectApproveCallRequest({ payload }: PayloadAction<{
         if (typeof transactionHash === 'string') {
             yield put(approveCallRequestAction.success({ transactionHash }));
         } else if (typeof transactionHash === 'number') {
-            yield put(approveCallRequestAction.success({ transactionHash }));
+            const chainId = transactionHash;
+
+            yield put(approveCallRequestAction.success({ chainId }));
+
             yield put(updateSessionAction.trigger({
-                chainId: transactionHash,
+                chainId,
                 connector,
-                accounts: [wallet.address],
+                accounts: [walletInstance.address],
             }));
         }
     } catch (err) {

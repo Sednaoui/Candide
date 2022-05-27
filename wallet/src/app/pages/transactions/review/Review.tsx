@@ -39,6 +39,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
     const walletProvider = useWalletProvider();
     const dappProvider = useDappProvider();
     const [provider, setProvider] = useState(walletProvider);
+    const [passwordRequired, setPasswordRequired] = useState(true);
 
     const [password, setPassword] = useState('');
 
@@ -60,6 +61,10 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
 
                 setTransactionData(request);
             };
+
+            if (callRequest.method === 'wallet_switchEthereumChain') {
+                setPasswordRequired(false);
+            }
 
             transactionReview();
         }
@@ -138,14 +143,16 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                 </Modal.Body>
                 <Modal.Footer className="text-center">
                     <Stack gap={2}>
-                        <Form.Group>
-                            <Form.Control
-                                required
-                                type="password"
-                                placeholder="Password"
-                                name="password"
-                                onChange={(e) => setPassword(e.target.value)} />
-                        </Form.Group>
+                        {passwordRequired ? (
+                            <Form.Group>
+                                <Form.Control
+                                    required
+                                    type="password"
+                                    placeholder="Password"
+                                    name="password"
+                                    onChange={(e) => setPassword(e.target.value)} />
+                            </Form.Group>
+                        ) : null}
                         <Stack
                             direction="horizontal"
                             className="text-center"
@@ -164,27 +171,38 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                 Reject
                             </Button>
                             <Button
-                                disabled={!password}
+                                disabled={passwordRequired && !password}
                                 size="lg"
                                 type="button"
                                 onClick={async () => {
-                                    if (walletEncryptedPrivateKey) {
-                                        const wallet = await decryptWallet(
-                                            password,
-                                            walletInstance,
-                                        );
+                                    if (passwordRequired) {
+                                        if (walletEncryptedPrivateKey) {
+                                            const wallet = await decryptWallet(
+                                                password,
+                                                walletInstance,
+                                            );
 
-                                        if (wallet instanceof Error) {
-                                            dispatch(rejectCallRequest(
-                                                { message: wallet.message },
+                                            if (wallet instanceof Error) {
+                                                dispatch(rejectCallRequest(
+                                                    { message: wallet.message },
+                                                ));
+                                                return;
+                                            }
+                                            dispatch(approveCallRequest(
+                                                {
+                                                    provider,
+                                                    fromAddress: walletAddress,
+                                                    privateKey: wallet.privateKey,
+                                                },
                                             ));
-                                            return;
+                                            setShow(false);
+                                            setTransactionData([]);
                                         }
+                                    } else {
                                         dispatch(approveCallRequest(
                                             {
                                                 provider,
                                                 fromAddress: walletAddress,
-                                                privateKey: wallet.privateKey,
                                             },
                                         ));
                                         setShow(false);
