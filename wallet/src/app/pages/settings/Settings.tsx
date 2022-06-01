@@ -48,7 +48,7 @@ const Settings = () => {
     return (
         <>
             <div className="d-flex flex-row-reverse">
-                <CloseButton variant="white" />
+                <CloseButton />
             </div>
             <Form
                 className="mb-3"
@@ -94,16 +94,16 @@ const Settings = () => {
                         gap={3}>
                         <Button
                             className="mt-3"
-                            disabled={!password}
-                            type="submit">
-                            Reveal
-                        </Button>
-                        <Button
-                            className="mt-3"
                             variant="danger"
                             type="button"
                             onClick={onDelete}>
                             Delete Wallet
+                        </Button>
+                        <Button
+                            className="mt-3"
+                            disabled={!password}
+                            type="submit">
+                            Reveal
                         </Button>
                     </Stack>
                 </Form.Group>

@@ -101,6 +101,7 @@ const Wallet = (): React.ReactElement => {
                 <Stack direction="horizontal" gap={2}>
                     <Button
                         type="button"
+                        className="btn-primary"
                         onClick={() => setShowReceiveModal(true)}>
                         Receive
                     </Button>

@@ -71,7 +71,7 @@ const ConnectWallet = (): React.ReactElement => {
     return (
         <>
             <div className="d-flex flex-row-reverse">
-                <CloseButton variant="white" />
+                <CloseButton />
             </div>
             <Form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                 e.preventDefault();

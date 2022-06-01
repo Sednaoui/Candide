@@ -56,6 +56,7 @@ const ReceiveModal = ({ show, setShow }: Props) => {
                     <Card.Footer>
                         <Button
                             type="button"
+                            className="btn-primary"
                             buttonRef={target}
                             onClick={copy}>
                             {trancatAddress(address || '')}

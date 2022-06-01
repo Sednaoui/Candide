@@ -26,8 +26,8 @@ const Layout = ({ children }: Props) => (
             content="width=device-width, initial-scale=1.0" />
         <Card
             style={{
-                backgroundColor: '#1A2737',
-                color: 'white',
+                backgroundColor: '#F8ECE1', // cream
+                color: '#1F2546', // navy blue
                 height: '100vh',
                 width: '100%',
                 justifyContent: 'center',

@@ -32,16 +32,31 @@ const Button = (props: {
     const { type, onClick, disabled, className, variant, size, buttonRef, children } = props;
 
     return (
-        <ReactBoostrapButton
-            type={type}
-            variant={variant}
-            className={className}
-            onClick={onClick}
-            size={size}
-            ref={buttonRef}
-            disabled={disabled}>
-            {children}
-        </ReactBoostrapButton>
+        <>
+            <style type="text/css">
+                {`
+                .btn-flat {
+                background-color: #1F2546;
+                color: white;
+                }
+
+                .btn-xxl {
+                padding: 1rem 1.5rem;
+                font-size: 1.5rem;
+                }
+                `}
+            </style>
+            <ReactBoostrapButton
+                type={type}
+                variant={variant || 'flat'}
+                className={className}
+                onClick={onClick}
+                size={size}
+                ref={buttonRef}
+                disabled={disabled}>
+                {children}
+            </ReactBoostrapButton>
+        </>
     );
 };
 

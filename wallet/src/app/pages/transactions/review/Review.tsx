@@ -174,6 +174,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                 disabled={passwordRequired && !password}
                                 size="lg"
                                 type="button"
+                                className="btn-primary"
                                 onClick={async () => {
                                     if (passwordRequired) {
                                         if (walletEncryptedPrivateKey) {

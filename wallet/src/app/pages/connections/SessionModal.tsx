@@ -132,6 +132,7 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
                         <Button
                             size="lg"
                             type="button"
+                            className="btn-primary"
                             onClick={confirm}>
                             Connect
                         </Button>

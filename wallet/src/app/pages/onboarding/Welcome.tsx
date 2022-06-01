@@ -1,14 +1,17 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import logo from '../../../assets/logo.png';
 import {
     Image,
     Stack,
     Container,
+    Button,
 } from '../../components';
 import '../../App.css';
 
 function Welcome(): JSX.Element {
+    const navigate = useNavigate();
+
     return (
         <Container className="container">
             <Stack gap={2}>
@@ -19,9 +22,12 @@ function Welcome(): JSX.Element {
                 <h3>
                     Welcome to Candide
                 </h3>
-                <Link to="/import_wallet">
+                <Button
+                    type="button"
+                    className="btn-primary"
+                    onClick={() => navigate('/import_wallet')}>
                     Get Started
-                </Link>
+                </Button>
             </Stack>
         </Container>
     );
