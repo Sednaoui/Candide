@@ -124,6 +124,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                             ))}
                         </Card.Body>
                         {functionCalled.value.includes('swapAndSend')
+                            && sourceChainName !== destinationChainName
                             && (
                                 <Card.Footer>
                                     <Stack>
