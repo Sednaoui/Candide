@@ -1,5 +1,4 @@
 import React from 'react';
-import { Stack } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +12,7 @@ import {
     Modal,
     Image,
     Form,
+    Stack,
 } from '../../components';
 import {
     confirmRequestSession,
@@ -69,16 +69,20 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
     return (
         sessionInfo && (
             <Modal show={show} fullscreen onHide={() => setShow(false)}>
-                <Modal.Header className="text-center">
+                <Modal.Header>
                     <Modal.Title>
-                        {sessionInfo.icons
-                            && (
-                                <Image
-                                    src={sessionInfo.icons[0]}
-                                    width={160}
-                                    height={160} />
-                            )}
-                        {removeHttp(sessionInfo.url)}
+                        <Stack gap={2}>
+                            {sessionInfo.icons
+                                && (
+                                    <Image
+                                        src={sessionInfo.icons?.[0]}
+                                        alt={sessionInfo.name}
+                                        className="mr-3"
+                                        width="40"
+                                        height="40" />
+                                )}
+                            {removeHttp(sessionInfo.url)}
+                        </Stack>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
