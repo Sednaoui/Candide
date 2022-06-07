@@ -106,7 +106,7 @@ const SessionModal = ({ sessionInfo, setSessionInfo, show, setShow }: ModalProps
                                     ...sessionInfo,
                                     chainId: Number(e.target.value),
                                 })}
-                                defaultValue={Number(chainId)}>
+                                value={Number(chainId)}>
                                 {networkList}
                             </Form.Select>
                         </Form.Group>

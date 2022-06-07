@@ -26,15 +26,15 @@ const ConnectWallet = (): React.ReactElement => {
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
 
     const address = walletInstance?.address;
-    const walletChainId = useAppSelector((state) => state.wallet.walletChainId);
+    const dappChainId = useAppSelector((state) => state.wallet.dappChainId);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (pendingRequest?.params) {
-            const { peerMeta } = pendingRequest.params[0];
+            const { peerMeta, chainId } = pendingRequest.params[0];
 
-            const chain = peerMeta.chainId || walletChainId;
+            const chain = chainId || dappChainId;
 
             const seshInfo = {
                 name: peerMeta.name,
