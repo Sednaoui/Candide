@@ -99,6 +99,9 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
         }
     }, [transactionData]);
 
+    const incomingTransactionRequestNetwork = functionCalled.value.includes('swapAndSend')
+        && sourceChainName !== destinationChainName ? sourceChainName : destinationChainName;
+
     return (
         <>
             <Modal show={show} fullscreen onHide={() => setShow(false)}>
@@ -106,7 +109,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                     <Modal.Title>
                         Review Incoming Request on
                         {' '}
-                        {sourceChainName}
+                        {incomingTransactionRequestNetwork}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
