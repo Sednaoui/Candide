@@ -3,6 +3,7 @@ export {
     CloseButton,
 } from './Buttons';
 
+export { default as Alert } from 'react-bootstrap/Alert';
 export { default as Card } from 'react-bootstrap/Card';
 export { default as Carousel } from 'react-bootstrap/Carousel';
 export { default as Col } from 'react-bootstrap/Col';

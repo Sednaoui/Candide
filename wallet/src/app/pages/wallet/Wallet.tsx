@@ -11,6 +11,7 @@ import {
     removeHttp,
 } from '../../../lib/helpers';
 import {
+    Alert,
     Image,
     Form,
     Button,
@@ -130,6 +131,30 @@ const Wallet = (): React.ReactElement => {
                         Connect
                     </Button>
                 </Stack>
+                {/* Alert */}
+                <Alert variant="warning">
+                    <Alert.Heading>
+                        ALPHA Product
+                    </Alert.Heading>
+                    <p>
+                        For cross-transactions, Candide Alpha currently supports spending ETH.
+                        Do not attempt to spend any other asset.
+                        Your ETH will automatically be bridged instead.
+                        Learn more in our
+                        {' '}
+                        <Alert.Link href="https://docs.candidewallet.com">
+                            docs
+                        </Alert.Link>
+                    </p>
+                    <hr />
+                    <div className="mb-0">
+                        To cross-transact, you need a balance on both networks. Learn
+                        {' '}
+                        <Alert.Link href="https://docs.candidewallet.com/faq#why-do-i-need-to-have-a-balance-on-destination-network-to-transact">
+                            why
+                        </Alert.Link>
+                    </div>
+                </Alert>
                 <WalletNavBar />
                 {connectedSession && connectedSession.peerMeta && (
                     <Stack
