@@ -1,10 +1,10 @@
 import { run as runHolder } from 'holderjs';
 import { useEffect } from 'react';
-import { Carousel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 import logo from '../../../assets/logo.png';
 import {
+    Carousel,
     Image,
     Stack,
     Container,

@@ -4,6 +4,7 @@ export {
 } from './Buttons';
 
 export { default as Card } from 'react-bootstrap/Card';
+export { default as Carousel } from 'react-bootstrap/Carousel';
 export { default as Col } from 'react-bootstrap/Col';
 export { default as Container } from 'react-bootstrap/Container';
 export { default as ConfirmModal } from './Modals/ConfirmModal';
