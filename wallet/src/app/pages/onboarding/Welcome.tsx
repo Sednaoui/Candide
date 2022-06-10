@@ -100,16 +100,16 @@ function Welcome(): JSX.Element {
                                 Candide will propose you to sign a pre-transaction to
                                 bridge your funds to the Layer2 network of your choice
                             </p>
-                            <Button
-                                type="button"
-                                className="btn-primary"
-                                onClick={() => navigate('/import_wallet')}>
-                                Get Started
-                            </Button>
                         </Stack>
                     </Carousel.Caption>
                 </Carousel.Item>
             </Carousel>
+            <Button
+                type="button"
+                className="btn-primary"
+                onClick={() => navigate('/import_wallet')}>
+                Get Started
+            </Button>
         </Container>
     );
 }
