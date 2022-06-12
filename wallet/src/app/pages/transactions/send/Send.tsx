@@ -3,7 +3,12 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ETH } from '../../../../lib/constants/currencies';
-import { getEthereumNetwork } from '../../../../lib/helpers';
+import { MAINNET } from '../../../../lib/constants/networks';
+import {
+    getEthereumNetwork,
+    removeHttp,
+} from '../../../../lib/helpers';
+import { EVMNetwork } from '../../../../lib/networks';
 import {
     Form,
     Button,
@@ -37,6 +42,7 @@ const Send = (): React.ReactElement => {
     const [password, setPassword] = useState('');
     const [displayPassword, setDisplayPassword] = useState(false);
     const [txTransaction, setTxTransaction] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
     const walletAddress = walletInstance?.address;
@@ -60,12 +66,17 @@ const Send = (): React.ReactElement => {
     const defaultGasConfidence = useAppSelector((state) =>
         state.settings.defaultGasSpeed.confidence);
 
+    const [sourceChain, setSourceChain] = useState<EVMNetwork | null>(null);
+
     React.useEffect(() => {
         if (provider) {
+            const network = getEthereumNetwork(provider.network.chainId);
+
             dispatch(getBlockPrices({
-                network: getEthereumNetwork(provider.network.chainId),
+                network,
                 provider,
             }));
+            setSourceChain(network);
         }
     }, [provider]);
 
@@ -94,6 +105,8 @@ const Send = (): React.ReactElement => {
         setShow(false);
     };
 
+    const blockExplorer = sourceChain?.blockExplorerUrl;
+
     return (
         <>
             <Form
@@ -105,7 +118,8 @@ const Send = (): React.ReactElement => {
 
                         // if wrong password, wallet will return error
                         if (wallet instanceof Error) {
-                            setTxTransaction(wallet.message);
+                            setErrorMessage(wallet.message);
+                            setTxTransaction('');
                             return;
                         }
 
@@ -120,14 +134,16 @@ const Send = (): React.ReactElement => {
 
                             // if transaction failed, tx will return an error
                             if (tx instanceof Error) {
-                                setTxTransaction(tx.message);
+                                setErrorMessage(tx.message);
+                                setTxTransaction('');
                                 return;
                             }
 
                             setTxTransaction(tx.hash);
                         }
                     } else {
-                        setTxTransaction('no wallet Instance');
+                        setErrorMessage('no wallet Instance');
+                        setTxTransaction('');
                     }
                 }}>
                 <Row>
@@ -188,42 +204,47 @@ const Send = (): React.ReactElement => {
                         label="Show password"
                         onClick={() => setDisplayPassword(!displayPassword)} />
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>
-                        Estimated Fee:
-                        {' '}
-                        {gasPriceOfTXInETH}
-                        {' '}
-                        ETH
-                    </Form.Label>
-                    <Button
-                        variant="link"
-                        type="button"
-                        onClick={() => setShow(true)}>
-                        Fee Settings
-                    </Button>
-                    <GasSettings
-                        gasLimit={gasLimit}
-                        show={show}
-                        close={handleClose} />
-                </Form.Group>
+                {/* TODO: handle estimation gas fee for arbitrum and optimism */}
+                {sourceChain?.chainID === MAINNET.chainID && (
+                    <Form.Group>
+                        <Form.Label>
+                            Estimated Fee:
+                            {' '}
+                            {gasPriceOfTXInETH}
+                            {' '}
+                            ETH
+                        </Form.Label>
+                        <Button
+                            variant="link"
+                            type="button"
+                            onClick={() => setShow(true)}>
+                            Fee Settings
+                        </Button>
+                        <GasSettings
+                            gasLimit={gasLimit}
+                            show={show}
+                            close={handleClose} />
+                    </Form.Group>
+                )}
                 <Button
-                    disabled={!utils.isAddress(recipient)}
+                    disabled={!utils.isAddress(recipient) && !tokenAmount && !password}
                     type="submit"
                     className="mt-3">
                     Send
                 </Button>
             </Form>
-            {txTransaction && (
+            {txTransaction && blockExplorer ? (
                 <div className="mt-3">
                     <a
-                        href={`https://ropsten.etherscan.io/tx/${txTransaction}`}
+                        href={`${blockExplorer}/tx/${txTransaction}`}
                         target="_blank"
                         rel="noopener noreferrer">
-                        {txTransaction}
+                        See Transaction on
+                        {' '}
+                        {removeHttp(blockExplorer)}
                     </a>
                 </div>
-            )}
+            ) : errorMessage}
         </>
     );
 };
