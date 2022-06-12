@@ -16,6 +16,7 @@ import '../../App.css';
 const ImportWallet = (): ReactElement => {
     const [mnemonic, setMnemonic] = useState('');
     const [password, setPassword] = useState('');
+    const [displayPassword, setDisplayPassword] = useState(false);
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ const ImportWallet = (): ReactElement => {
                     </Form.Label>
                     <Form.Control
                         className="mt-3"
-                        type="password"
+                        type={displayPassword ? 'text' : 'password'}
                         placeholder="password"
                         name="password"
                         pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
@@ -69,6 +70,11 @@ const ImportWallet = (): ReactElement => {
                         onChange={(e) => {
                             setPassword(e.target.value);
                         }} />
+                    <Form.Check
+                        className="mt-3"
+                        type="checkbox"
+                        label="Show password"
+                        onClick={() => setDisplayPassword(!displayPassword)} />
                     <Button
                         className="mt-3"
                         disabled={disableButton}
