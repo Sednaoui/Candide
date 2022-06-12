@@ -35,6 +35,7 @@ const Send = (): React.ReactElement => {
     const [recipient, setRecipient] = useState('');
     const [tokenAmount, setTokenAmount] = useState('');
     const [password, setPassword] = useState('');
+    const [displayPassword, setDisplayPassword] = useState(false);
     const [txTransaction, setTxTransaction] = useState('');
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
@@ -177,10 +178,15 @@ const Send = (): React.ReactElement => {
                     </Form.Label>
                     <Form.Control
                         required
-                        type="password"
+                        type={displayPassword ? 'text' : 'password'}
                         placeholder="Password"
                         name="password"
                         onChange={(e) => setPassword(e.target.value)} />
+                    <Form.Check
+                        className="mt-3"
+                        type="checkbox"
+                        label="Show password"
+                        onClick={() => setDisplayPassword(!displayPassword)} />
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>
