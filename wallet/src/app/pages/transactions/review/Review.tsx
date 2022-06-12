@@ -40,6 +40,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
     const dappProvider = useDappProvider();
     const [provider, setProvider] = useState(walletProvider);
     const [passwordRequired, setPasswordRequired] = useState(true);
+    const [displayPassword, setDisplayPassword] = useState(false);
 
     const [password, setPassword] = useState('');
 
@@ -151,10 +152,15 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                             <Form.Group>
                                 <Form.Control
                                     required
-                                    type="password"
+                                    type={displayPassword ? 'text' : 'password'}
                                     placeholder="Password"
                                     name="password"
                                     onChange={(e) => setPassword(e.target.value)} />
+                                <Form.Check
+                                    className="mt-3"
+                                    type="checkbox"
+                                    label="Show password"
+                                    onClick={() => setDisplayPassword(!displayPassword)} />
                             </Form.Group>
                         ) : null}
                         <Stack
