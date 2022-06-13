@@ -43,6 +43,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
     const [displayPassword, setDisplayPassword] = useState(false);
 
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const walletInstance = useAppSelector((state) => state.wallet.walletInstance);
     const walletAddress = walletInstance?.address;
@@ -146,7 +147,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                             )}
                     </Card>
                 </Modal.Body>
-                <Modal.Footer className="text-center">
+                <Modal.Footer>
                     <Stack gap={2}>
                         {passwordRequired ? (
                             <Form.Group>
@@ -161,6 +162,7 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                     type="checkbox"
                                     label="Show password"
                                     onClick={() => setDisplayPassword(!displayPassword)} />
+                                {errorMessage || null}
                             </Form.Group>
                         ) : null}
                         <Stack
@@ -194,10 +196,10 @@ const Review = ({ show, setShow, callRequest, chainId }: ModalProps) => {
                                             );
 
                                             if (wallet instanceof Error) {
-                                                dispatch(rejectCallRequest(
-                                                    { message: wallet.message },
-                                                ));
+                                                setErrorMessage(wallet.message);
                                                 return;
+                                            } else {
+                                                setErrorMessage('');
                                             }
                                             dispatch(approveCallRequest(
                                                 {
