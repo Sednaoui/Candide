@@ -11,35 +11,20 @@ interface Props {
 
 const Layout = ({ children }: Props) => (
     <Container
-        className="container-fluid"
         style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100vw',
-            height: '100vh',
-            paddingLeft: 0,
-            paddingRight: 0,
+            backgroundColor: '#F8ECE1', // cream
+            color: '#1F2546', // navy blue
         }}>
         <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0" />
         <Card
+            border="light"
             style={{
                 backgroundColor: '#F8ECE1', // cream
-                color: '#1F2546', // navy blue
-                height: '100vh',
                 width: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 0,
-                paddingBottom: 5,
             }}>
-            <Card.Body
-                style={{
-                    paddingLeft: 2,
-                    paddingRight: 2,
-                }}>
+            <Card.Body>
                 {children}
             </Card.Body>
         </Card>
