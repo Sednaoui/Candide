@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@eth-optimism/sdk": "^1.1.4",
+    "@eth-optimism/sdk": "1.1.9",
     "@ethersproject/providers": "^5.6.8",
     "@ethersproject/web": "^5.6.1",
     "@hop-protocol/sdk": "0.0.1-beta.313",
