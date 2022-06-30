@@ -79,7 +79,6 @@ const NFTList = (): React.ReactElement => {
                     <Card.Body>
                         <Card.Title>
                             {i.name}
-                            {i.token_id}
                         </Card.Title>
                     </Card.Body>
                 </Card>
