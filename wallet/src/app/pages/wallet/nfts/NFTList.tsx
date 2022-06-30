@@ -69,8 +69,8 @@ const NFTList = (): React.ReactElement => {
                 <Card
                     key={i.token_id}
                     style={{
-                        width: '10rem',
-                        marginBottom: '10px',
+                        width: '12rem',
+                        marginBottom: '12px',
                     }}
                     className="FlexIndividualCollection">
                     <Card.Img
