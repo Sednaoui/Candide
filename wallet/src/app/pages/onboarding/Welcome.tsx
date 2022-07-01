@@ -26,7 +26,7 @@ function Welcome(): JSX.Element {
                 variant="dark"
                 style={{
                     height: '480px',
-                    width: '120%',
+                    width: '100%',
                 }}>
                 <Carousel.Item>
                     <Image
