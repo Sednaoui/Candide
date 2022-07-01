@@ -84,7 +84,7 @@ const NFTList = (): React.ReactElement => {
                     className="FlexIndividualCollection">
                     <Card.Img
                         variant="top"
-                        src={i.image_url} />
+                        src={i.image_url || i.collection.image_url} />
                     <Card.Body>
                         <Card.Subtitle
                             style={{
